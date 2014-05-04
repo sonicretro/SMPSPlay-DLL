@@ -1,0 +1,439 @@
+#include <windows.h>
+#include "resource.h"
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_1       MUSIC          ".\\Data\\Sonic 3\\25 Title Screen.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_2        MUSIC          ".\\Data\\Sonic 3\\01 Angel Island 1.8000.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_3        MUSIC          ".\\Data\\Sonic 3\\02 Angel Island 2.9B6D.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_4        MUSIC          ".\\Data\\Sonic 3\\03 Hydrocity 1.B0BC.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_5        MUSIC          ".\\Data\\Sonic 3\\04 Hydrocity 2.C0C6.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_6        MUSIC          ".\\Data\\Sonic 3\\05 Marble Garden 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_7        MUSIC          ".\\Data\\Sonic 3\\06 Marble Garden 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_8        MUSIC          ".\\Data\\Sonic 3\\07 Carnival Night 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_9        MUSIC          ".\\Data\\Sonic 3\\08 Carnival Night 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_10       MUSIC          ".\\Data\\Sonic & Knuckles\\09 Flying Battery 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_11       MUSIC          ".\\Data\\Sonic & Knuckles\\0A Flying Battery 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_12       MUSIC          ".\\Data\\Sonic 3\\0B IceCap 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_13       MUSIC          ".\\Data\\Sonic 3\\0C IceCap 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_14       MUSIC          ".\\Data\\Sonic 3\\0D Launch Base 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_15       MUSIC          ".\\Data\\Sonic 3\\0E Launch Base 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_16       MUSIC          ".\\Data\\Sonic & Knuckles\\0F Mushroom Hill 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_17       MUSIC          ".\\Data\\Sonic & Knuckles\\10 Mushroom Hill 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_18       MUSIC          ".\\Data\\Sonic & Knuckles\\11 Sandopolis 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_19       MUSIC          ".\\Data\\Sonic & Knuckles\\12 Sandopolis 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_20       MUSIC          ".\\Data\\Sonic & Knuckles\\13 Lava Reef 1.A2E5.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_21       MUSIC          ".\\Data\\Sonic & Knuckles\\14 Lava Reef 2, Hidden Palace.ACF3.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_22       MUSIC          ".\\Data\\Sonic & Knuckles\\15 Sky Sanctuary.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_23       MUSIC          ".\\Data\\Sonic & Knuckles\\16 Death Egg 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_24       MUSIC          ".\\Data\\Sonic & Knuckles\\17 Death Egg 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_25       MUSIC          ".\\Data\\Sonic & Knuckles\\18 Act 1 Boss.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_26       MUSIC          ".\\Data\\Sonic & Knuckles\\19 Act 2 Boss.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_27       MUSIC          ".\\Data\\Sonic & Knuckles\\1A Doomsday.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_28       MUSIC          ".\\Data\\Sonic & Knuckles\\1B Bonus - Magnetic Orbs.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_29       MUSIC          ".\\Data\\Sonic & Knuckles\\1C Special Stage.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_30       MUSIC          ".\\Data\\Sonic & Knuckles\\1D Bonus - Slot Machine.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_31       MUSIC          ".\\Data\\Sonic 3\\1E Bonus - Gumball Machine.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_32       MUSIC          ".\\Data\\Sonic 3\\1F Knuckles' Theme.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_33       MUSIC          ".\\Data\\Sonic 3\\20 Azure Lake.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_34       MUSIC          ".\\Data\\Sonic 3\\21 Balloon Park.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_35       MUSIC          ".\\Data\\Sonic 3\\22 Desert Palace.B0EC.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_36       MUSIC          ".\\Data\\Sonic 3\\23 Chrome Gadget.C324.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_37       MUSIC          ".\\Data\\Sonic 3\\24 Endless Mine.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_38       MUSIC          ".\\Data\\Sonic & Knuckles\\27 Game Over.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_39       MUSIC          ".\\Data\\Sonic & Knuckles\\28 Continue.DFA6.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_40       MUSIC          ".\\Data\\Sonic & Knuckles\\29 Act Clear.E3C0.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_41       MUSIC          ".\\Data\\Sonic 3\\2A 1-Up.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_42       MUSIC          ".\\Data\\Sonic & Knuckles\\2B Chaos Emerald.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_43       MUSIC          ".\\Data\\Sonic 3\\2C Invincibility.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_44       MUSIC          ".\\Data\\Sonic 3\\2D Competition Menu.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_45       MUSIC          ".\\Data\\Sonic 3\\2E Act 1 Boss.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_46       MUSIC          ".\\Data\\Sonic & Knuckles\\2F Level Select Screen.E7AF.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_47       MUSIC          ".\\Data\\Sonic & Knuckles\\30 Final Boss.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_48       MUSIC          ".\\Data\\Sonic & Knuckles\\31 Drowning.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_49       MUSIC          ".\\Data\\Sonic 3\\32 All Clear.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_50       MUSIC          ".\\Data\\Sonic 3\\26 Staff Roll.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_51       MUSIC          ".\\Data\\Sonic & Knuckles\\1F Knuckles' Theme.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_52        MUSIC          ".\\Data\\Sonic & Knuckles\\25 Title Screen.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_53       MUSIC          ".\\Data\\Sonic & Knuckles\\2A 1-Up.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_54       MUSIC          ".\\Data\\Sonic & Knuckles\\2C Invincibility.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_55       MUSIC          ".\\Data\\Sonic & Knuckles\\32 All Clear.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_56       MUSIC          ".\\Data\\Sonic & Knuckles\\33 Staff Roll.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_81          DAC            ".\\Data\\DAC\\DAC_81.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_82          DAC            ".\\Data\\DAC\\DAC_82.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_86          DAC            ".\\Data\\DAC\\DAC_86.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_87          DAC            ".\\Data\\DAC\\DAC_87.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_88          DAC            ".\\Data\\DAC\\DAC_88.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_89          DAC            ".\\Data\\DAC\\DAC_89.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_8A          DAC            ".\\Data\\DAC\\DAC_8A.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_8C          DAC            ".\\Data\\DAC\\DAC_8C.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_8D          DAC            ".\\Data\\DAC\\DAC_8D.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_8F          DAC            ".\\Data\\DAC\\DAC_8F.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_90          DAC            ".\\Data\\DAC\\DAC_90.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_94          DAC            ".\\Data\\DAC\\DAC_94.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_98          DAC            ".\\Data\\DAC\\DAC_98.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_9B          DAC            ".\\Data\\DAC\\DAC_9B.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_9C          DAC            ".\\Data\\DAC\\DAC_9C.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_9D          DAC            ".\\Data\\DAC\\DAC_9D.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_9E          DAC            ".\\Data\\DAC\\DAC_9E.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_9F          DAC            ".\\Data\\DAC\\DAC_9F.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A0          DAC            ".\\Data\\DAC\\DAC_A0.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A1          DAC            ".\\Data\\DAC\\DAC_A1.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A2          DAC            ".\\Data\\DAC\\DAC_A2.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A3          DAC            ".\\Data\\DAC\\DAC_A3.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A4          DAC            ".\\Data\\DAC\\DAC_A4.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A5          DAC            ".\\Data\\DAC\\DAC_A5.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A6          DAC            ".\\Data\\DAC\\DAC_A6.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A7          DAC            ".\\Data\\DAC\\DAC_A7.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A8          DAC            ".\\Data\\DAC\\DAC_A8.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A9          DAC            ".\\Data\\DAC\\DAC_A9.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_AA          DAC            ".\\Data\\DAC\\DAC_AA.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_AB          DAC            ".\\Data\\DAC\\DAC_AB.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_AC          DAC            ".\\Data\\DAC\\DAC_AC.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_AD          DAC            ".\\Data\\DAC\\DAC_AD.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_AF          DAC            ".\\Data\\DAC\\DAC_AF.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B0          DAC            ".\\Data\\DAC\\DAC_B0_unused.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B1          DAC            ".\\Data\\DAC\\DAC_B1.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B2          DAC            ".\\Data\\DAC\\DAC_B2.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B4          DAC            ".\\Data\\DAC\\DAC_B4.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B5          DAC            ".\\Data\\DAC\\DAC_B5.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B6          DAC            ".\\Data\\DAC\\DAC_B6.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B7          DAC            ".\\Data\\DAC\\DAC_B7.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B8          DAC            ".\\Data\\DAC\\DAC_B8.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_BA          DAC            ".\\Data\\DAC\\DAC_BA.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_BB          DAC            ".\\Data\\DAC\\DAC_BB.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_BC          DAC            ".\\Data\\DAC\\DAC_BC.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_BD          DAC            ".\\Data\\DAC\\DAC_BD.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_BE          DAC            ".\\Data\\DAC\\DAC_BE.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_BF          DAC            ".\\Data\\DAC\\DAC_BF.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_C0          DAC            ".\\Data\\DAC\\DAC_C0.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_B2_S3       DAC            ".\\Data\\DAC\\DAC_B2_S3.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MISC_INSSET     MISC           ".\\Data\\InsSet.17D8.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MISC_MODULAT    MISC           ".\\Data\\Modulat.lst"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MISC_PSG        MISC           ".\\Data\\PSG.lst"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MISC_PSG_S3     MISC           ".\\Data\\PSG_S3.lst"
+
+
