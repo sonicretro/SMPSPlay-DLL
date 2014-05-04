@@ -7,7 +7,105 @@
 #include "Sound.h"
 #include "Stream.h"
 #include <sstream>
+#include <unordered_map>
+#include <fstream>
 #include "resource.h"
+using namespace std;
+
+typedef unordered_map<string, string> IniGroup;
+struct IniGroupStr { IniGroup Element; };
+typedef unordered_map<string, IniGroupStr> IniDictionary;
+IniDictionary LoadINI(istream &textfile)
+{
+	IniDictionary result = IniDictionary();
+	result[""] = IniGroupStr();
+	IniGroupStr *curent = &result[""];
+	while (textfile.good())
+	{
+		string line;
+		getline(textfile, line);
+		string sb = string();
+		sb.reserve(line.length());
+		bool startswithbracket = false;
+		int firstequals = -1;
+		int endbracket = -1;
+		for (int c = 0; c < (int)line.length(); c++)
+			switch (line[c])
+		{
+			case '\\': // escape character
+				if (c + 1 == line.length())
+					goto appendchar;
+				c++;
+				switch (line[c])
+				{
+				case 'n': // line feed
+					sb += '\n';
+					break;
+				case 'r': // carriage return
+					sb += '\r';
+					break;
+				default: // literal character
+					goto appendchar;
+				}
+				break;
+			case '=':
+				if (firstequals == -1)
+					firstequals = sb.length();
+				goto appendchar;
+			case '[':
+				if (c == 0)
+					startswithbracket = true;
+				goto appendchar;
+			case ']':
+				endbracket = sb.length();
+				goto appendchar;
+			case ';': // comment character, stop processing this line
+				c = line.length();
+				break;
+			default:
+appendchar:
+				sb += line[c];
+				break;
+		}
+		line = sb;
+		if (startswithbracket && endbracket != -1)
+		{
+			line = line.substr(1, endbracket - 1);
+			result[line] = IniGroupStr();
+			curent = &result[line];
+		}
+		else if (!line.empty())
+		{
+			string key;
+			string value = "";
+			if (firstequals > -1)
+			{
+				key = line.substr(0, firstequals);
+				value = line.substr(firstequals + 1);
+			}
+			else
+				key = line;
+			(*curent).Element[key] = value;
+		}
+	}
+	return result;
+}
+
+IniDictionary LoadINI(const string &filename)
+{
+	ifstream str(filename);
+	IniDictionary dict = LoadINI(str);
+	str.close();
+	return dict;
+}
+
+IniDictionary LoadINI(const wstring &filename)
+{
+	ifstream str(filename);
+	IniDictionary dict = LoadINI(str);
+	str.close();
+	return dict;
+}
 
 HMODULE moduleHandle;
 HWND gameWindow;
@@ -16,77 +114,138 @@ extern volatile bool ThreadPauseConfrm;
 extern volatile bool CloseThread;
 extern UINT16 FrameDivider;
 
-struct dacentry { int id; int resid; unsigned char rate; };
+enum MusicID {
+	MusicID_S3Title,
+	MusicID_AngelIsland1,
+	MusicID_AngelIsland2,
+	MusicID_Hydrocity1,
+	MusicID_Hydrocity2,
+	MusicID_MarbleGarden1,
+	MusicID_MarbleGarden2,
+	MusicID_CarnivalNight1,
+	MusicID_CarnivalNight2,
+	MusicID_FlyingBattery1,
+	MusicID_FlyingBattery2,
+	MusicID_IceCap1,
+	MusicID_IceCap2,
+	MusicID_LaunchBase1,
+	MusicID_LaunchBase2,
+	MusicID_MushroomHill1,
+	MusicID_MushroomHill2,
+	MusicID_Sandopolis1,
+	MusicID_Sandopolis2,
+	MusicID_LavaReef1,
+	MusicID_LavaReef2,
+	MusicID_SkySanctuary,
+	MusicID_DeathEgg1,
+	MusicID_DeathEgg2,
+	MusicID_Midboss,
+	MusicID_SKMidboss = MusicID_Midboss,
+	MusicID_Boss,
+	MusicID_Doomsday,
+	MusicID_MagneticOrbs,
+	MusicID_SpecialStage,
+	MusicID_SlotMachine,
+	MusicID_GumballMachine,
+	MusicID_S3Knuckles,
+	MusicID_AzureLake,
+	MusicID_BalloonPark,
+	MusicID_DesertPalace,
+	MusicID_ChromeGadget,
+	MusicID_EndlessMine,
+	MusicID_GameOver,
+	MusicID_Continue,
+	MusicID_ActClear,
+	MusicID_S31Up,
+	MusicID_ChaosEmerald,
+	MusicID_S3Invincibility,
+	MusicID_CompetitionMenu,
+	MusicID_Unused,
+	MusicID_S3Midboss = MusicID_Unused,
+	MusicID_LevelSelect,
+	MusicID_FinalBoss,
+	MusicID_Drowning,
+	MusicID_S3AllClear,
+	MusicID_S3Credits,
+	MusicID_SKKnuckles,
+	MusicID_SKTitle,
+	MusicID_SK1Up,
+	MusicID_SKInvincibility,
+	MusicID_SKAllClear,
+	MusicID_SKCredits
+};
+
+struct dacentry { int resid; unsigned char rate; };
 
 dacentry DACFiles[] = {
-	{ 0x81, IDR_DAC_81, 0x04 },
-	{ 0x82, IDR_DAC_82, 0x0E },
-	{ 0x83, IDR_DAC_82, 0x14 },
-	{ 0x84, IDR_DAC_82, 0x1A },
-	{ 0x85, IDR_DAC_82, 0x20 },
-	{ 0x86, IDR_DAC_86, 0x04 },
-	{ 0x87, IDR_DAC_87, 0x04 },
-	{ 0x88, IDR_DAC_88, 0x06 },
-	{ 0x89, IDR_DAC_89, 0x0A },
-	{ 0x8A, IDR_DAC_8A, 0x14 },
-	{ 0x8B, IDR_DAC_8A, 0x1B },
-	{ 0x8C, IDR_DAC_8C, 0x08 },
-	{ 0x8D, IDR_DAC_8D, 0x0B },
-	{ 0x8E, IDR_DAC_8D, 0x11 },
-	{ 0x8F, IDR_DAC_8F, 0x08 },
-	{ 0x90, IDR_DAC_90, 0x03 },
-	{ 0x91, IDR_DAC_90, 0x07 },
-	{ 0x92, IDR_DAC_90, 0x0A },
-	{ 0x93, IDR_DAC_90, 0x0E },
-	{ 0x94, IDR_DAC_94, 0x06 },
-	{ 0x95, IDR_DAC_94, 0x0A },
-	{ 0x96, IDR_DAC_94, 0x0D },
-	{ 0x97, IDR_DAC_94, 0x12 },
-	{ 0x98, IDR_DAC_98, 0x0B },
-	{ 0x99, IDR_DAC_98, 0x13 },
-	{ 0x9A, IDR_DAC_98, 0x16 },
-	{ 0x9B, IDR_DAC_9B, 0x0C },
-	{ 0x9C, IDR_DAC_9C, 0x0A },
-	{ 0x9D, IDR_DAC_9D, 0x18 },
-	{ 0x9E, IDR_DAC_9E, 0x18 },
-	{ 0x9F, IDR_DAC_9F, 0x0C },
-	{ 0xA0, IDR_DAC_A0, 0x0C },
-	{ 0xA1, IDR_DAC_A1, 0x0A },
-	{ 0xA2, IDR_DAC_A2, 0x0A },
-	{ 0xA3, IDR_DAC_A3, 0x18 },
-	{ 0xA4, IDR_DAC_A4, 0x18 },
-	{ 0xA5, IDR_DAC_A5, 0x0C },
-	{ 0xA6, IDR_DAC_A6, 0x09 },
-	{ 0xA7, IDR_DAC_A7, 0x18 },
-	{ 0xA8, IDR_DAC_A8, 0x18 },
-	{ 0xA9, IDR_DAC_A9, 0x0C },
-	{ 0xAA, IDR_DAC_AA, 0x0A },
-	{ 0xAB, IDR_DAC_AB, 0x0D },
-	{ 0xAC, IDR_DAC_AC, 0x06 },
-	{ 0xAD, IDR_DAC_AD, 0x10 },
-	{ 0xAE, IDR_DAC_AD, 0x18 },
-	{ 0xAF, IDR_DAC_AF, 0x09 },
-	{ 0xB0, IDR_DAC_AF, 0x12 },
-	{ 0xB1, IDR_DAC_B1, 0x18 },
-	{ 0xB2, IDR_DAC_B2, 0x16 },
-	{ 0xB3, IDR_DAC_B2, 0x20 },
-	{ 0xB4, IDR_DAC_B4, 0x0C },
-	{ 0xB5, IDR_DAC_B5, 0x0C },
-	{ 0xB6, IDR_DAC_B6, 0x0C },
-	{ 0xB7, IDR_DAC_B7, 0x18 },
-	{ 0xB8, IDR_DAC_B8, 0x0C },
-	{ 0xB9, IDR_DAC_B8, 0x0C },
-	{ 0xBA, IDR_DAC_BA, 0x18 },
-	{ 0xBB, IDR_DAC_BB, 0x18 },
-	{ 0xBC, IDR_DAC_BC, 0x18 },
-	{ 0xBD, IDR_DAC_BD, 0x0C },
-	{ 0xBE, IDR_DAC_BE, 0x0C },
-	{ 0xBF, IDR_DAC_BF, 0x1C },
-	{ 0xC0, IDR_DAC_C0, 0x0B },
-	{ 0xC1, IDR_DAC_B4, 0x0F },
-	{ 0xC2, IDR_DAC_B4, 0x11 },
-	{ 0xC3, IDR_DAC_B4, 0x12 },
-	{ 0xC4, IDR_DAC_B4, 0x0B },
+	{ IDR_DAC_81, 0x04 },
+	{ IDR_DAC_82, 0x0E },
+	{ IDR_DAC_82, 0x14 },
+	{ IDR_DAC_82, 0x1A },
+	{ IDR_DAC_82, 0x20 },
+	{ IDR_DAC_86, 0x04 },
+	{ IDR_DAC_87, 0x04 },
+	{ IDR_DAC_88, 0x06 },
+	{ IDR_DAC_89, 0x0A },
+	{ IDR_DAC_8A, 0x14 },
+	{ IDR_DAC_8A, 0x1B },
+	{ IDR_DAC_8C, 0x08 },
+	{ IDR_DAC_8D, 0x0B },
+	{ IDR_DAC_8D, 0x11 },
+	{ IDR_DAC_8F, 0x08 },
+	{ IDR_DAC_90, 0x03 },
+	{ IDR_DAC_90, 0x07 },
+	{ IDR_DAC_90, 0x0A },
+	{ IDR_DAC_90, 0x0E },
+	{ IDR_DAC_94, 0x06 },
+	{ IDR_DAC_94, 0x0A },
+	{ IDR_DAC_94, 0x0D },
+	{ IDR_DAC_94, 0x12 },
+	{ IDR_DAC_98, 0x0B },
+	{ IDR_DAC_98, 0x13 },
+	{ IDR_DAC_98, 0x16 },
+	{ IDR_DAC_9B, 0x0C },
+	{ IDR_DAC_9C, 0x0A },
+	{ IDR_DAC_9D, 0x18 },
+	{ IDR_DAC_9E, 0x18 },
+	{ IDR_DAC_9F, 0x0C },
+	{ IDR_DAC_A0, 0x0C },
+	{ IDR_DAC_A1, 0x0A },
+	{ IDR_DAC_A2, 0x0A },
+	{ IDR_DAC_A3, 0x18 },
+	{ IDR_DAC_A4, 0x18 },
+	{ IDR_DAC_A5, 0x0C },
+	{ IDR_DAC_A6, 0x09 },
+	{ IDR_DAC_A7, 0x18 },
+	{ IDR_DAC_A8, 0x18 },
+	{ IDR_DAC_A9, 0x0C },
+	{ IDR_DAC_AA, 0x0A },
+	{ IDR_DAC_AB, 0x0D },
+	{ IDR_DAC_AC, 0x06 },
+	{ IDR_DAC_AD, 0x10 },
+	{ IDR_DAC_AD, 0x18 },
+	{ IDR_DAC_AF, 0x09 },
+	{ IDR_DAC_AF, 0x12 },
+	{ IDR_DAC_B1, 0x18 },
+	{ IDR_DAC_B2, 0x16 },
+	{ IDR_DAC_B2, 0x20 },
+	{ IDR_DAC_B4, 0x0C },
+	{ IDR_DAC_B5, 0x0C },
+	{ IDR_DAC_B6, 0x0C },
+	{ IDR_DAC_B7, 0x18 },
+	{ IDR_DAC_B8, 0x0C },
+	{ IDR_DAC_B8, 0x0C },
+	{ IDR_DAC_BA, 0x18 },
+	{ IDR_DAC_BB, 0x18 },
+	{ IDR_DAC_BC, 0x18 },
+	{ IDR_DAC_BD, 0x0C },
+	{ IDR_DAC_BE, 0x0C },
+	{ IDR_DAC_BF, 0x1C },
+	{ IDR_DAC_C0, 0x0B },
+	{ IDR_DAC_B4, 0x0F },
+	{ IDR_DAC_B4, 0x11 },
+	{ IDR_DAC_B4, 0x12 },
+	{ IDR_DAC_B4, 0x0B }
 };
 
 struct musicentry { unsigned short base; bool s3; };
@@ -149,6 +308,20 @@ musicentry MusicFiles[] = {
 	{ 0xFCDE, false }, // 55
 	{ 0xC104, false } // 56
 };
+
+const char TitleScreenMusicIDs[] = { MusicID_S3Title, MusicID_SKTitle };
+
+const char MidbossMusicIDs[] = { MusicID_S3Midboss, MusicID_SKMidboss };
+
+const char KnucklesMusicIDs[] = { MusicID_S3Knuckles, MusicID_SKKnuckles };
+
+const char OneUpMusicIDs[] = { MusicID_S31Up, MusicID_SK1Up };
+
+const char InvincibilityMusicIDs[] = { MusicID_S3Invincibility, MusicID_SKInvincibility };
+
+const char AllClearMusicIDs[] = { MusicID_S3AllClear, MusicID_SKAllClear };
+
+const char CreditsMusicIDs[] = { MusicID_S3Credits, MusicID_SKCredits };
 
 static const UINT8 DefDPCMData[] =
 {	0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
@@ -231,6 +404,22 @@ inline size_t LengthOfArray(const T(&)[N])
 	return N;
 }
 
+struct trackoption { string text; char id; };
+
+const trackoption TitleScreenTrackOptions[] = { { "S3", MusicID_S3Title }, { "S&K", MusicID_SKTitle } };
+
+const trackoption MidbossTrackOptions[] = { { "S3", MusicID_S3Midboss }, { "S&K", MusicID_SKMidboss } };
+
+const trackoption KnucklesTrackOptions[] = { { "S3", MusicID_S3Knuckles }, { "S&K", MusicID_SKKnuckles } };
+
+const trackoption OneUpTrackOptions[] = { { "S3", MusicID_S31Up }, { "S&K", MusicID_SK1Up } };
+
+const trackoption InvincibilityTrackOptions[] = { { "S3", MusicID_S3Invincibility }, { "S&K", MusicID_SKInvincibility } };
+
+const trackoption AllClearTrackOptions[] = { { "S3", MusicID_S3AllClear }, { "S&K", MusicID_SKAllClear } };
+
+const trackoption CreditsTrackOptions[] = { { "S3", MusicID_S3Credits }, { "S&K", MusicID_SKCredits } };
+
 unsigned int &Sonic3Mode = *(unsigned int *)0x831180;
 
 class MidiInterfaceClass
@@ -250,6 +439,13 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	SMPS_CFG smpscfg;
 	bool playerRunning;
 	bool s3mode;
+	char TitleScreenTrack;
+	char MidbossTrack;
+	char KnucklesTrack;
+	char OneUpTrack;
+	char InvincibilityTrack;
+	char AllClearTrack;
+	char CreditsTrack;
 
 	static void LoadRegisterList(SMPS_CFG* SmpsCfg)
 	{
@@ -315,120 +511,176 @@ class SMPSInterfaceClass : MidiInterfaceClass
 		}
 	}
 
-INLINE UINT16 ReadBE16(const UINT8* Data)
-{
-	return (Data[0x00] << 8) | (Data[0x01] << 0);
-}
-
-INLINE UINT16 ReadLE16(const UINT8* Data)
-{
-	return (Data[0x01] << 8) | (Data[0x00] << 0);
-}
-
-INLINE UINT16 ReadRawPtr(const UINT8* Data, const SMPS_CFG* SmpsCfg)
-{
-	if ((SmpsCfg->PtrFmt & PTRFMT_EMASK) == PTRFMT_BE)
-		return ReadBE16(Data);
-	else
-		return ReadLE16(Data);
-}
-
-INLINE UINT16 ReadPtr(const UINT8* Data, const SMPS_CFG* SmpsCfg)
-{
-	return ReadRawPtr(Data, SmpsCfg) - SmpsCfg->SeqBase;
-}
-
-static void PreparseSMPSFile(SMPS_CFG* SmpsCfg)
-{
-	UINT32 FileLen;
-	UINT8* FileData;
-	CMD_LIB* CmdList;
-	CMD_LIB* CmdMetaList;
-	DAC_CFG* DACDrv;
-	UINT16 InsPtr;
-	UINT8 FMTrkCnt;
-	UINT8 PSGTrkCnt;
-	UINT8 TrkCount;
-	UINT8 CurTrk;
-	UINT16 CurPos;
-	UINT16 TrkOfs[0x10];
-	UINT16 TempOfs;
-	
-	FileLen = SmpsCfg->SeqLength;
-	FileData = SmpsCfg->SeqData;
-	CmdList = &SmpsCfg->CmdList;
-	CmdMetaList = &SmpsCfg->CmdMetaList;
-	DACDrv = &SmpsCfg->DACDrv;
-	
-	CurPos = 0x00;
-	InsPtr = ReadPtr(&FileData[CurPos + 0x00], SmpsCfg);
-	FMTrkCnt = FileData[CurPos + 0x02];
-	PSGTrkCnt = FileData[CurPos + 0x03];
-	
-	CurPos += 0x06;
-	TempOfs = CurPos + FMTrkCnt * 0x04 + PSGTrkCnt * 0x06;
-	
-	TrkCount = 0x00;
-	for (CurTrk = 0x00; CurTrk < FMTrkCnt; CurTrk ++, TrkCount ++, CurPos += 0x04)
-		TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
-	for (CurTrk = 0x00; CurTrk < PSGTrkCnt; CurTrk ++, TrkCount ++, CurPos += 0x06)
-		TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
-	for (CurTrk = 0x00; CurTrk < SmpsCfg->AddChnCnt; CurTrk ++, TrkCount ++, CurPos += 0x04)
-		TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
-	
-	if (InsPtr < FileLen)
+	INLINE UINT16 ReadBE16(const UINT8* Data)
 	{
-		INS_LIB* InsLib;
-		
-		InsLib = (INS_LIB*)malloc(sizeof(INS_LIB));
-		SmpsCfg->InsLib = InsLib;
-		InsLib->InsCount = (FileLen - InsPtr) / SmpsCfg->InsRegCnt;
-		if (InsLib->InsCount > 0x100)
-			InsLib->InsCount = 0x100;
-		InsLib->InsPtrs = (UINT8**)malloc(InsLib->InsCount * sizeof(UINT8*));
-		for (CurTrk = 0; CurTrk < InsLib->InsCount; CurTrk ++)
-			InsLib->InsPtrs[CurTrk] = &FileData[InsPtr + CurTrk * SmpsCfg->InsRegCnt];
+		return (Data[0x00] << 8) | (Data[0x01] << 0);
 	}
-	else if (SmpsCfg->GlbInsData != NULL)
+
+	INLINE UINT16 ReadLE16(const UINT8* Data)
 	{
-		InsPtr += SmpsCfg->SeqBase;
-		if (InsPtr > SmpsCfg->GlbInsBase && InsPtr < SmpsCfg->GlbInsBase + SmpsCfg->GlbInsLen)
+		return (Data[0x01] << 8) | (Data[0x00] << 0);
+	}
+
+	INLINE UINT16 ReadRawPtr(const UINT8* Data, const SMPS_CFG* SmpsCfg)
+	{
+		if ((SmpsCfg->PtrFmt & PTRFMT_EMASK) == PTRFMT_BE)
+			return ReadBE16(Data);
+		else
+			return ReadLE16(Data);
+	}
+
+	INLINE UINT16 ReadPtr(const UINT8* Data, const SMPS_CFG* SmpsCfg)
+	{
+		return ReadRawPtr(Data, SmpsCfg) - SmpsCfg->SeqBase;
+	}
+
+	static void PreparseSMPSFile(SMPS_CFG* SmpsCfg)
+	{
+		UINT32 FileLen;
+		UINT8* FileData;
+		CMD_LIB* CmdList;
+		CMD_LIB* CmdMetaList;
+		DAC_CFG* DACDrv;
+		UINT16 InsPtr;
+		UINT8 FMTrkCnt;
+		UINT8 PSGTrkCnt;
+		UINT8 TrkCount;
+		UINT8 CurTrk;
+		UINT16 CurPos;
+		UINT16 TrkOfs[0x10];
+		UINT16 TempOfs;
+
+		FileLen = SmpsCfg->SeqLength;
+		FileData = SmpsCfg->SeqData;
+		CmdList = &SmpsCfg->CmdList;
+		CmdMetaList = &SmpsCfg->CmdMetaList;
+		DACDrv = &SmpsCfg->DACDrv;
+
+		CurPos = 0x00;
+		InsPtr = ReadPtr(&FileData[CurPos + 0x00], SmpsCfg);
+		FMTrkCnt = FileData[CurPos + 0x02];
+		PSGTrkCnt = FileData[CurPos + 0x03];
+
+		CurPos += 0x06;
+		TempOfs = CurPos + FMTrkCnt * 0x04 + PSGTrkCnt * 0x06;
+
+		TrkCount = 0x00;
+		for (CurTrk = 0x00; CurTrk < FMTrkCnt; CurTrk ++, TrkCount ++, CurPos += 0x04)
+			TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
+		for (CurTrk = 0x00; CurTrk < PSGTrkCnt; CurTrk ++, TrkCount ++, CurPos += 0x06)
+			TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
+		for (CurTrk = 0x00; CurTrk < SmpsCfg->AddChnCnt; CurTrk ++, TrkCount ++, CurPos += 0x04)
+			TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
+
+		if (InsPtr < FileLen)
 		{
 			INS_LIB* InsLib;
-			UINT16 BaseOfs;
-			
-			BaseOfs = InsPtr - SmpsCfg->GlbInsBase;
+
 			InsLib = (INS_LIB*)malloc(sizeof(INS_LIB));
 			SmpsCfg->InsLib = InsLib;
-			InsLib->InsCount = (SmpsCfg->GlbInsLen - BaseOfs) / SmpsCfg->InsRegCnt;
+			InsLib->InsCount = (FileLen - InsPtr) / SmpsCfg->InsRegCnt;
 			if (InsLib->InsCount > 0x100)
 				InsLib->InsCount = 0x100;
 			InsLib->InsPtrs = (UINT8**)malloc(InsLib->InsCount * sizeof(UINT8*));
 			for (CurTrk = 0; CurTrk < InsLib->InsCount; CurTrk ++)
-				InsLib->InsPtrs[CurTrk] = &SmpsCfg->GlbInsData[BaseOfs + CurTrk * SmpsCfg->InsRegCnt];
+				InsLib->InsPtrs[CurTrk] = &FileData[InsPtr + CurTrk * SmpsCfg->InsRegCnt];
+		}
+		else if (SmpsCfg->GlbInsData != NULL)
+		{
+			InsPtr += SmpsCfg->SeqBase;
+			if (InsPtr > SmpsCfg->GlbInsBase && InsPtr < SmpsCfg->GlbInsBase + SmpsCfg->GlbInsLen)
+			{
+				INS_LIB* InsLib;
+				UINT16 BaseOfs;
+
+				BaseOfs = InsPtr - SmpsCfg->GlbInsBase;
+				InsLib = (INS_LIB*)malloc(sizeof(INS_LIB));
+				SmpsCfg->InsLib = InsLib;
+				InsLib->InsCount = (SmpsCfg->GlbInsLen - BaseOfs) / SmpsCfg->InsRegCnt;
+				if (InsLib->InsCount > 0x100)
+					InsLib->InsCount = 0x100;
+				InsLib->InsPtrs = (UINT8**)malloc(InsLib->InsCount * sizeof(UINT8*));
+				for (CurTrk = 0; CurTrk < InsLib->InsCount; CurTrk ++)
+					InsLib->InsPtrs[CurTrk] = &SmpsCfg->GlbInsData[BaseOfs + CurTrk * SmpsCfg->InsRegCnt];
+			}
+			else
+			{
+				SmpsCfg->InsLib = &SmpsCfg->GlbInsLib;
+			}
 		}
 		else
 		{
-			SmpsCfg->InsLib = &SmpsCfg->GlbInsLib;
+			SmpsCfg->InsLib = NULL;
 		}
 	}
-	else
-	{
-		SmpsCfg->InsLib = NULL;
-	}
-}
 
 public:
-	SMPSInterfaceClass()
-	{
-		gameWindow = NULL;
-	}
+	SMPSInterfaceClass() { }
 
 	BOOL initialize(HWND hwnd)
 	{
 		gameWindow = hwnd;
 		ZeroMemory(&smpscfg, sizeof(smpscfg));
 		s3mode = false;
+		memset(&TitleScreenTrack, -1, (&CreditsTrack - &TitleScreenTrack) + 1);
+
+		IniGroup settings = LoadINI("SMPSOUT.ini")[""].Element;
+		for (auto iter = settings.cbegin(); iter != settings.cend(); iter++)
+		{
+			const trackoption *options = nullptr;
+			int optioncount = 0;
+			char *setting = nullptr;
+			if (iter->first == "TitleScreenTrack")
+			{
+				options = TitleScreenTrackOptions;
+				optioncount = LengthOfArray(TitleScreenTrackOptions);
+				setting = &TitleScreenTrack;
+			}
+			else if (iter->first == "MidbossTrack")
+			{
+				options = MidbossTrackOptions;
+				optioncount = LengthOfArray(MidbossTrackOptions);
+				setting = &MidbossTrack;
+			}
+			else if (iter->first == "KnucklesTrack")
+			{
+				options = KnucklesTrackOptions;
+				optioncount = LengthOfArray(KnucklesTrackOptions);
+				setting = &KnucklesTrack;
+			}
+			else if (iter->first == "1UpTrack")
+			{
+				options = OneUpTrackOptions;
+				optioncount = LengthOfArray(OneUpTrackOptions);
+				setting = &OneUpTrack;
+			}
+			else if (iter->first == "InvincibilityTrack")
+			{
+				options = InvincibilityTrackOptions;
+				optioncount = LengthOfArray(InvincibilityTrackOptions);
+				setting = &InvincibilityTrack;
+			}
+			else if (iter->first == "AllClearTrack")
+			{
+				options = AllClearTrackOptions;
+				optioncount = LengthOfArray(AllClearTrackOptions);
+				setting = &AllClearTrack;
+			}
+			else if (iter->first == "CreditsTrack")
+			{
+				options = CreditsTrackOptions;
+				optioncount = LengthOfArray(CreditsTrackOptions);
+				setting = &CreditsTrack;
+			}
+			else
+				continue;
+			for (int i = 0; i < optioncount; i++)
+				if (iter->second == options[i].text)
+				{
+					*setting = options[i].id;
+					break;
+				}
+		}
 
 		smpscfg.PtrFmt = PTRFMT_Z80;
 		smpscfg.TempoMode = TEMPO_OVERFLOW;
@@ -474,13 +726,13 @@ public:
 			smpscfg.DrumLib.DrumData[i + 1].DrumID = i;
 
 		HRSRC hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_MODULAT), L"MISC");
-		std::string s((const char *)LockResource(LoadResource(moduleHandle, hres)), SizeofResource(moduleHandle, hres));
-		std::istringstream str(s);
+		string s((const char *)LockResource(LoadResource(moduleHandle, hres)), SizeofResource(moduleHandle, hres));
+		istringstream str(s);
 		GetEnvelopeData(str, &smpscfg.ModEnvs);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG), L"MISC");
-		s = std::string((const char *)LockResource(LoadResource(moduleHandle, hres)), SizeofResource(moduleHandle, hres));
-		str = std::istringstream(s);
+		s = string((const char *)LockResource(LoadResource(moduleHandle, hres)), SizeofResource(moduleHandle, hres));
+		str = istringstream(s);
 		GetEnvelopeData(str, &smpscfg.VolEnvs);
 
 		ZeroMemory(&smpscfg.DACDrv, sizeof(smpscfg.DACDrv));
@@ -552,8 +804,45 @@ public:
 		while(! ThreadPauseConfrm)
 			Sleep(1);
 		id--;
-		if (id == (IDR_MUSIC_25 - IDR_MUSIC_1) && Sonic3Mode)
-			id = IDR_MUSIC_45 - IDR_MUSIC_1; // Restore S3 Midboss music
+		switch (id)
+		{
+		case MusicID_S3Title:
+		case MusicID_SKTitle:
+			if (TitleScreenTrack != -1)
+				id = TitleScreenTrack;
+			break;
+		case MusicID_Midboss:
+			if (MidbossTrack != -1)
+				id = MidbossTrack;
+			else
+				id = Sonic3Mode ? MusicID_S3Midboss : MusicID_SKMidboss;
+			break;
+		case MusicID_S3Knuckles:
+		case MusicID_SKKnuckles:
+			if (KnucklesTrack != -1)
+				id = KnucklesTrack;
+			break;
+		case MusicID_S31Up:
+		case MusicID_SK1Up:
+			if (OneUpTrack != -1)
+				id = OneUpTrack;
+			break;
+		case MusicID_S3Invincibility:
+		case MusicID_SKInvincibility:
+			if (InvincibilityTrack != -1)
+				id = InvincibilityTrack;
+			break;
+		case MusicID_S3AllClear:
+		case MusicID_SKAllClear:
+			if (AllClearTrack != -1)
+				id = AllClearTrack;
+			break;
+		case MusicID_S3Credits:
+		case MusicID_SKCredits:
+			if (CreditsTrack != -1)
+				id = CreditsTrack;
+			break;
+		}
 		musicentry *song = &MusicFiles[id];
 		if (song->s3 & !s3mode) // switch s&k -> s3
 		{
