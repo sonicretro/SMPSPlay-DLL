@@ -860,6 +860,7 @@ public:
 		smpscfg.SeqLength = (UINT16)SizeofResource(moduleHandle, hres);
 		smpscfg.SeqData = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		PreparseSMPSFile(&smpscfg);
+		s3mode = song->s3;
 		return TRUE;
 	}
 
