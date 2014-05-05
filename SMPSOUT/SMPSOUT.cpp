@@ -421,6 +421,7 @@ const trackoption AllClearTrackOptions[] = { { "S3", MusicID_S3AllClear }, { "S&
 const trackoption CreditsTrackOptions[] = { { "S3", MusicID_S3Credits }, { "S&K", MusicID_SKCredits } };
 
 unsigned int &Sonic3Mode = *(unsigned int *)0x831180;
+unsigned char &reg_d0 = *(unsigned char *)0x8549A4;
 
 class MidiInterfaceClass
 {
@@ -891,11 +892,16 @@ public:
 
 	BOOL stop_song()
 	{
-		ThreadPauseConfrm = false;
-		PauseThread = true;
-		while(! ThreadPauseConfrm)
-			Sleep(1);
-		StopAllSound();
+		if (reg_d0 == 0xE1)
+			FadeOutMusic();
+		else
+		{
+			ThreadPauseConfrm = false;
+			PauseThread = true;
+			while(! ThreadPauseConfrm)
+				Sleep(1);
+			StopAllSound();
+		}
 		return TRUE;
 	}
 
