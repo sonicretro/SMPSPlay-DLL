@@ -309,20 +309,6 @@ musicentry MusicFiles[] = {
 	{ 0xC104, false } // 56
 };
 
-const char TitleScreenMusicIDs[] = { MusicID_S3Title, MusicID_SKTitle };
-
-const char MidbossMusicIDs[] = { MusicID_S3Midboss, MusicID_SKMidboss };
-
-const char KnucklesMusicIDs[] = { MusicID_S3Knuckles, MusicID_SKKnuckles };
-
-const char OneUpMusicIDs[] = { MusicID_S31Up, MusicID_SK1Up };
-
-const char InvincibilityMusicIDs[] = { MusicID_S3Invincibility, MusicID_SKInvincibility };
-
-const char AllClearMusicIDs[] = { MusicID_S3AllClear, MusicID_SKAllClear };
-
-const char CreditsMusicIDs[] = { MusicID_S3Credits, MusicID_SKCredits };
-
 static const UINT8 DefDPCMData[] =
 {	0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
 0x80, 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0};
