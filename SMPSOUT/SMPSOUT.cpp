@@ -467,7 +467,7 @@ const trackoption LaunchBase2TrackOptions[] = { { "MD", MusicID_LaunchBase2 }, {
 const trackoption CompetitionMenuTrackOptions[] = { { "MD", MusicID_CompetitionMenu }, { "PC", MusicID_CompetitionMenuPC } };
 #endif
 
-unsigned int &Sonic3Mode = *(unsigned int *)0x831180;
+unsigned int &GameSelection = *(unsigned int *)0x831188;
 unsigned char &reg_d0 = *(unsigned char *)0x8549A4;
 
 struct TrackSettings
@@ -507,7 +507,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	SMPS_CFG smpscfg;
 	bool playerRunning;
 	bool s3mode;
-	TrackSettings trackSettings;
+	TrackSettings trackSettings[3];
 
 	static void LoadRegisterList(SMPS_CFG* SmpsCfg)
 	{
@@ -676,17 +676,8 @@ class SMPSInterfaceClass : MidiInterfaceClass
 		}
 	}
 
-public:
-	SMPSInterfaceClass() { }
-
-	BOOL initialize(HWND hwnd)
+	void ReadSettings(const IniGroup &settings, TrackSettings &trackSettings)
 	{
-		gameWindow = hwnd;
-		ZeroMemory(&smpscfg, sizeof(smpscfg));
-		s3mode = false;
-		memset(&trackSettings, -1, sizeof(trackSettings));
-
-		IniGroup settings = LoadINI("SMPSOUT.ini")[""].Element;
 		for (auto iter = settings.cbegin(); iter != settings.cend(); iter++)
 		{
 			const trackoption *options = nullptr;
@@ -787,6 +778,42 @@ public:
 					break;
 				}
 		}
+	}
+
+public:
+	SMPSInterfaceClass() { }
+
+	BOOL initialize(HWND hwnd)
+	{
+		gameWindow = hwnd;
+		ZeroMemory(&smpscfg, sizeof(smpscfg));
+		s3mode = false;
+
+		TrackSettings masterSettings;
+		memset(&masterSettings, -1, sizeof(masterSettings));
+
+		IniDictionary settings = LoadINI("SMPSOUT.ini");
+
+		auto iter = settings.find("");
+		if (iter != settings.cend())
+			ReadSettings(iter->second.Element, masterSettings);
+
+		trackSettings[0] = masterSettings;
+		iter = settings.find("S3K");
+		if (iter != settings.cend())
+			ReadSettings(iter->second.Element, trackSettings[0]);
+
+		trackSettings[1] = masterSettings;
+		iter = settings.find("S&K");
+		if (iter != settings.cend())
+			ReadSettings(iter->second.Element, trackSettings[1]);
+
+		trackSettings[2] = masterSettings;
+		if (trackSettings[2].MidbossTrack == -1)
+			trackSettings[2].MidbossTrack = MusicID_S3Midboss;
+		iter = settings.find("S3");
+		if (iter != settings.cend())
+			ReadSettings(iter->second.Element, trackSettings[2]);
 
 		smpscfg.PtrFmt = PTRFMT_Z80;
 		smpscfg.TempoMode = TEMPO_OVERFLOW;
@@ -910,72 +937,71 @@ public:
 		while(! ThreadPauseConfrm)
 			Sleep(1);
 		id--;
+		TrackSettings *trackSet = &trackSettings[GameSelection];
 		switch (id)
 		{
 		case MusicID_S3Title:
 		case MusicID_SKTitle:
-			if (trackSettings.TitleScreenTrack != -1)
-				id = trackSettings.TitleScreenTrack;
+			if (trackSet->TitleScreenTrack != -1)
+				id = trackSet->TitleScreenTrack;
 			break;
 		case MusicID_Midboss:
-			if (trackSettings.MidbossTrack != -1)
-				id = trackSettings.MidbossTrack;
-			else
-				id = Sonic3Mode ? MusicID_S3Midboss : MusicID_SKMidboss;
+			if (trackSet->MidbossTrack != -1)
+				id = trackSet->MidbossTrack;
 			break;
 		case MusicID_S3Knuckles:
 		case MusicID_SKKnuckles:
-			if (trackSettings.KnucklesTrack != -1)
-				id = trackSettings.KnucklesTrack;
+			if (trackSet->KnucklesTrack != -1)
+				id = trackSet->KnucklesTrack;
 			break;
 		case MusicID_S31Up:
 		case MusicID_SK1Up:
-			if (trackSettings.OneUpTrack != -1)
-				id = trackSettings.OneUpTrack;
+			if (trackSet->OneUpTrack != -1)
+				id = trackSet->OneUpTrack;
 			break;
 		case MusicID_S3Invincibility:
 		case MusicID_SKInvincibility:
-			if (trackSettings.InvincibilityTrack != -1)
-				id = trackSettings.InvincibilityTrack;
+			if (trackSet->InvincibilityTrack != -1)
+				id = trackSet->InvincibilityTrack;
 			break;
 		case MusicID_S3AllClear:
 		case MusicID_SKAllClear:
-			if (trackSettings.AllClearTrack != -1)
-				id = trackSettings.AllClearTrack;
+			if (trackSet->AllClearTrack != -1)
+				id = trackSet->AllClearTrack;
 			break;
 		case MusicID_S3Credits:
 		case MusicID_SKCredits:
-			if (trackSettings.CreditsTrack != -1)
-				id = trackSettings.CreditsTrack;
+			if (trackSet->CreditsTrack != -1)
+				id = trackSet->CreditsTrack;
 			break;
 #ifdef SKCMUSIC
 		case MusicID_CarnivalNight1:
-			if (trackSettings.CarnivalNight1Track != -1)
-				id = trackSettings.CarnivalNight1Track;
+			if (trackSet->CarnivalNight1Track != -1)
+				id = trackSet->CarnivalNight1Track;
 			break;
 		case MusicID_CarnivalNight2:
-			if (trackSettings.CarnivalNight2Track != -1)
-				id = trackSettings.CarnivalNight2Track;
+			if (trackSet->CarnivalNight2Track != -1)
+				id = trackSet->CarnivalNight2Track;
 			break;
 		case MusicID_IceCap1:
-			if (trackSettings.IceCap1Track != -1)
-				id = trackSettings.IceCap1Track;
+			if (trackSet->IceCap1Track != -1)
+				id = trackSet->IceCap1Track;
 			break;
 		case MusicID_IceCap2:
-			if (trackSettings.IceCap2Track != -1)
-				id = trackSettings.IceCap2Track;
+			if (trackSet->IceCap2Track != -1)
+				id = trackSet->IceCap2Track;
 			break;
 		case MusicID_LaunchBase1:
-			if (trackSettings.LaunchBase1Track != -1)
-				id = trackSettings.LaunchBase1Track;
+			if (trackSet->LaunchBase1Track != -1)
+				id = trackSet->LaunchBase1Track;
 			break;
 		case MusicID_LaunchBase2:
-			if (trackSettings.LaunchBase2Track != -1)
-				id = trackSettings.LaunchBase2Track;
+			if (trackSet->LaunchBase2Track != -1)
+				id = trackSet->LaunchBase2Track;
 			break;
 		case MusicID_CompetitionMenu:
-			if (trackSettings.CompetitionMenuTrack != -1)
-				id = trackSettings.CompetitionMenuTrack;
+			if (trackSet->CompetitionMenuTrack != -1)
+				id = trackSet->CompetitionMenuTrack;
 			break;
 #endif
 		}
