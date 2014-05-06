@@ -172,7 +172,8 @@ enum MusicID {
 	MusicID_SK1Up,
 	MusicID_SKInvincibility,
 	MusicID_SKAllClear,
-	MusicID_SKCredits
+	MusicID_SKCredits,
+	MusicID_S3CCredits
 };
 
 struct dacentry { int resid; unsigned char rate; };
@@ -306,7 +307,8 @@ musicentry MusicFiles[] = {
 	{ 0xFD4B, false }, // 53
 	{ 0xE574, false }, // 54
 	{ 0xFCDE, false }, // 55
-	{ 0xC104, false } // 56
+	{ 0xC104, false }, // 56
+	{ 0x8000, false } // 57
 };
 
 static const UINT8 DefDPCMData[] =
@@ -404,7 +406,7 @@ const trackoption InvincibilityTrackOptions[] = { { "S3", MusicID_S3Invincibilit
 
 const trackoption AllClearTrackOptions[] = { { "S3", MusicID_S3AllClear }, { "S&K", MusicID_SKAllClear } };
 
-const trackoption CreditsTrackOptions[] = { { "S3", MusicID_S3Credits }, { "S&K", MusicID_SKCredits } };
+const trackoption CreditsTrackOptions[] = { { "S3", MusicID_S3Credits }, { "S&K", MusicID_SKCredits }, { "S3C", MusicID_S3CCredits } };
 
 unsigned int &Sonic3Mode = *(unsigned int *)0x831180;
 unsigned char &reg_d0 = *(unsigned char *)0x8549A4;

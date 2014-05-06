@@ -226,6 +226,10 @@ IDR_MUSIC_56       MUSIC          ".\\Data\\Sonic & Knuckles\\33 Staff Roll.s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_57       MUSIC          ".\\Data\\Sonic 3C Credits.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_DAC_81          DAC            ".\\Data\\DAC\\DAC_81.bin"
 
 
