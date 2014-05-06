@@ -746,7 +746,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			}
 			else if (iter->first == "IceCap2Track")
 			{
-				options = IceCap1TrackOptions;
+				options = IceCap2TrackOptions;
 				optioncount = LengthOfArray(IceCap2TrackOptions);
 				setting = &trackSettings.IceCap2Track;
 			}
