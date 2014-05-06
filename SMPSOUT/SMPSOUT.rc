@@ -230,6 +230,10 @@ IDR_MUSIC_57       MUSIC          ".\\Data\\Sonic 3C Credits.s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_58       MUSIC          ".\\Data\\Sonic 3\\28 Continue, Competition Results.EC7B.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_DAC_81          DAC            ".\\Data\\DAC\\DAC_81.bin"
 
 

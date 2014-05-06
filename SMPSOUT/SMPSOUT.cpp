@@ -174,6 +174,7 @@ enum MusicID {
 	MusicID_SKAllClear,
 	MusicID_SKCredits,
 	MusicID_S3CCredits,
+	MusicID_S3Continue,
 #ifdef SKCMUSIC
 	MusicID_CarnivalNight1PC,
 	MusicID_CarnivalNight2PC,
@@ -321,8 +322,8 @@ musicentry MusicFiles[] = {
 	{ 0xFCDE, false }, // 55
 	{ 0xC104, false }, // 56
 	{ 0x8000, false }, // 57
+	{ 0xEC7B, true }, // 58
 #ifdef SKCMUSIC
-	{ 0x8000, false }, // 58
 	{ 0x8000, false }, // 59
 	{ 0x8000, false }, // 60
 	{ 0x8000, false }, // 61
@@ -331,7 +332,8 @@ musicentry MusicFiles[] = {
 	{ 0x8000, false }, // 64
 	{ 0x8000, false }, // 65
 	{ 0x8000, false }, // 66
-	{ 0x8000, false } // 67
+	{ 0x8000, false }, // 67
+	{ 0x8000, false } // 68
 #endif
 };
 
@@ -451,6 +453,8 @@ const trackoption CreditsTrackOptions[] = {
 #endif
 };
 
+const trackoption ContinueTrackOptions[] = { { "S3", MusicID_S3Continue }, { "S&K", MusicID_Continue } };
+
 #ifdef SKCMUSIC
 const trackoption CarnivalNight1TrackOptions[] = { { "MD", MusicID_CarnivalNight1 }, { "PC", MusicID_CarnivalNight1PC } };
 
@@ -479,6 +483,7 @@ struct TrackSettings
 	char InvincibilityTrack;
 	char AllClearTrack;
 	char CreditsTrack;
+	char ContinueTrack;
 #ifdef SKCMUSIC
 	char CarnivalNight1Track;
 	char CarnivalNight2Track;
@@ -725,6 +730,12 @@ class SMPSInterfaceClass : MidiInterfaceClass
 				optioncount = LengthOfArray(CreditsTrackOptions);
 				setting = &trackSettings.CreditsTrack;
 			}
+			else if (iter->first == "ContinueTrack")
+			{
+				options = ContinueTrackOptions;
+				optioncount = LengthOfArray(ContinueTrackOptions);
+				setting = &trackSettings.ContinueTrack;
+			}
 #ifdef SKCMUSIC
 			else if (iter->first == "CarnivalNight1Track")
 			{
@@ -811,6 +822,8 @@ public:
 		trackSettings[2] = masterSettings;
 		if (trackSettings[2].MidbossTrack == -1)
 			trackSettings[2].MidbossTrack = MusicID_S3Midboss;
+		if (trackSettings[2].ContinueTrack == -1)
+			trackSettings[2].ContinueTrack = MusicID_S3Continue;
 		iter = settings.find("S3");
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, trackSettings[2]);
@@ -973,6 +986,10 @@ public:
 		case MusicID_SKCredits:
 			if (trackSet->CreditsTrack != -1)
 				id = trackSet->CreditsTrack;
+			break;
+		case MusicID_Continue:
+			if (trackSet->ContinueTrack != -1)
+				id = trackSet->ContinueTrack;
 			break;
 #ifdef SKCMUSIC
 		case MusicID_CarnivalNight1:
