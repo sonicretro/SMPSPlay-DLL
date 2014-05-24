@@ -1094,7 +1094,7 @@ public:
 		smpscfg.DACDrv.SmplTbl = new DAC_TABLE[smpscfg.DACDrv.TblAlloc];
 		ZeroMemory(smpscfg.DACDrv.SmplTbl, smpscfg.DACDrv.TblAlloc * sizeof(DAC_TABLE));
 
-		for (i = 0; i < LengthOfArray(DACFiles); i++)
+		for (i = 0; i < (int)LengthOfArray(DACFiles); i++)
 		{
 			smpscfg.DACDrv.SmplTbl[i].Sample = DACFiles[i].resid - IDR_DAC_81;
 			smpscfg.DACDrv.SmplTbl[i].Rate = DACFiles[i].rate;
