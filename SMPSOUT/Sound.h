@@ -1,6 +1,11 @@
 #ifndef __SOUND_H__
 #define __SOUND_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "stdtype.h"
 
 typedef struct waveform_16bit_stereo
@@ -22,5 +27,9 @@ UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize);
 void ym2612_timer_mask(UINT8 Mask);
 void ym2612_fm_write(UINT8 ChipID, UINT8 Port, UINT8 Register, UINT8 Data);
 void sn76496_psg_write(UINT8 ChipID, UINT8 Data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	// __SOUND_H__

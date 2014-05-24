@@ -1,6 +1,11 @@
 #ifndef __SMPS_STRUCTS_H__
 #define __SMPS_STRUCTS_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "stdtype.h"
 #include "dac.h"	// for DAC_CFG
 
@@ -63,7 +68,8 @@
 #define DRMMODE_DUAL	0x01	// one note = 2 drums (FM/PSG)
 #define DRMTYPE_FM		0x01
 #define DRMTYPE_PSG		0x02
-#define DRMTYPE_DAC		0x00
+#define DRMTYPE_DAC		0x03
+#define DRMTYPE_NONE	0x00
 
 typedef struct _command_flags
 {
@@ -171,13 +177,12 @@ typedef struct _smps_settings
 	INS_LIB GlbInsLib;
 	
 	UINT8 FMChnCnt;
-	//UINT8* FMChnList;
 	UINT8 FMChnList[0x10];
 	UINT8 AddChnCnt;
 	UINT8 AddChnList[0x10];
 	UINT8 InsRegCnt;
-	UINT8* InsRegs;
-	UINT8* InsReg_TL;
+	const UINT8* InsRegs;
+	const UINT8* InsReg_TL;
 	
 	UINT8 FMFreqCnt;
 	UINT16* FMFreqs;
@@ -202,5 +207,8 @@ typedef struct _smps_settings
 	UINT16* LoopPtrs;
 } SMPS_CFG;
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __SMPS_STRUCTS_H__

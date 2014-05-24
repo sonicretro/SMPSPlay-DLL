@@ -109,7 +109,8 @@
 #define IDR_DAC_BF                              246
 #define IDR_DAC_C0                              247
 #define IDR_DAC_B2_S3                           248
-#define IDR_MISC_INSSET                         249
-#define IDR_MISC_MODULAT                        250
-#define IDR_MISC_PSG                            251
-#define IDR_MISC_PSG_S3                         252
+#define IDR_MISC_INSSET                         300
+#define IDR_MISC_MODULAT                        301
+#define IDR_MISC_PSG                            302
+#define IDR_MISC_PSG_S3                         303
+#define IDR_MISC_FM_DRUMS                       304

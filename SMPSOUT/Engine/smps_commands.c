@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS	// I know what I'm doing with sprintf. Really.
+
 #include <stdio.h>
 #include <stdlib.h>	// for rand()
 #include <stddef.h>

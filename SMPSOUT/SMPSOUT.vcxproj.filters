@@ -18,12 +18,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\dac.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,46 +71,43 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SMPSOUT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Stream.cpp">
+    <ClCompile Include="chips\2612intf.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sound.cpp">
+    <ClCompile Include="chips\fm2612.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="chips\sn764intf.cpp">
+    <ClCompile Include="chips\sn76496.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="chips\sn76496.cpp">
+    <ClCompile Include="chips\sn764intf.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\smps_extra.cpp">
+    <ClCompile Include="Engine\dac.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\smps_drums.cpp">
+    <ClCompile Include="Engine\smps.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\smps_commands.cpp">
+    <ClCompile Include="Engine\smps_commands.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\smps.cpp">
+    <ClCompile Include="Engine\smps_drums.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="chips\fm2612.cpp">
+    <ClCompile Include="Engine\smps_extra.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\dac.cpp">
+    <ClCompile Include="Sound.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="chips\2612intf.cpp">
+    <ClCompile Include="Stream.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

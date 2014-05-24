@@ -5,6 +5,8 @@
 #include "smps_structs_int.h"
 #include "dac.h"
 
+extern void NotifySongStopped();
+
 //void StartSignal(void);
 //void StopSignal(void);
 //void LoopStartSignal(void);
@@ -73,7 +75,6 @@ void LoopEndSignal(void)
 	return;
 }
 
-extern void NotifySongStopped();
 void Extra_StopCheck(void)
 {
 	UINT8 CurTrk;

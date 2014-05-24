@@ -1,6 +1,11 @@
 #ifndef __DAC_H__
 #define __DAC_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #define COMPR_PCM	0x00
 #define COMPR_DPCM	0x01
 
@@ -72,5 +77,9 @@ void DAC_SetRate(UINT8 Chn, UINT32 Rate, UINT8 MidNote);
 void DAC_SetFrequency(UINT8 Chn, UINT32 Freq, UINT8 MidNote);
 
 void UpdateDAC(UINT32 Samples);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	// __DAC_H__

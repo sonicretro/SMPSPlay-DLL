@@ -91,37 +91,24 @@
     <ClInclude Include="Engine\stdtype.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sound.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdbool.h" />
     <ClInclude Include="stdtype.h" />
     <ClInclude Include="Stream.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="chips\2612intf.cpp" />
-    <ClCompile Include="chips\fm2612.cpp" />
-    <ClCompile Include="chips\sn76496.cpp" />
-    <ClCompile Include="chips\sn764intf.cpp" />
-    <ClCompile Include="dllmain.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Engine\dac.cpp" />
-    <ClCompile Include="Engine\smps.cpp" />
-    <ClCompile Include="Engine\smps_commands.cpp" />
-    <ClCompile Include="Engine\smps_drums.cpp" />
-    <ClCompile Include="Engine\smps_extra.cpp" />
+    <ClCompile Include="chips\2612intf.c" />
+    <ClCompile Include="chips\fm2612.c" />
+    <ClCompile Include="chips\sn76496.c" />
+    <ClCompile Include="chips\sn764intf.c" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Engine\dac.c" />
+    <ClCompile Include="Engine\smps.c" />
+    <ClCompile Include="Engine\smps_commands.c" />
+    <ClCompile Include="Engine\smps_drums.c" />
+    <ClCompile Include="Engine\smps_extra.c" />
     <ClCompile Include="SMPSOUT.cpp" />
-    <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Stream.cpp" />
+    <ClCompile Include="Sound.c" />
+    <ClCompile Include="Stream.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SMPSOUT.rc" />

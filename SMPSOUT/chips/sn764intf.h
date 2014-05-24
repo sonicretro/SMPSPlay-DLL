@@ -1,6 +1,11 @@
 #ifndef __SN764INTF_H__
 #define __SN764INTF_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /*WRITE8_DEVICE_HANDLER( ym2413_w );
 
 WRITE8_DEVICE_HANDLER( ym2413_register_port_w );
@@ -19,5 +24,9 @@ void device_reset_sn764xx(UINT8 ChipID);
 void sn764xx_w(UINT8 ChipID, offs_t offset, UINT8 data);
 
 void sn764xx_set_mute_mask(UINT8 ChipID, UINT32 MuteMask);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	// __SN764INTF_H__

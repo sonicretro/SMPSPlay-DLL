@@ -1,12 +1,14 @@
 // Stream.h: Header File for constants and structures related to Sound Output
 //
 
-#ifdef WIN32
-#include <windows.h>
+#ifdef __cplusplus
 extern "C"
 {
+#endif
+
+#ifdef WIN32
+#include <windows.h>
 #include <mmsystem.h>
-}
 #else
 #define MAX_PATH	PATH_MAX
 #endif
@@ -29,3 +31,7 @@ extern "C"
 UINT8 StartStream(UINT8 DeviceID);
 UINT8 StopStream(void);
 void PauseStream(bool PauseOn);
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,6 +1,11 @@
 #ifndef __2612INTF_H__
 #define __2612INTF_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef void (*FM_CALLBACK)(void *param, int irq);
 
 void ym2612_update_request(void *param);
@@ -26,5 +31,9 @@ void ym2612_data_port_b_w(UINT8 ChipID, offs_t offset, UINT8 data);
 
 void ym2612_set_options(UINT8 Flags);
 void ym2612_set_mute_mask(UINT8 ChipID, UINT32 MuteMask);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __2612INTF_H__ */

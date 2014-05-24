@@ -128,7 +128,9 @@
 #include <malloc.h>
 #include "sn76496.h"
 
-#define NULL	0
+#ifndef NULL
+#define NULL    ((void *)0)
+#endif
 
 
 //#define MAX_OUTPUT 0x7fff

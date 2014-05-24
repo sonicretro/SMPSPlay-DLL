@@ -1,6 +1,11 @@
 #ifndef __SMPS_H__
 #define __SMPS_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 // --- SMPS functions for external usage ---
 
 #include "smps_structs.h"
@@ -19,5 +24,9 @@ void FadeOutMusic(void);
 void StopAllSound(void);
 
 void SetDACState(UINT8 DacOn);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	// __SMPS_H__

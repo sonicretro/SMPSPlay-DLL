@@ -72,7 +72,7 @@ stream_sample_t* DUMMYBUF[0x02] = {NULL, NULL};
 static UINT8 DeviceState = 0x00;	// 00 - not running, 01 - running
 static UINT8 TimerExpired;
 UINT16 FrameDivider = 60;
-//static UINT32 SmplsPerFrame;
+UINT32 SmplsPerFrame;
 static UINT32 SmplsTilFrame;
 static UINT8 TimerMask;
 
@@ -128,7 +128,7 @@ UINT8 StartAudioOutput(void)
 	PlayingTimer = 0;
 	StoppedTimer = -1;
 	
-	//SmplsPerFrame = SampleRate / 60;
+	SmplsPerFrame = SampleRate / FrameDivider;
 	SmplsTilFrame = 0;
 	
 	RetVal = StartStream(0x00);
@@ -467,8 +467,8 @@ UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize)
 		{
 			UpdateAll(UPDATEEVT_VINT);
 			UpdateAll(UPDATEEVT_TIMER);
-			//SmplsTilFrame = SmplsPerFrame;
-			SmplsTilFrame = SampleRate / FrameDivider;
+			SmplsTilFrame = SmplsPerFrame;
+			//SmplsTilFrame = SampleRate / FrameDivider;
 		}
 		SmplsTilFrame --;
 		if (TimerExpired)
@@ -479,16 +479,9 @@ UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize)
 		UpdateDAC(1);
 		
 		if (StoppedTimer != -1)
-		{
 			StoppedTimer ++;
-		}
-		else
-		{
-			if (PlayingTimer != -1)
-			{
-				PlayingTimer ++;
-			}
-		}
+		else if (PlayingTimer != -1)
+			PlayingTimer ++;
 		
 		TempBuf.Left = 0x00;
 		TempBuf.Right = 0x00;

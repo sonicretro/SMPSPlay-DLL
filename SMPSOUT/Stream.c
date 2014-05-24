@@ -3,7 +3,7 @@
 
 // Thanks to nextvolume for NetBSD support
 
-#include <cstdio>
+//#include <cstdio>
 #include <malloc.h>
 
 #ifdef WIN32
