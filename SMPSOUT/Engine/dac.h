@@ -12,7 +12,7 @@ extern "C"
 typedef struct _dac_sample
 {
 	UINT8* Data;
-	UINT8* DPCMArr;
+	const UINT8* DPCMArr;
 	UINT32 Size;
 	UINT8 Compr;
 	UINT8 Flags;

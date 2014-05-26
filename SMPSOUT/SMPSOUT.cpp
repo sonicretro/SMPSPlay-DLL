@@ -196,7 +196,7 @@ enum MusicID {
 	MusicID_SKCredits,
 	MusicID_S3CCredits,
 	MusicID_S3Continue,
-#ifdef SKCMUSIC
+//#ifdef SKCMUSIC	// uncommented to make the SK0525 IDs match
 	MusicID_CarnivalNight1PC,
 	MusicID_CarnivalNight2PC,
 	MusicID_IceCap1PC,
@@ -206,8 +206,12 @@ enum MusicID {
 	MusicID_KnucklesPC,
 	MusicID_CompetitionMenuPC,
 	MusicID_UnusedPC,
-	MusicID_CreditsPC
-#endif
+	MusicID_CreditsPC,
+	MusicID_S3InvincibilityPC,
+//#endif
+	MusicID_SKTitle0525,
+	MusicID_SKAllClear0525,
+	MusicID_SKCredits0525,
 };
 
 struct dacentry { int resid; unsigned char rate; };
@@ -351,9 +355,9 @@ musicentry MusicFiles[] = {
 	{ 0xE574, false }, // 54
 	{ 0xFCDE, false }, // 55
 	{ 0xC104, false }, // 56
-	{ 0x8000, false }, // 57
+	{ 0xE33A, true }, // 57 (S3C uses S3 PSGs and DACs)
 	{ 0xEC7B, true }, // 58
-#ifdef SKCMUSIC
+//#ifdef SKCMUSIC
 	{ 0x8000, false }, // 59
 	{ 0x8000, false }, // 60
 	{ 0x8000, false }, // 61
@@ -363,8 +367,12 @@ musicentry MusicFiles[] = {
 	{ 0x8000, false }, // 65
 	{ 0x8000, false }, // 66
 	{ 0x8000, false }, // 67
-	{ 0x8000, false } // 68
-#endif
+	{ 0x8000, false }, // 68
+	{ 0xF364, true }, // 69
+//#endif
+	{ 0x8000, true }, // 70 (S&K Beta 0525 uses S3 PSGs and DACs, too)
+	{ 0xC294, true }, // 71
+	{ 0x84BD, true }, // 72
 };
 
 static const UINT8 DefDPCMData[] =
@@ -461,7 +469,11 @@ inline size_t LengthOfArray(const T(&)[N])
 //struct trackoption { string text; char id; };	// this doesn't work with MSVC6
 struct trackoption { char* text; char id; };
 
-const trackoption TitleScreenTrackOptions[] = { { "S3", MusicID_S3Title }, { "S&K", MusicID_SKTitle } };
+const trackoption TitleScreenTrackOptions[] = {
+	{ "S3", MusicID_S3Title },
+	{ "S&K", MusicID_SKTitle },
+	{ "S&K0525", MusicID_SKTitle0525 }
+};
 
 const trackoption MidbossTrackOptions[] = { { "S3", MusicID_S3Midboss }, { "S&K", MusicID_SKMidboss } };
 
@@ -479,16 +491,22 @@ const trackoption InvincibilityTrackOptions[] = {
 	{ "S3", MusicID_S3Invincibility },
 	{ "S&K", MusicID_SKInvincibility },
 #ifdef SKCMUSIC
+	{ "S3PC", MusicID_S3InvincibilityPC },
 	{ "PC", MusicID_UnusedPC }
 #endif
 };
 
-const trackoption AllClearTrackOptions[] = { { "S3", MusicID_S3AllClear }, { "S&K", MusicID_SKAllClear } };
+const trackoption AllClearTrackOptions[] = {
+	{ "S3", MusicID_S3AllClear },
+	{ "S&K", MusicID_SKAllClear },
+	{ "S&K0525", MusicID_SKAllClear0525 },
+};
 
 const trackoption CreditsTrackOptions[] = {
 	{ "S3", MusicID_S3Credits },
 	{ "S&K", MusicID_SKCredits },
 	{ "S3C", MusicID_S3CCredits },
+	{ "S&K0525", MusicID_SKCredits0525 },
 #ifdef SKCMUSIC
 	{ "PC", MusicID_CreditsPC }
 #endif
@@ -553,7 +571,6 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	SMPS_CFG smpscfg;
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
-	bool s3mode;
 	bool fmdrum_on;
 	TrackSettings trackSettings[3];
 
@@ -992,17 +1009,14 @@ public:
 		HRSRC hres;
 		UINT8* dataPtr;
 		UINT32 dataSize;
+		unsigned int i;
 		
 		gameWindow = hwnd;
 		ZeroMemory(&smpscfg, sizeof(smpscfg));
-		s3mode = false;
 		fmdrum_on = false;
 
 		TrackSettings masterSettings;
 		memset(&masterSettings, -1, sizeof(masterSettings));
-		trackSettings[0] = masterSettings;
-		trackSettings[1] = masterSettings;
-		trackSettings[2] = masterSettings;
 
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 		IniDictionary settings = LoadINI("SMPSOUT.ini");
@@ -1010,6 +1024,10 @@ public:
 		auto iter = settings.find("");
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, masterSettings);
+
+		trackSettings[0] = masterSettings;
+		trackSettings[1] = masterSettings;
+		trackSettings[2] = masterSettings;
 
 		iter = settings.find("S3K");
 		if (iter != settings.cend())
@@ -1023,6 +1041,9 @@ public:
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, trackSettings[2]);
 #else
+		trackSettings[0] = masterSettings;
+		trackSettings[1] = masterSettings;
+		trackSettings[2] = masterSettings;
 		fmdrum_on = true;
 #endif
 		if (trackSettings[2].MidbossTrack == -1)
@@ -1038,7 +1059,6 @@ public:
 		ZeroMemory(smpscfg.DrumLib.DrumData, sizeof(DRUM_DATA) * smpscfg.DrumLib.DrumCount);
 
 		smpscfg.DrumLib.DrumData[0].Type = DRMTYPE_NONE;
-		int i;
 		for (i = 1; i < smpscfg.DrumLib.DrumCount; i++)
 		{
 			smpscfg.DrumLib.DrumData[i].Type = DRMTYPE_DAC;
@@ -1077,7 +1097,7 @@ public:
 		{
 			hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_DAC_81 + i), _T("DAC"));
 			smpscfg.DACDrv.Smpls[i].Compr = COMPR_DPCM;
-			smpscfg.DACDrv.Smpls[i].DPCMArr = (UINT8*)DefDPCMData;
+			smpscfg.DACDrv.Smpls[i].DPCMArr = DefDPCMData;
 			smpscfg.DACDrv.Smpls[i].Size = SizeofResource(moduleHandle, hres);
 			smpscfg.DACDrv.Smpls[i].Data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		}
@@ -1094,7 +1114,7 @@ public:
 		smpscfg.DACDrv.SmplTbl = new DAC_TABLE[smpscfg.DACDrv.TblAlloc];
 		ZeroMemory(smpscfg.DACDrv.SmplTbl, smpscfg.DACDrv.TblAlloc * sizeof(DAC_TABLE));
 
-		for (i = 0; i < (int)LengthOfArray(DACFiles); i++)
+		for (i = 0; i < LengthOfArray(DACFiles); i++)
 		{
 			smpscfg.DACDrv.SmplTbl[i].Sample = DACFiles[i].resid - IDR_DAC_81;
 			smpscfg.DACDrv.SmplTbl[i].Rate = DACFiles[i].rate;
@@ -1244,7 +1264,6 @@ public:
 		smpscfg.SeqLength = (UINT16)SizeofResource(moduleHandle, hres);
 		smpscfg.SeqData = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		PreparseSMPSFile(&smpscfg);
-		s3mode = song->s3;
 		return TRUE;
 	}
 

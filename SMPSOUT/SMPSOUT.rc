@@ -206,7 +206,7 @@ IDR_MUSIC_51       MUSIC          ".\\Data\\Sonic & Knuckles\\1F Knuckles' Theme
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDR_MUSIC_52        MUSIC          ".\\Data\\Sonic & Knuckles\\25 Title Screen.s3k"
+IDR_MUSIC_52       MUSIC          ".\\Data\\Sonic & Knuckles\\25 Title Screen.s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
@@ -226,11 +226,23 @@ IDR_MUSIC_56       MUSIC          ".\\Data\\Sonic & Knuckles\\33 Staff Roll.s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDR_MUSIC_57       MUSIC          ".\\Data\\Sonic 3C Credits.s3k"
+IDR_MUSIC_57       MUSIC          ".\\Data\\Sonic & Knuckles Beta\\26 Staff Roll (S3C 0517).s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_MUSIC_58       MUSIC          ".\\Data\\Sonic 3\\28 Continue, Competition Results.EC7B.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_70       MUSIC          ".\\Data\\Sonic & Knuckles Beta\\25 Title Screen (Beta 0525).s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_71       MUSIC          ".\\Data\\Sonic & Knuckles Beta\\32 All Clear (Beta 0525).s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_72       MUSIC          ".\\Data\\Sonic & Knuckles Beta\\33 Staff Roll (Beta 0525).s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL

@@ -60,6 +60,9 @@
 #define IDR_MUSIC_56                            155
 #define IDR_MUSIC_57                            156
 #define IDR_MUSIC_58                            157
+#define IDR_MUSIC_70                            169
+#define IDR_MUSIC_71                            170
+#define IDR_MUSIC_72                            171
 #define IDR_DAC_81                              200
 #define IDR_DAC_82                              201
 #define IDR_DAC_86                              202
