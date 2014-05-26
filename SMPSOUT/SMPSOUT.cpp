@@ -196,7 +196,7 @@ enum MusicID {
 	MusicID_SKCredits,
 	MusicID_S3CCredits,
 	MusicID_S3Continue,
-//#ifdef SKCMUSIC	// uncommented to make the SK0525 IDs match
+	// begin S&KC tracks
 	MusicID_CarnivalNight1PC,
 	MusicID_CarnivalNight2PC,
 	MusicID_IceCap1PC,
@@ -208,11 +208,13 @@ enum MusicID {
 	MusicID_UnusedPC,
 	MusicID_CreditsPC,
 	MusicID_S3InvincibilityPC,
-//#endif
+	// end S&KC tracks
 	MusicID_SKTitle0525,
 	MusicID_SKAllClear0525,
 	MusicID_SKCredits0525,
 };
+
+#define TrackCount MusicID_SKCredits+1
 
 struct dacentry { int resid; unsigned char rate; };
 
@@ -357,7 +359,7 @@ musicentry MusicFiles[] = {
 	{ 0xC104, false }, // 56
 	{ 0xE33A, true }, // 57 (S3C uses S3 PSGs and DACs)
 	{ 0xEC7B, true }, // 58
-//#ifdef SKCMUSIC
+	// begin S&KC tracks
 	{ 0x8000, false }, // 59
 	{ 0x8000, false }, // 60
 	{ 0x8000, false }, // 61
@@ -369,7 +371,7 @@ musicentry MusicFiles[] = {
 	{ 0x8000, false }, // 67
 	{ 0x8000, false }, // 68
 	{ 0xF364, true }, // 69
-//#endif
+	// end S&KC tracks
 	{ 0x8000, true }, // 70 (S&K Beta 0525 uses S3 PSGs and DACs, too)
 	{ 0xC294, true }, // 71
 	{ 0x84BD, true }, // 72
@@ -466,8 +468,7 @@ inline size_t LengthOfArray(const T(&)[N])
 #define LengthOfArray(x)	(sizeof(x) / sizeof((x)[0]))
 #endif
 
-//struct trackoption { string text; char id; };	// this doesn't work with MSVC6
-struct trackoption { char* text; char id; };
+struct trackoption { const char *text; char id; };
 
 const trackoption TitleScreenTrackOptions[] = {
 	{ "S3", MusicID_S3Title },
@@ -530,29 +531,89 @@ const trackoption LaunchBase2TrackOptions[] = { { "MD", MusicID_LaunchBase2 }, {
 const trackoption CompetitionMenuTrackOptions[] = { { "MD", MusicID_CompetitionMenu }, { "PC", MusicID_CompetitionMenuPC } };
 #endif
 
+struct tracknameoptions { const char *name; const trackoption *options; int optioncount; };
+
+#define arrayptrandlength(x) x, LengthOfArray(x)
+
+#define trackoptdef(x) { #x, arrayptrandlength(x##Options) }
+
+const tracknameoptions TrackOptions[TrackCount] = {
+	trackoptdef(TitleScreenTrack),
+	{ "AngelIsland1Track" },
+	{ "AngelIsland2Track" },
+	{ "Hydrocity1Track" },
+	{ "Hydrocity2Track" },
+	{ "MarbleGarden1Track" },
+	{ "MarbleGarden2Track" },
+#ifdef SKCMUSIC
+	trackoptdef(CarnivalNight1Track),
+	trackoptdef(CarnivalNight2Track),
+#else
+	{ "CarnivalNight1Track" },
+	{ "CarnivalNight2Track" },
+#endif
+	{ "FlyingBattery1Track" },
+	{ "FlyingBattery2Track" },
+#ifdef SKCMUSIC
+	trackoptdef(IceCap1Track),
+	trackoptdef(IceCap2Track),
+	trackoptdef(LaunchBase1Track),
+	trackoptdef(LaunchBase2Track),
+#else
+	{ "IceCap1Track" },
+	{ "IceCap2Track" },
+	{ "LaunchBase1Track" },
+	{ "LaunchBase2Track" },
+#endif
+	{ "MushroomHill1Track" },
+	{ "MushroomHill2Track" },
+	{ "Sandopolis1Track" },
+	{ "Sandopolis2Track" },
+	{ "LavaReef1Track" },
+	{ "LavaReef2Track" },
+	{ "SkySanctuaryTrack" },
+	{ "DeathEgg1Track" },
+	{ "DeathEgg2Track" },
+	trackoptdef(MidbossTrack),
+	{ "BossTrack" },
+	{ "DoomsdayTrack" },
+	{ "MagneticOrbsTrack" },
+	{ "SpecialStageTrack" },
+	{ "SlotMachineTrack" },
+	{ "GumballMachineTrack" },
+	trackoptdef(KnucklesTrack),
+	{ "AzureLakeTrack" },
+	{ "BalloonParkTrack" },
+	{ "DesertPalaceTrack" },
+	{ "ChromeGadgetTrack" },
+	{ "EndlessMineTrack" },
+	{ "GameOverTrack" },
+	trackoptdef(ContinueTrack),
+	{ "ActClearTrack" },
+	{ "1UpTrack", arrayptrandlength(OneUpTrackOptions) },
+	{ "ChaosEmeraldTrack" },
+	trackoptdef(InvincibilityTrack),
+#ifdef SKCMUSIC
+	trackoptdef(CompetitionMenuTrack),
+#else
+	{ "CompetitionMenuTrack" },
+#endif
+	{ "UnusedTrack" },
+	{ "LevelSelectTrack" },
+	{ "FinalBossTrack" },
+	{ "DrowningTrack" },
+	trackoptdef(AllClearTrack),
+	trackoptdef(CreditsTrack),
+	trackoptdef(KnucklesTrack),
+	trackoptdef(TitleScreenTrack),
+	{ "1UpTrack", arrayptrandlength(OneUpTrackOptions) },
+	trackoptdef(InvincibilityTrack),
+	trackoptdef(AllClearTrack),
+	trackoptdef(CreditsTrack)
+};
+
 unsigned int &GameSelection = *(unsigned int *)0x831188;
 unsigned char &reg_d0 = *(unsigned char *)0x8549A4;
-
-struct TrackSettings
-{
-	char TitleScreenTrack;
-	char MidbossTrack;
-	char KnucklesTrack;
-	char OneUpTrack;
-	char InvincibilityTrack;
-	char AllClearTrack;
-	char CreditsTrack;
-	char ContinueTrack;
-#ifdef SKCMUSIC
-	char CarnivalNight1Track;
-	char CarnivalNight2Track;
-	char IceCap1Track;
-	char IceCap2Track;
-	char LaunchBase1Track;
-	char LaunchBase2Track;
-	char CompetitionMenuTrack;
-#endif
-};
 
 class MidiInterfaceClass
 {
@@ -572,7 +633,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
-	TrackSettings trackSettings[3];
+	char trackSettings[3][TrackCount];
 
 	INLINE UINT16 ReadBE16(const UINT8* Data)
 	{
@@ -879,106 +940,11 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	}
 
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
-	void ReadSettings(const IniGroup &settings, TrackSettings &trackSettings)
+	void ReadSettings(const IniGroup &settings, char *trackSettings)
 	{
 		for (auto iter = settings.cbegin(); iter != settings.cend(); iter++)
 		{
-			const trackoption *options = nullptr;
-			int optioncount = 0;
-			char *setting = nullptr;
-			if (iter->first == "TitleScreenTrack")
-			{
-				options = TitleScreenTrackOptions;
-				optioncount = LengthOfArray(TitleScreenTrackOptions);
-				setting = &trackSettings.TitleScreenTrack;
-			}
-			else if (iter->first == "MidbossTrack")
-			{
-				options = MidbossTrackOptions;
-				optioncount = LengthOfArray(MidbossTrackOptions);
-				setting = &trackSettings.MidbossTrack;
-			}
-			else if (iter->first == "KnucklesTrack")
-			{
-				options = KnucklesTrackOptions;
-				optioncount = LengthOfArray(KnucklesTrackOptions);
-				setting = &trackSettings.KnucklesTrack;
-			}
-			else if (iter->first == "1UpTrack")
-			{
-				options = OneUpTrackOptions;
-				optioncount = LengthOfArray(OneUpTrackOptions);
-				setting = &trackSettings.OneUpTrack;
-			}
-			else if (iter->first == "InvincibilityTrack")
-			{
-				options = InvincibilityTrackOptions;
-				optioncount = LengthOfArray(InvincibilityTrackOptions);
-				setting = &trackSettings.InvincibilityTrack;
-			}
-			else if (iter->first == "AllClearTrack")
-			{
-				options = AllClearTrackOptions;
-				optioncount = LengthOfArray(AllClearTrackOptions);
-				setting = &trackSettings.AllClearTrack;
-			}
-			else if (iter->first == "CreditsTrack")
-			{
-				options = CreditsTrackOptions;
-				optioncount = LengthOfArray(CreditsTrackOptions);
-				setting = &trackSettings.CreditsTrack;
-			}
-			else if (iter->first == "ContinueTrack")
-			{
-				options = ContinueTrackOptions;
-				optioncount = LengthOfArray(ContinueTrackOptions);
-				setting = &trackSettings.ContinueTrack;
-			}
-#ifdef SKCMUSIC
-			else if (iter->first == "CarnivalNight1Track")
-			{
-				options = CarnivalNight1TrackOptions;
-				optioncount = LengthOfArray(CarnivalNight1TrackOptions);
-				setting = &trackSettings.CarnivalNight1Track;
-			}
-			else if (iter->first == "CarnivalNight2Track")
-			{
-				options = CarnivalNight2TrackOptions;
-				optioncount = LengthOfArray(CarnivalNight2TrackOptions);
-				setting = &trackSettings.CarnivalNight2Track;
-			}
-			else if (iter->first == "IceCap1Track")
-			{
-				options = IceCap1TrackOptions;
-				optioncount = LengthOfArray(IceCap1TrackOptions);
-				setting = &trackSettings.IceCap1Track;
-			}
-			else if (iter->first == "IceCap2Track")
-			{
-				options = IceCap2TrackOptions;
-				optioncount = LengthOfArray(IceCap2TrackOptions);
-				setting = &trackSettings.IceCap2Track;
-			}
-			else if (iter->first == "LaunchBase1Track")
-			{
-				options = LaunchBase1TrackOptions;
-				optioncount = LengthOfArray(LaunchBase1TrackOptions);
-				setting = &trackSettings.LaunchBase1Track;
-			}
-			else if (iter->first == "LaunchBase2Track")
-			{
-				options = LaunchBase2TrackOptions;
-				optioncount = LengthOfArray(LaunchBase2TrackOptions);
-				setting = &trackSettings.LaunchBase2Track;
-			}
-			else if (iter->first == "CompetitionMenuTrack")
-			{
-				options = CompetitionMenuTrackOptions;
-				optioncount = LengthOfArray(CompetitionMenuTrackOptions);
-				setting = &trackSettings.CompetitionMenuTrack;
-			}
-#endif
-			else if (iter->first == "FMDrums")
+			if (iter->first == "FMDrums")
 			{
 				const char* cstr = iter->second.c_str();
 				if (! _stricmp(cstr, "True"))
@@ -990,13 +956,14 @@ class SMPSInterfaceClass : MidiInterfaceClass
 				continue;
 			}
 			else
-				continue;
-			for (int i = 0; i < optioncount; i++)
-				if (iter->second == options[i].text)
-				{
-					*setting = options[i].id;
-					break;
-				}
+				for (int i = 0; i < TrackCount; i++)
+					if (iter->first == TrackOptions[i].name)
+						for (int j = 0; j < TrackOptions[i].optioncount; j++)
+							if (iter->second == TrackOptions[i].options[j].text)
+							{
+								trackSettings[i] = TrackOptions[i].options[j].id;
+								break; // can't break outer loop due to S3/S&K copies of tracks
+							}
 		}
 	}
 #endif
@@ -1015,8 +982,8 @@ public:
 		ZeroMemory(&smpscfg, sizeof(smpscfg));
 		fmdrum_on = false;
 
-		TrackSettings masterSettings;
-		memset(&masterSettings, -1, sizeof(masterSettings));
+		char masterSettings[TrackCount];
+		memset(&masterSettings, -1, TrackCount);
 
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 		IniDictionary settings = LoadINI("SMPSOUT.ini");
@@ -1025,9 +992,9 @@ public:
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, masterSettings);
 
-		trackSettings[0] = masterSettings;
-		trackSettings[1] = masterSettings;
-		trackSettings[2] = masterSettings;
+		memmove(trackSettings[0], masterSettings, TrackCount);
+		memmove(trackSettings[1], masterSettings, TrackCount);
+		memmove(trackSettings[2], masterSettings, TrackCount);
 
 		iter = settings.find("S3K");
 		if (iter != settings.cend())
@@ -1041,15 +1008,15 @@ public:
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, trackSettings[2]);
 #else
-		trackSettings[0] = masterSettings;
-		trackSettings[1] = masterSettings;
-		trackSettings[2] = masterSettings;
+		memmove(trackSettings[0], masterSettings, TrackCount);
+		memmove(trackSettings[1], masterSettings, TrackCount);
+		memmove(trackSettings[2], masterSettings, TrackCount);
 		fmdrum_on = true;
 #endif
-		if (trackSettings[2].MidbossTrack == -1)
-			trackSettings[2].MidbossTrack = MusicID_S3Midboss;
-		if (trackSettings[2].ContinueTrack == -1)
-			trackSettings[2].ContinueTrack = MusicID_S3Continue;
+		if (trackSettings[2][MusicID_Midboss] == -1)
+			trackSettings[2][MusicID_Midboss] = MusicID_S3Midboss;
+		if (trackSettings[2][MusicID_Continue] == -1)
+			trackSettings[2][MusicID_Continue] = MusicID_S3Continue;
 
 		LoadSettings(SmpsDrv_S3K, &smpscfg);
 
@@ -1153,78 +1120,9 @@ public:
 		while(! ThreadPauseConfrm)
 			Sleep(1);
 		id--;
-		TrackSettings *trackSet = &trackSettings[GameSelection];
-		switch (id)
-		{
-		case MusicID_S3Title:
-		case MusicID_SKTitle:
-			if (trackSet->TitleScreenTrack != -1)
-				id = trackSet->TitleScreenTrack;
-			break;
-		case MusicID_Midboss:
-			if (trackSet->MidbossTrack != -1)
-				id = trackSet->MidbossTrack;
-			break;
-		case MusicID_S3Knuckles:
-		case MusicID_SKKnuckles:
-			if (trackSet->KnucklesTrack != -1)
-				id = trackSet->KnucklesTrack;
-			break;
-		case MusicID_S31Up:
-		case MusicID_SK1Up:
-			if (trackSet->OneUpTrack != -1)
-				id = trackSet->OneUpTrack;
-			break;
-		case MusicID_S3Invincibility:
-		case MusicID_SKInvincibility:
-			if (trackSet->InvincibilityTrack != -1)
-				id = trackSet->InvincibilityTrack;
-			break;
-		case MusicID_S3AllClear:
-		case MusicID_SKAllClear:
-			if (trackSet->AllClearTrack != -1)
-				id = trackSet->AllClearTrack;
-			break;
-		case MusicID_S3Credits:
-		case MusicID_SKCredits:
-			if (trackSet->CreditsTrack != -1)
-				id = trackSet->CreditsTrack;
-			break;
-		case MusicID_Continue:
-			if (trackSet->ContinueTrack != -1)
-				id = trackSet->ContinueTrack;
-			break;
-#ifdef SKCMUSIC
-		case MusicID_CarnivalNight1:
-			if (trackSet->CarnivalNight1Track != -1)
-				id = trackSet->CarnivalNight1Track;
-			break;
-		case MusicID_CarnivalNight2:
-			if (trackSet->CarnivalNight2Track != -1)
-				id = trackSet->CarnivalNight2Track;
-			break;
-		case MusicID_IceCap1:
-			if (trackSet->IceCap1Track != -1)
-				id = trackSet->IceCap1Track;
-			break;
-		case MusicID_IceCap2:
-			if (trackSet->IceCap2Track != -1)
-				id = trackSet->IceCap2Track;
-			break;
-		case MusicID_LaunchBase1:
-			if (trackSet->LaunchBase1Track != -1)
-				id = trackSet->LaunchBase1Track;
-			break;
-		case MusicID_LaunchBase2:
-			if (trackSet->LaunchBase2Track != -1)
-				id = trackSet->LaunchBase2Track;
-			break;
-		case MusicID_CompetitionMenu:
-			if (trackSet->CompetitionMenuTrack != -1)
-				id = trackSet->CompetitionMenuTrack;
-			break;
-#endif
-		}
+		char set = trackSettings[GameSelection][id];
+		if (set != -1)
+			id = set;
 		musicentry *song = &MusicFiles[id];
 		if (song->s3)
 		{
