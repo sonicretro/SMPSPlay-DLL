@@ -136,6 +136,8 @@ extern UINT32 SmplsPerFrame;
 }
 
 enum MusicID {
+	MusicID_Random = -2,
+	MusicID_Default,
 	MusicID_S3Title,
 	MusicID_AngelIsland1,
 	MusicID_AngelIsland2,
@@ -958,12 +960,19 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			else
 				for (int i = 0; i < TrackCount; i++)
 					if (iter->first == TrackOptions[i].name)
-						for (int j = 0; j < TrackOptions[i].optioncount; j++)
-							if (iter->second == TrackOptions[i].options[j].text)
-							{
-								trackSettings[i] = TrackOptions[i].options[j].id;
-								break; // can't break outer loop due to S3/S&K copies of tracks
-							}
+					{
+						if (TrackOptions[i].optioncount < 2)
+							continue;
+						if (iter->second == "Random")
+							trackSettings[i] = MusicID_Random;
+						else
+							for (int j = 0; j < TrackOptions[i].optioncount; j++)
+								if (iter->second == TrackOptions[i].options[j].text)
+								{
+									trackSettings[i] = TrackOptions[i].options[j].id;
+									break; // can't break outer loop due to S3/S&K copies of tracks
+								}
+					}
 		}
 	}
 #endif
@@ -983,7 +992,7 @@ public:
 		fmdrum_on = false;
 
 		char masterSettings[TrackCount];
-		memset(&masterSettings, -1, TrackCount);
+		memset(&masterSettings, MusicID_Default, TrackCount);
 
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 		IniDictionary settings = LoadINI("SMPSOUT.ini");
@@ -1013,9 +1022,9 @@ public:
 		memmove(trackSettings[2], masterSettings, TrackCount);
 		fmdrum_on = true;
 #endif
-		if (trackSettings[2][MusicID_Midboss] == -1)
+		if (trackSettings[2][MusicID_Midboss] == MusicID_Default)
 			trackSettings[2][MusicID_Midboss] = MusicID_S3Midboss;
-		if (trackSettings[2][MusicID_Continue] == -1)
+		if (trackSettings[2][MusicID_Continue] == MusicID_Default)
 			trackSettings[2][MusicID_Continue] = MusicID_S3Continue;
 
 		LoadSettings(SmpsDrv_S3K, &smpscfg);
@@ -1121,7 +1130,12 @@ public:
 			Sleep(1);
 		id--;
 		char set = trackSettings[GameSelection][id];
-		if (set != -1)
+		if (set == MusicID_Random)
+		{
+			const tracknameoptions *opt = &TrackOptions[id];
+			id = opt->options[rand() % opt->optioncount].id;
+		}
+		else if (set != MusicID_Default)
 			id = set;
 		musicentry *song = &MusicFiles[id];
 		if (song->s3)
