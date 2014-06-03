@@ -137,7 +137,8 @@ extern UINT32 SmplsPerFrame;
 }
 
 enum MusicID {
-	MusicID_Random = -2,
+	MusicID_MIDI = -3,
+	MusicID_Random,
 	MusicID_Default,
 	MusicID_S3Title,
 	MusicID_AngelIsland1,
@@ -637,6 +638,8 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
 	char trackSettings[3][TrackCount];
+	bool trackMIDI;
+	MidiInterfaceClass *MIDIFallbackClass;
 
 	INLINE UINT16 ReadBE16(const UINT8* Data)
 	{
@@ -962,9 +965,11 @@ class SMPSInterfaceClass : MidiInterfaceClass
 				for (int i = 0; i < TrackCount; i++)
 					if (iter->first == TrackOptions[i].name)
 					{
-						if (TrackOptions[i].optioncount < 2)
+						if (iter->second == "MIDI")
+							trackSettings[i] = MusicID_MIDI;
+						else if (TrackOptions[i].optioncount < 2)
 							continue;
-						if (iter->second == "Random")
+						else if (iter->second == "Random")
 							trackSettings[i] = MusicID_Random;
 						else
 							for (int j = 0; j < TrackOptions[i].optioncount; j++)
@@ -987,7 +992,14 @@ public:
 		UINT8* dataPtr;
 		UINT32 dataSize;
 		unsigned int i;
-		
+
+		HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
+		if (midimodule)
+		{
+			MIDIFallbackClass = ((MidiInterfaceClass *(*)())GetProcAddress(midimodule, "GetMidiInterface"))();
+			MIDIFallbackClass->initialize(hwnd);
+		}
+
 		gameWindow = hwnd;
 		ZeroMemory(&smpscfg, sizeof(smpscfg));
 		fmdrum_on = false;
@@ -996,7 +1008,7 @@ public:
 		memset(&masterSettings, MusicID_Default, TrackCount);
 
 #ifdef INISUPPORT
-		IniDictionary settings = LoadINI("SMPSOUT.ini");
+		IniDictionary settings = LoadINI(_T("SMPSOUT.ini"));
 
 		auto iter = settings.find("");
 		if (iter != settings.cend())
@@ -1125,19 +1137,30 @@ public:
 	BOOL load_song(unsigned char id, unsigned int bgmmode)
 	{
 		HRSRC hres;
-		ThreadPauseConfrm = false;
-		PauseThread = true;
-		while(! ThreadPauseConfrm)
-			Sleep(1);
+		if (trackMIDI)
+			MIDIFallbackClass->stop_song();
+		else
+		{
+			ThreadPauseConfrm = false;
+			PauseThread = true;
+			while(! ThreadPauseConfrm)
+				Sleep(1);
+		}
 		id--;
 		char set = trackSettings[GameSelection][id];
-		if (set == MusicID_Random)
+		if (MIDIFallbackClass && set == MusicID_MIDI)
+		{
+			trackMIDI = true;
+			return MIDIFallbackClass->load_song(id + 1, bgmmode);
+		}
+		else if (set == MusicID_Random)
 		{
 			const tracknameoptions *opt = &TrackOptions[id];
 			id = opt->options[rand() % opt->optioncount].id;
 		}
 		else if (set != MusicID_Default)
 			id = set;
+		trackMIDI = false;
 		musicentry *song = &MusicFiles[id];
 		if (song->s3)
 		{
@@ -1182,6 +1205,8 @@ public:
 
 	BOOL play_song()
 	{
+		if (trackMIDI)
+			return MIDIFallbackClass->play_song();
 		ThreadPauseConfrm = false;
 		PauseThread = true;
 		while(! ThreadPauseConfrm)
@@ -1196,6 +1221,8 @@ public:
 
 	BOOL stop_song()
 	{
+		if (trackMIDI)
+			return MIDIFallbackClass->stop_song();
 		if (reg_d0 == 0xE1)
 			FadeOutMusic();
 		else
@@ -1211,18 +1238,24 @@ public:
 
 	BOOL pause_song()
 	{
+		if (trackMIDI)
+			return MIDIFallbackClass->pause_song();
 		PauseStream(true);
 		return TRUE;
 	}
 
 	BOOL unpause_song()
 	{
+		if (trackMIDI)
+			return MIDIFallbackClass->unpause_song();
 		PauseStream(false);
 		return TRUE;
 	}
 
 	BOOL set_song_tempo(unsigned int pct)
 	{
+		if (trackMIDI)
+			return MIDIFallbackClass->set_song_tempo(pct);
 		SmplsPerFrame = (SampleRate * pct) / (FrameDivider * 100);
 		return TRUE;
 	}
