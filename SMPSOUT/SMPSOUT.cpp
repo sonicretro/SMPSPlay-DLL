@@ -13,12 +13,13 @@
 #include <sstream>
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 #include <unordered_map>
+#define INISUPPORT 1
 #endif
 #include <fstream>
 #include "resource.h"
 using namespace std;
 
-#if ! defined(_MSC_VER) || _MSC_VER >= 1600
+#ifdef INISUPPORT
 typedef unordered_map<string, string> IniGroup;
 struct IniGroupStr { IniGroup Element; };
 typedef unordered_map<string, IniGroupStr> IniDictionary;
@@ -941,7 +942,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 		}
 	}
 
-#if ! defined(_MSC_VER) || _MSC_VER >= 1600
+#ifdef INISUPPORT
 	void ReadSettings(const IniGroup &settings, char *trackSettings)
 	{
 		for (auto iter = settings.cbegin(); iter != settings.cend(); iter++)
@@ -994,7 +995,7 @@ public:
 		char masterSettings[TrackCount];
 		memset(&masterSettings, MusicID_Default, TrackCount);
 
-#if ! defined(_MSC_VER) || _MSC_VER >= 1600
+#ifdef INISUPPORT
 		IniDictionary settings = LoadINI("SMPSOUT.ini");
 
 		auto iter = settings.find("");
