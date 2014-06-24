@@ -16,6 +16,7 @@
 #define INISUPPORT 1
 #endif
 #include <fstream>
+#include <ctime>
 #include "resource.h"
 using namespace std;
 
@@ -1130,6 +1131,8 @@ public:
 		InitDriver();
 
 		timeBeginPeriod(2);
+
+		srand(_time32(NULL));
 
 		return TRUE;
 	}
