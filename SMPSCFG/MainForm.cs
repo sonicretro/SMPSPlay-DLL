@@ -124,66 +124,76 @@ namespace SMPSCFG
 			"Hidden Palace Zone"
 		};
 
-		static readonly string[] TitleScreenTrackOptions = { "S3", "S&K", "S&K0525" };
+		static readonly string[] TitleScreenTrackOptions = { "S3", "S&K", "S&K0525", "S3D" };
 
-		static readonly string[] MidbossTrackOptions = { "S3", "S&K" };
+		static readonly string[] AngelIslandTrackOptions = { "S3K", "GreenGrove" };
+		
+		static readonly string[] HydrocityTrackOptions = { "S3K", "RustyRuin" };
+
+		static readonly string[] CarnivalNightTrackOptions = { "MD", "PC", "SpringStadium" };
+
+		static readonly string[] FlyingBatteryTrackOptions = { "S3K", "PanicPuppet" };
+
+		static readonly string[] IceCapTrackOptions = { "MD", "PC", "DiamondDust" };
+
+		static readonly string[] LaunchBaseTrackOptions = { "MD", "PC", "GeneGadget", "PanicPuppet" };
+
+		static readonly string[] LavaReefTrackOptions = { "S3K", "VolcanoValley" };
+
+		static readonly string[] MidbossTrackOptions = { "S3", "S&K", "S3D1", "S3D2" };
+
+		static readonly string[] BossTrackOptions = { "S3K", "S3D1", "S3D2" };
+
+		static readonly string[] DoomsdayTrackOptions = { "S3K", "S3D1", "S3D2", "FinalFight" };
+
+		static readonly string[] SpecialStageTrackOptions = { "S3K", "S3D" };
 
 		static readonly string[] KnucklesTrackOptions = { "S3", "S&K", "PC" };
 
 		static readonly string[] OneUpTrackOptions = { "S3", "S&K" };
 
-		static readonly string[] InvincibilityTrackOptions = { "S3", "S&K", "S3PC", "PC" };
+		static readonly string[] InvincibilityTrackOptions = { "S3", "S&K", "S3PC", "PC", "S3D" };
 
-		static readonly string[] AllClearTrackOptions = { "S3", "S&K", "S&K0525" };
+		static readonly string[] CompetitionMenuTrackOptions = { "MD", "PC", "S3D" };
 
-		static readonly string[] CreditsTrackOptions = { "S3", "S&K", "S3C", "S&K0525", "PC" };
+		static readonly string[] LevelSelectTrackOptions = { "S3K", "S3D", "PanicPuppet1" };
+
+		static readonly string[] AllClearTrackOptions = { "S3", "S&K", "S&K0525", "S3D" };
+
+		static readonly string[] CreditsTrackOptions = { "S3", "S&K", "S3C", "S&K0525", "PC", "S3D" };
 
 		static readonly string[] ContinueTrackOptions = { "S3", "S&K" };
 
-		static readonly string[] CarnivalNight1TrackOptions = { "MD", "PC" };
-
-		static readonly string[] CarnivalNight2TrackOptions = { "MD", "PC" };
-
-		static readonly string[] IceCap1TrackOptions = { "MD", "PC" };
-
-		static readonly string[] IceCap2TrackOptions = { "MD", "PC" };
-
-		static readonly string[] LaunchBase1TrackOptions = { "MD", "PC" };
-
-		static readonly string[] LaunchBase2TrackOptions = { "MD", "PC" };
-
-		static readonly string[] CompetitionMenuTrackOptions = { "MD", "PC" };
-
 		static readonly string[][] TrackOptions = {
 			TitleScreenTrackOptions,
+			AngelIslandTrackOptions,
+			AngelIslandTrackOptions,
+			HydrocityTrackOptions,
+			HydrocityTrackOptions,
 			null,
 			null,
+			CarnivalNightTrackOptions,
+			CarnivalNightTrackOptions,
+			FlyingBatteryTrackOptions,
+			FlyingBatteryTrackOptions,
+			IceCapTrackOptions,
+			IceCapTrackOptions,
+			LaunchBaseTrackOptions,
+			LaunchBaseTrackOptions,
+			AngelIslandTrackOptions,
+			AngelIslandTrackOptions,
 			null,
 			null,
+			LavaReefTrackOptions,
+			LavaReefTrackOptions,
 			null,
-			null,
-			CarnivalNight1TrackOptions,
-			CarnivalNight2TrackOptions,
-			null,
-			null,
-			IceCap1TrackOptions,
-			IceCap2TrackOptions,
-			LaunchBase1TrackOptions,
-			LaunchBase2TrackOptions,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
+			LaunchBaseTrackOptions,
+			LaunchBaseTrackOptions,
 			MidbossTrackOptions,
+			BossTrackOptions,
+			DoomsdayTrackOptions,
 			null,
-			null,
-			null,
-			null,
+			SpecialStageTrackOptions,
 			null,
 			null,
 			KnucklesTrackOptions,
@@ -200,8 +210,8 @@ namespace SMPSCFG
 			InvincibilityTrackOptions,
 			CompetitionMenuTrackOptions,
 			null,
-			null,
-			null,
+			LevelSelectTrackOptions,
+			DoomsdayTrackOptions,
 			null,
 			AllClearTrackOptions,
 			CreditsTrackOptions,

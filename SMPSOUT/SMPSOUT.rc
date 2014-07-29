@@ -246,6 +246,98 @@ IDR_MUSIC_72       MUSIC          ".\\Data\\Sonic & Knuckles Beta\\33 Staff Roll
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_73       MUSIC          ".\\Data\\Sonic 3D Blast\\01 Green Grove 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_74       MUSIC          ".\\Data\\Sonic 3D Blast\\02 Green Grove 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_75       MUSIC          ".\\Data\\Sonic 3D Blast\\03 Rusty Ruin 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_76       MUSIC          ".\\Data\\Sonic 3D Blast\\04 Rusty Ruin 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_77       MUSIC          ".\\Data\\Sonic 3D Blast\\05 Volcano Valley 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_78       MUSIC          ".\\Data\\Sonic 3D Blast\\06 Volcano Valley 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_79       MUSIC          ".\\Data\\Sonic 3D Blast\\07 Spring Stadium 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_80       MUSIC          ".\\Data\\Sonic 3D Blast\\08 Spring Stadium 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_81       MUSIC          ".\\Data\\Sonic 3D Blast\\09 Diamond Dust 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_82       MUSIC          ".\\Data\\Sonic 3D Blast\\0A Diamond Dust 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_83       MUSIC          ".\\Data\\Sonic 3D Blast\\0B Gene Gadget 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_84       MUSIC          ".\\Data\\Sonic 3D Blast\\0C Gene Gadget 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_85       MUSIC          ".\\Data\\Sonic 3D Blast\\0D Panic Puppet 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_86       MUSIC          ".\\Data\\Sonic 3D Blast\\0E The Final Fight.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_87       MUSIC          ".\\Data\\Sonic 3D Blast\\0F Ending.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_88       MUSIC          ".\\Data\\Sonic 3D Blast\\10 Special Stage.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_89       MUSIC          ".\\Data\\Sonic 3D Blast\\11 Panic Puppet 1, Level Select Screen.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_90       MUSIC          ".\\Data\\Sonic 3D Blast\\12 Boss Theme 2.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_91       MUSIC          ".\\Data\\Sonic 3D Blast\\13 Boss Theme 1.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_92       MUSIC          ".\\Data\\Sonic 3D Blast\\14 Intro.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_93       MUSIC          ".\\Data\\Sonic 3D Blast\\15 Credits.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_94       MUSIC          ".\\Data\\Sonic 3D Blast\\1B Invincibility.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_95       MUSIC          ".\\Data\\Sonic 3D Blast\\1C Main Menu.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_DAC_81          DAC            ".\\Data\\DAC\\DAC_81.bin"
 
 

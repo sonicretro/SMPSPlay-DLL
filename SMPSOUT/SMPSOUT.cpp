@@ -218,6 +218,29 @@ enum MusicID {
 	MusicID_SKTitle0525,
 	MusicID_SKAllClear0525,
 	MusicID_SKCredits0525,
+	MusicID_GreenGrove1,
+	MusicID_GreenGrove2,
+	MusicID_RustyRuin1,
+	MusicID_RustyRuin2,
+	MusicID_VolcanoValley2,
+	MusicID_VolcanoValley1,
+	MusicID_SpringStadium1,
+	MusicID_SpringStadium2,
+	MusicID_DiamondDust1,
+	MusicID_DiamondDust2,
+	MusicID_GeneGadget1,
+	MusicID_GeneGadget2,
+	MusicID_PanicPuppet2,
+	MusicID_FinalFight,
+	MusicID_S3DEnding,
+	MusicID_S3DSpecialStage,
+	MusicID_PanicPuppet1,
+	MusicID_S3DBoss2,
+	MusicID_S3DBoss1,
+	MusicID_S3DIntro,
+	MusicID_S3DCredits,
+	MusicID_S3DInvincibility,
+	MusicID_S3DMenu
 };
 
 #define TrackCount MusicID_HiddenPalace+1
@@ -390,6 +413,29 @@ musicentry MusicFiles[] = {
 	{ 0x8000, TrackMode_S3 }, // 70 (S&K Beta 0525 uses S3 PSGs and DACs, too)
 	{ 0xC294, TrackMode_S3 }, // 71
 	{ 0x84BD, TrackMode_S3 }, // 72
+	{ 0x8024, TrackMode_S3D }, // 73
+	{ 0x918F, TrackMode_S3D }, // 74
+	{ 0xA8A0, TrackMode_S3D }, // 75
+	{ 0xB9E7, TrackMode_S3D }, // 76
+	{ 0xC795, TrackMode_S3D }, // 77
+	{ 0xD04A, TrackMode_S3D }, // 78
+	{ 0xD739, TrackMode_S3D }, // 79
+	{ 0xE372, TrackMode_S3D }, // 80
+	{ 0xF091, TrackMode_S3D }, // 81
+	{ 0x8024, TrackMode_S3D }, // 82
+	{ 0x8BDE, TrackMode_S3D }, // 83
+	{ 0x96BD, TrackMode_S3D }, // 84
+	{ 0xA0A8, TrackMode_S3D }, // 85
+	{ 0xA8E0, TrackMode_S3D }, // 86
+	{ 0x96B3, TrackMode_S3D }, // 87
+	{ 0xBB55, TrackMode_S3D }, // 88
+	{ 0xC68F, TrackMode_S3D }, // 89
+	{ 0xD012, TrackMode_S3D }, // 90
+	{ 0xD620, TrackMode_S3D }, // 91
+	{ 0xDD98, TrackMode_S3D }, // 92
+	{ 0xE1D9, TrackMode_S3D }, // 93
+	{ 0x8D55, TrackMode_S3D }, // 94
+	{ 0x9127, TrackMode_S3D }, // 95
 };
 
 static const UINT8 DefDPCMData[] =
@@ -488,10 +534,146 @@ struct trackoption { const char *text; char id; };
 const trackoption TitleScreenTrackOptions[] = {
 	{ "S3", MusicID_S3Title },
 	{ "S&K", MusicID_SKTitle },
-	{ "S&K0525", MusicID_SKTitle0525 }
+	{ "S&K0525", MusicID_SKTitle0525 },
+	{ "S3D", MusicID_S3DIntro }
 };
 
-const trackoption MidbossTrackOptions[] = { { "S3", MusicID_S3Midboss }, { "S&K", MusicID_SKMidboss } };
+const trackoption AngelIsland1TrackOptions[] = {
+	{ "S3K", MusicID_AngelIsland1 },
+	{ "GreenGrove", MusicID_GreenGrove1 }
+};
+
+const trackoption AngelIsland2TrackOptions[] = {
+	{ "S3K", MusicID_AngelIsland2 },
+	{ "GreenGrove", MusicID_GreenGrove2 }
+};
+
+const trackoption Hydrocity1TrackOptions[] = {
+	{ "S3K", MusicID_Hydrocity1 },
+	{ "RustyRuin", MusicID_RustyRuin1 },
+};
+
+const trackoption Hydrocity2TrackOptions[] = {
+	{ "S3K", MusicID_Hydrocity2 },
+	{ "RustyRuin", MusicID_RustyRuin2 }
+};
+
+const trackoption CarnivalNight1TrackOptions[] = {
+	{ "MD", MusicID_CarnivalNight1 },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_CarnivalNight1PC },
+#endif
+	{ "SpringStadium", MusicID_SpringStadium1 }
+};
+
+const trackoption CarnivalNight2TrackOptions[] = {
+	{ "MD", MusicID_CarnivalNight2 },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_CarnivalNight2PC },
+#endif
+	{ "SpringStadium", MusicID_SpringStadium2 }
+};
+
+const trackoption FlyingBattery1TrackOptions[] = {
+	{ "S3K", MusicID_FlyingBattery1 },
+	{ "PanicPuppet", MusicID_PanicPuppet1 }
+};
+
+const trackoption FlyingBattery2TrackOptions[] = {
+	{ "S3K", MusicID_FlyingBattery2 },
+	{ "PanicPuppet", MusicID_PanicPuppet2 }
+};
+
+const trackoption IceCap1TrackOptions[] = {
+	{ "MD", MusicID_IceCap1 },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_IceCap1PC },
+#endif
+	{ "DiamondDust", MusicID_DiamondDust1 }
+};
+
+const trackoption IceCap2TrackOptions[] = {
+	{ "MD", MusicID_IceCap2 },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_IceCap2PC },
+#endif
+	{ "DiamondDust", MusicID_DiamondDust2 }
+};
+
+const trackoption LaunchBase1TrackOptions[] = {
+	{ "MD", MusicID_LaunchBase1 },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_LaunchBase1PC },
+#endif
+	{ "GeneGadget", MusicID_GeneGadget1 },
+	{ "PanicPuppet", MusicID_PanicPuppet1 }
+};
+
+const trackoption LaunchBase2TrackOptions[] = {
+	{ "MD", MusicID_LaunchBase2 },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_LaunchBase2PC },
+#endif
+	{ "GeneGadget", MusicID_GeneGadget2 },
+	{ "PanicPuppet", MusicID_PanicPuppet2 }
+};
+
+const trackoption MushroomHill1TrackOptions[] = {
+	{ "S3K", MusicID_MushroomHill1 },
+	{ "GreenGrove", MusicID_GreenGrove1 }
+};
+
+const trackoption MushroomHill2TrackOptions[] = {
+	{ "S3K", MusicID_MushroomHill2 },
+	{ "GreenGrove", MusicID_GreenGrove2 }
+};
+
+const trackoption LavaReef1TrackOptions[] = {
+	{ "S3K", MusicID_LavaReef1 },
+	{ "VolcanoValley", MusicID_VolcanoValley1 }
+};
+
+const trackoption LavaReef2TrackOptions[] = {
+	{ "S3K", MusicID_LavaReef2 },
+	{ "VolcanoValley", MusicID_VolcanoValley2 }
+};
+
+const trackoption DeathEgg1TrackOptions[] = {
+	{ "S3K", MusicID_DeathEgg1 },
+	{ "GeneGadget", MusicID_GeneGadget1 },
+	{ "PanicPuppet", MusicID_PanicPuppet1 }
+};
+
+const trackoption DeathEgg2TrackOptions[] = {
+	{ "S3K", MusicID_DeathEgg2 },
+	{ "GeneGadget", MusicID_GeneGadget2 },
+	{ "PanicPuppet", MusicID_PanicPuppet2 }
+};
+
+const trackoption MidbossTrackOptions[] = {
+	{ "S3", MusicID_S3Midboss },
+	{ "S&K", MusicID_SKMidboss },
+	{ "S3D1", MusicID_S3DBoss1 },
+	{ "S3D2", MusicID_S3DBoss2 }
+};
+
+const trackoption BossTrackOptions[] = {
+	{ "S3K", MusicID_Boss },
+	{ "S3D1", MusicID_S3DBoss1 },
+	{ "S3D2", MusicID_S3DBoss2 }
+};
+
+const trackoption DoomsdayTrackOptions[] = {
+	{ "S3K", MusicID_Doomsday },
+	{ "S3D1", MusicID_S3DBoss1 },
+	{ "S3D2", MusicID_S3DBoss2 },
+	{ "FinalFight", MusicID_FinalFight }
+};
+
+const trackoption SpecialStageTrackOptions[] = {
+	{ "S3K", MusicID_SpecialStage },
+	{ "S3D", MusicID_S3DSpecialStage }
+};
 
 const trackoption KnucklesTrackOptions[] = {
 	{ "S3", MusicID_S3Knuckles },
@@ -501,6 +683,8 @@ const trackoption KnucklesTrackOptions[] = {
 #endif
 };
 
+const trackoption ContinueTrackOptions[] = { { "S3", MusicID_S3Continue }, { "S&K", MusicID_Continue } };
+
 const trackoption OneUpTrackOptions[] = { { "S3", MusicID_S31Up }, { "S&K", MusicID_SK1Up } };
 
 const trackoption InvincibilityTrackOptions[] = {
@@ -508,14 +692,37 @@ const trackoption InvincibilityTrackOptions[] = {
 	{ "S&K", MusicID_SKInvincibility },
 #ifdef SKCMUSIC
 	{ "S3PC", MusicID_S3InvincibilityPC },
-	{ "PC", MusicID_UnusedPC }
+	{ "PC", MusicID_UnusedPC },
 #endif
+	{ "S3D", MusicID_S3DInvincibility }
+};
+
+const trackoption CompetitionMenuTrackOptions[] = {
+	{ "MD", MusicID_CompetitionMenu },
+#ifdef SKCMUSIC
+	{ "PC", MusicID_CompetitionMenuPC },
+#endif
+	{ "S3D", MusicID_S3DMenu }
+};
+
+const trackoption LevelSelectTrackOptions[] = {
+	{ "S3K", MusicID_LevelSelect },
+	{ "S3D", MusicID_S3DMenu },
+	{ "PanicPuppet1", MusicID_PanicPuppet1 }
+};
+
+const trackoption FinalBossTrackOptions[] = {
+	{ "S3K", MusicID_FinalBoss },
+	{ "S3D1", MusicID_S3DBoss1 },
+	{ "S3D2", MusicID_S3DBoss2 },
+	{ "FinalFight", MusicID_FinalFight }
 };
 
 const trackoption AllClearTrackOptions[] = {
 	{ "S3", MusicID_S3AllClear },
 	{ "S&K", MusicID_SKAllClear },
 	{ "S&K0525", MusicID_SKAllClear0525 },
+	{ "S3D", MusicID_S3DEnding }
 };
 
 const trackoption CreditsTrackOptions[] = {
@@ -524,27 +731,10 @@ const trackoption CreditsTrackOptions[] = {
 	{ "S3C", MusicID_S3CCredits },
 	{ "S&K0525", MusicID_SKCredits0525 },
 #ifdef SKCMUSIC
-	{ "PC", MusicID_CreditsPC }
+	{ "PC", MusicID_CreditsPC },
 #endif
+	{ "S3D", MusicID_S3DCredits }
 };
-
-const trackoption ContinueTrackOptions[] = { { "S3", MusicID_S3Continue }, { "S&K", MusicID_Continue } };
-
-#ifdef SKCMUSIC
-const trackoption CarnivalNight1TrackOptions[] = { { "MD", MusicID_CarnivalNight1 }, { "PC", MusicID_CarnivalNight1PC } };
-
-const trackoption CarnivalNight2TrackOptions[] = { { "MD", MusicID_CarnivalNight2 }, { "PC", MusicID_CarnivalNight2PC } };
-
-const trackoption IceCap1TrackOptions[] = { { "MD", MusicID_IceCap1 }, { "PC", MusicID_IceCap1PC } };
-
-const trackoption IceCap2TrackOptions[] = { { "MD", MusicID_IceCap2 }, { "PC", MusicID_IceCap2PC } };
-
-const trackoption LaunchBase1TrackOptions[] = { { "MD", MusicID_LaunchBase1 }, { "PC", MusicID_LaunchBase1PC } };
-
-const trackoption LaunchBase2TrackOptions[] = { { "MD", MusicID_LaunchBase2 }, { "PC", MusicID_LaunchBase2PC } };
-
-const trackoption CompetitionMenuTrackOptions[] = { { "MD", MusicID_CompetitionMenu }, { "PC", MusicID_CompetitionMenuPC } };
-#endif
 
 struct tracknameoptions { const char *name; const trackoption *options; int optioncount; };
 
@@ -554,46 +744,34 @@ struct tracknameoptions { const char *name; const trackoption *options; int opti
 
 const tracknameoptions TrackOptions[TrackCount] = {
 	trackoptdef(TitleScreenTrack),
-	{ "AngelIsland1Track" },
-	{ "AngelIsland2Track" },
-	{ "Hydrocity1Track" },
-	{ "Hydrocity2Track" },
+	trackoptdef(AngelIsland1Track),
+	trackoptdef(AngelIsland2Track),
+	trackoptdef(Hydrocity1Track),
+	trackoptdef(Hydrocity2Track),
 	{ "MarbleGarden1Track" },
 	{ "MarbleGarden2Track" },
-#ifdef SKCMUSIC
 	trackoptdef(CarnivalNight1Track),
 	trackoptdef(CarnivalNight2Track),
-#else
-	{ "CarnivalNight1Track" },
-	{ "CarnivalNight2Track" },
-#endif
-	{ "FlyingBattery1Track" },
-	{ "FlyingBattery2Track" },
-#ifdef SKCMUSIC
+	trackoptdef(FlyingBattery1Track),
+	trackoptdef(FlyingBattery2Track),
 	trackoptdef(IceCap1Track),
 	trackoptdef(IceCap2Track),
 	trackoptdef(LaunchBase1Track),
 	trackoptdef(LaunchBase2Track),
-#else
-	{ "IceCap1Track" },
-	{ "IceCap2Track" },
-	{ "LaunchBase1Track" },
-	{ "LaunchBase2Track" },
-#endif
-	{ "MushroomHill1Track" },
-	{ "MushroomHill2Track" },
+	trackoptdef(MushroomHill1Track),
+	trackoptdef(MushroomHill2Track),
 	{ "Sandopolis1Track" },
 	{ "Sandopolis2Track" },
-	{ "LavaReef1Track" },
-	{ "LavaReef2Track" },
+	trackoptdef(LavaReef1Track),
+	trackoptdef(LavaReef2Track),
 	{ "SkySanctuaryTrack" },
-	{ "DeathEgg1Track" },
-	{ "DeathEgg2Track" },
+	trackoptdef(DeathEgg1Track),
+	trackoptdef(DeathEgg2Track),
 	trackoptdef(MidbossTrack),
-	{ "BossTrack" },
-	{ "DoomsdayTrack" },
+	trackoptdef(BossTrack),
+	trackoptdef(DoomsdayTrack),
 	{ "MagneticOrbsTrack" },
-	{ "SpecialStageTrack" },
+	trackoptdef(SpecialStageTrack),
 	{ "SlotMachineTrack" },
 	{ "GumballMachineTrack" },
 	trackoptdef(KnucklesTrack),
@@ -608,14 +786,10 @@ const tracknameoptions TrackOptions[TrackCount] = {
 	{ "1UpTrack", arrayptrandlength(OneUpTrackOptions) },
 	{ "ChaosEmeraldTrack" },
 	trackoptdef(InvincibilityTrack),
-#ifdef SKCMUSIC
 	trackoptdef(CompetitionMenuTrack),
-#else
-	{ "CompetitionMenuTrack" },
-#endif
 	{ "UnusedTrack" },
-	{ "LevelSelectTrack" },
-	{ "FinalBossTrack" },
+	trackoptdef(LevelSelectTrack),
+	trackoptdef(FinalBossTrack),
 	{ "DrowningTrack" },
 	trackoptdef(AllClearTrack),
 	trackoptdef(CreditsTrack),
