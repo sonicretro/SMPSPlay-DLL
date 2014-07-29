@@ -66,7 +66,8 @@ namespace SMPSCFG
 			"FinalBossTrack",
 			"DrowningTrack",
 			"AllClearTrack",
-			"CreditsTrack"
+			"CreditsTrack",
+			"HiddenPalaceTrack"
 		};
 
 		static readonly string[] TrackNames = {
@@ -119,7 +120,8 @@ namespace SMPSCFG
 			"Final Boss",
 			"Drowning",
 			"All Clear",
-			"Credits"
+			"Credits",
+			"Hidden Palace Zone"
 		};
 
 		static readonly string[] TitleScreenTrackOptions = { "S3", "S&K", "S&K0525" };
@@ -202,7 +204,8 @@ namespace SMPSCFG
 			null,
 			null,
 			AllClearTrackOptions,
-			CreditsTrackOptions
+			CreditsTrackOptions,
+			null
 		};
 
 		static readonly string[] GameIDs = { string.Empty, "S3K", "S3", "S&K" };

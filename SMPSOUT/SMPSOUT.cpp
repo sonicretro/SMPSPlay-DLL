@@ -200,6 +200,7 @@ enum MusicID {
 	MusicID_SKAllClear,
 	MusicID_SKCredits,
 	MusicID_S3CCredits,
+	MusicID_HiddenPalace = MusicID_S3CCredits,
 	MusicID_S3Continue,
 	// begin S&KC tracks
 	MusicID_CarnivalNight1PC,
@@ -219,7 +220,7 @@ enum MusicID {
 	MusicID_SKCredits0525,
 };
 
-#define TrackCount MusicID_SKCredits+1
+#define TrackCount MusicID_HiddenPalace+1
 
 struct dacentry { int resid; unsigned char rate; };
 
@@ -614,11 +615,16 @@ const tracknameoptions TrackOptions[TrackCount] = {
 	{ "1UpTrack", arrayptrandlength(OneUpTrackOptions) },
 	trackoptdef(InvincibilityTrack),
 	trackoptdef(AllClearTrack),
-	trackoptdef(CreditsTrack)
+	trackoptdef(CreditsTrack),
+	{ "HiddenPalaceTrack" }
 };
 
 unsigned int &GameSelection = *(unsigned int *)0x831188;
 unsigned char &reg_d0 = *(unsigned char *)0x8549A4;
+unsigned short &Current_zone_and_act = *(unsigned short *)0x8FFFE10;
+
+#define hidden_palace_zone 0x1601
+#define hidden_palace_shrine 0x1701
 
 class MidiInterfaceClass
 {
@@ -1015,6 +1021,9 @@ public:
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, masterSettings);
 
+		if (masterSettings[MusicID_HiddenPalace] == MusicID_Default)
+			masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
+
 		memmove(trackSettings[0], masterSettings, TrackCount);
 		memmove(trackSettings[1], masterSettings, TrackCount);
 		memmove(trackSettings[2], masterSettings, TrackCount);
@@ -1031,6 +1040,7 @@ public:
 		if (iter != settings.cend())
 			ReadSettings(iter->second.Element, trackSettings[2]);
 #else
+		masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
 		memmove(trackSettings[0], masterSettings, TrackCount);
 		memmove(trackSettings[1], masterSettings, TrackCount);
 		memmove(trackSettings[2], masterSettings, TrackCount);
@@ -1149,22 +1159,26 @@ public:
 			while(! ThreadPauseConfrm)
 				Sleep(1);
 		}
-		id--;
-		char set = trackSettings[GameSelection][id];
+		int newid = id - 1;
+		if (newid == MusicID_LavaReef2)
+			if (Current_zone_and_act == hidden_palace_zone
+				|| Current_zone_and_act == hidden_palace_shrine)
+				newid = MusicID_HiddenPalace;
+		char set = trackSettings[GameSelection][newid];
 		if (MIDIFallbackClass && set == MusicID_MIDI)
 		{
 			trackMIDI = true;
-			return MIDIFallbackClass->load_song(id + 1, bgmmode);
+			return MIDIFallbackClass->load_song(id, bgmmode);
 		}
 		else if (set == MusicID_Random)
 		{
-			const tracknameoptions *opt = &TrackOptions[id];
-			id = opt->options[rand() % opt->optioncount].id;
+			const tracknameoptions *opt = &TrackOptions[newid];
+			newid = opt->options[rand() % opt->optioncount].id;
 		}
 		else if (set != MusicID_Default)
-			id = set;
+			newid = set;
 		trackMIDI = false;
-		musicentry *song = &MusicFiles[id];
+		musicentry *song = &MusicFiles[newid];
 		if (song->s3)
 		{
 			smpscfg.VolEnvs = VolEnvs_S3;
@@ -1198,7 +1212,7 @@ public:
 			}
 		}
 		
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MUSIC_1 + id), _T("MUSIC"));
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MUSIC_1 + newid), _T("MUSIC"));
 		smpscfg.SeqBase = song->base;
 		smpscfg.SeqLength = (UINT16)SizeofResource(moduleHandle, hres);
 		smpscfg.SeqData = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
