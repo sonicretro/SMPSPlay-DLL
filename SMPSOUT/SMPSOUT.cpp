@@ -292,8 +292,11 @@ dacentry DACFiles[] = {
 	{ IDR_DAC_B4, 0x0F },
 	{ IDR_DAC_B4, 0x11 },
 	{ IDR_DAC_B4, 0x12 },
-	{ IDR_DAC_B4, 0x0B }
+	{ IDR_DAC_B4, 0x0B },
+	{ IDR_DAC_9F_S3D, 0x01 },
+	{ IDR_DAC_A0_S3D, 0x12 }
 };
+#define S3D_ID_BASE	(0xC5 - 0x81)
 
 UINT8 FMDrumList[] = {
 	// 0    1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
@@ -304,83 +307,89 @@ UINT8 FMDrumList[] = {
 	0x86, 0x00, 0x00, 0x00, 0x00                                                                   	// C0..C4
 };
 
-struct musicentry { unsigned short base; bool s3; };
+enum EntryMode {
+	TrackMode_SK,
+	TrackMode_S3,
+	TrackMode_S3D
+};
+
+struct musicentry { unsigned short base; unsigned char mode; };
 
 musicentry MusicFiles[] = {
-	{ 0xE18F, true }, // 1
-	{ 0x8000, true }, // 2
-	{ 0x9B6D, true }, // 3
-	{ 0xB0BC, true }, // 4
-	{ 0xC0C6, true }, // 5
-	{ 0xD364, true }, // 6
-	{ 0xD97B, true }, // 7
-	{ 0xE48F, true }, // 8
-	{ 0xDDA9, true }, // 9
-	{ 0x8000, false }, // 10
-	{ 0x8597, false }, // 11
-	{ 0x86AA, true }, // 12
-	{ 0x8000, true }, // 13
-	{ 0x90CF, true }, // 14
-	{ 0x8DC8, true }, // 15
-	{ 0x8AFE, false }, // 16
-	{ 0x9106, false }, // 17
-	{ 0x9688, false }, // 18
-	{ 0x9CF2, false }, // 19
-	{ 0xA2E5, false }, // 20
-	{ 0xACF3, false }, // 21
-	{ 0xBE80, false }, // 22
-	{ 0xC2B4, false }, // 23
-	{ 0xC79F, false }, // 24
-	{ 0xCBB1, false }, // 25
-	{ 0xCEE1, false }, // 26
-	{ 0xD3DD, false }, // 27
-	{ 0xDCC0, false }, // 28
-	{ 0xE223, false }, // 29
-	{ 0xEABB, false }, // 30
-	{ 0x8AE8, true }, // 31
-	{ 0x97FD, true }, // 32
-	{ 0x99F7, true }, // 33
-	{ 0xA4FD, true }, // 34
-	{ 0xB0EC, true }, // 35
-	{ 0xC324, true }, // 36
-	{ 0xDA47, true }, // 37
-	{ 0xDD4B, false }, // 38
-	{ 0xDFA6, false }, // 39
-	{ 0xE3C0, false }, // 40
-	{ 0xF095, true }, // 41
-	{ 0xFE75, false }, // 42
-	{ 0xF364, true }, // 43
-	{ 0xF5E4, true }, // 44
-	{ 0xF1A0, true }, // 45
-	{ 0xE7AF, false }, // 46
-	{ 0xF74C, false }, // 47
-	{ 0xFABE, false }, // 48
-	{ 0xFBFE, true }, // 49
-	{ 0xE587, true }, // 50
-	{ 0xF5A3, false }, // 51
-	{ 0xF88E, false }, // 52
-	{ 0xFD4B, false }, // 53
-	{ 0xE574, false }, // 54
-	{ 0xFCDE, false }, // 55
-	{ 0xC104, false }, // 56
-	{ 0xE33A, true }, // 57 (S3C uses S3 PSGs and DACs)
-	{ 0xEC7B, true }, // 58
+	{ 0xE18F, TrackMode_S3 }, // 1
+	{ 0x8000, TrackMode_S3 }, // 2
+	{ 0x9B6D, TrackMode_S3 }, // 3
+	{ 0xB0BC, TrackMode_S3 }, // 4
+	{ 0xC0C6, TrackMode_S3 }, // 5
+	{ 0xD364, TrackMode_S3 }, // 6
+	{ 0xD97B, TrackMode_S3 }, // 7
+	{ 0xE48F, TrackMode_S3 }, // 8
+	{ 0xDDA9, TrackMode_S3 }, // 9
+	{ 0x8000, TrackMode_SK }, // 10
+	{ 0x8597, TrackMode_SK }, // 11
+	{ 0x86AA, TrackMode_S3 }, // 12
+	{ 0x8000, TrackMode_S3 }, // 13
+	{ 0x90CF, TrackMode_S3 }, // 14
+	{ 0x8DC8, TrackMode_S3 }, // 15
+	{ 0x8AFE, TrackMode_SK }, // 16
+	{ 0x9106, TrackMode_SK }, // 17
+	{ 0x9688, TrackMode_SK }, // 18
+	{ 0x9CF2, TrackMode_SK }, // 19
+	{ 0xA2E5, TrackMode_SK }, // 20
+	{ 0xACF3, TrackMode_SK }, // 21
+	{ 0xBE80, TrackMode_SK }, // 22
+	{ 0xC2B4, TrackMode_SK }, // 23
+	{ 0xC79F, TrackMode_SK }, // 24
+	{ 0xCBB1, TrackMode_SK }, // 25
+	{ 0xCEE1, TrackMode_SK }, // 26
+	{ 0xD3DD, TrackMode_SK }, // 27
+	{ 0xDCC0, TrackMode_SK }, // 28
+	{ 0xE223, TrackMode_SK }, // 29
+	{ 0xEABB, TrackMode_SK }, // 30
+	{ 0x8AE8, TrackMode_S3 }, // 31
+	{ 0x97FD, TrackMode_S3 }, // 32
+	{ 0x99F7, TrackMode_S3 }, // 33
+	{ 0xA4FD, TrackMode_S3 }, // 34
+	{ 0xB0EC, TrackMode_S3 }, // 35
+	{ 0xC324, TrackMode_S3 }, // 36
+	{ 0xDA47, TrackMode_S3 }, // 37
+	{ 0xDD4B, TrackMode_SK }, // 38
+	{ 0xDFA6, TrackMode_SK }, // 39
+	{ 0xE3C0, TrackMode_SK }, // 40
+	{ 0xF095, TrackMode_S3 }, // 41
+	{ 0xFE75, TrackMode_SK }, // 42
+	{ 0xF364, TrackMode_S3 }, // 43
+	{ 0xF5E4, TrackMode_S3 }, // 44
+	{ 0xF1A0, TrackMode_S3 }, // 45
+	{ 0xE7AF, TrackMode_SK }, // 46
+	{ 0xF74C, TrackMode_SK }, // 47
+	{ 0xFABE, TrackMode_SK }, // 48
+	{ 0xFBFE, TrackMode_S3 }, // 49
+	{ 0xE587, TrackMode_S3 }, // 50
+	{ 0xF5A3, TrackMode_SK }, // 51
+	{ 0xF88E, TrackMode_SK }, // 52
+	{ 0xFD4B, TrackMode_SK }, // 53
+	{ 0xE574, TrackMode_SK }, // 54
+	{ 0xFCDE, TrackMode_SK }, // 55
+	{ 0xC104, TrackMode_SK }, // 56
+	{ 0xE33A, TrackMode_S3 }, // 57 (S3C uses S3 PSGs and DACs)
+	{ 0xEC7B, TrackMode_S3 }, // 58
 	// begin S&KC tracks
-	{ 0x8000, false }, // 59
-	{ 0x8000, false }, // 60
-	{ 0x8000, false }, // 61
-	{ 0x8000, false }, // 62
-	{ 0x8000, false }, // 63
-	{ 0x8000, false }, // 64
-	{ 0x8000, false }, // 65
-	{ 0x8000, false }, // 66
-	{ 0x8000, false }, // 67
-	{ 0x8000, false }, // 68
-	{ 0xF364, true }, // 69
+	{ 0x8000, TrackMode_SK }, // 59
+	{ 0x8000, TrackMode_SK }, // 60
+	{ 0x8000, TrackMode_SK }, // 61
+	{ 0x8000, TrackMode_SK }, // 62
+	{ 0x8000, TrackMode_SK }, // 63
+	{ 0x8000, TrackMode_SK }, // 64
+	{ 0x8000, TrackMode_SK }, // 65
+	{ 0x8000, TrackMode_SK }, // 66
+	{ 0x8000, TrackMode_SK }, // 67
+	{ 0x8000, TrackMode_SK }, // 68
+	{ 0xF364, TrackMode_S3 }, // 69
 	// end S&KC tracks
-	{ 0x8000, true }, // 70 (S&K Beta 0525 uses S3 PSGs and DACs, too)
-	{ 0xC294, true }, // 71
-	{ 0x84BD, true }, // 72
+	{ 0x8000, TrackMode_S3 }, // 70 (S&K Beta 0525 uses S3 PSGs and DACs, too)
+	{ 0xC294, TrackMode_S3 }, // 71
+	{ 0x84BD, TrackMode_S3 }, // 72
 };
 
 static const UINT8 DefDPCMData[] =
@@ -1088,7 +1097,7 @@ public:
 		smpscfg.VolEnvs = VolEnvs_SK;
 
 		ZeroMemory(&smpscfg.DACDrv, sizeof(smpscfg.DACDrv));
-		smpscfg.DACDrv.SmplCount = (IDR_DAC_B2_S3 - IDR_DAC_81) + 1;	// all DAC sounds including S3's B2
+		smpscfg.DACDrv.SmplCount = (IDR_DAC_A0_S3D - IDR_DAC_81) + 1;	// all DAC sounds including S3's B2
 		smpscfg.DACDrv.SmplAlloc = smpscfg.DACDrv.SmplCount;
 		smpscfg.DACDrv.Smpls = new DAC_SAMPLE[smpscfg.DACDrv.SmplAlloc];
 		ZeroMemory(smpscfg.DACDrv.Smpls, sizeof(DAC_SAMPLE) * smpscfg.DACDrv.SmplAlloc);
@@ -1179,7 +1188,7 @@ public:
 			newid = set;
 		trackMIDI = false;
 		musicentry *song = &MusicFiles[newid];
-		if (song->s3)
+		if (song->mode == TrackMode_S3)
 		{
 			smpscfg.VolEnvs = VolEnvs_S3;
 			smpscfg.DACDrv.SmplTbl[0xB2-0x81].Sample = IDR_DAC_B2_S3 - IDR_DAC_81;
@@ -1192,9 +1201,10 @@ public:
 			smpscfg.DACDrv.SmplTbl[0xB3-0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
 		}
 		
+		UINT8 i;
 		if (! bgmmode && fmdrum_on)
 		{
-			for (UINT8 i = 1; i <= LengthOfArray(FMDrumList); i++)
+			for (i = 1; i <= LengthOfArray(FMDrumList); i++)
 			{
 				if (FMDrumList[i - 1])
 				{
@@ -1202,10 +1212,32 @@ public:
 					smpscfg.DrumLib.DrumData[i].DrumID = FMDrumList[i - 1] - 0x81;
 				}
 			}
+			if (song->mode == TrackMode_S3D)
+			{
+				smpscfg.DrumLib.DrumData[0x9F-0x80].Type = DRMTYPE_FM;
+				smpscfg.DrumLib.DrumData[0x9F-0x80].DrumID = 0x86 - 0x81;
+				smpscfg.DrumLib.DrumData[0xA0-0x80].Type = DRMTYPE_DAC;
+				smpscfg.DrumLib.DrumData[0xA0-0x80].DrumID = S3D_ID_BASE + (0xA0-0x9F);
+			}
+		}
+		else if (song->mode == TrackMode_S3D)
+		{
+			for (i = 1; i < 0x1F; i++)
+			{
+				smpscfg.DrumLib.DrumData[i].Type = DRMTYPE_DAC;
+				smpscfg.DrumLib.DrumData[i].DrumID = i - 1;	// set DAC sample
+			}
+			for (; i <= 0x20; i++)
+			{
+				smpscfg.DrumLib.DrumData[i].Type = DRMTYPE_DAC;
+				smpscfg.DrumLib.DrumData[i].DrumID = S3D_ID_BASE + (i - 0x1F);	// S3D sounds 9F/A0 start are C5/C6 here.
+			}
+			for (; i < smpscfg.DrumLib.DrumCount; i++)
+				smpscfg.DrumLib.DrumData[i].Type = DRMTYPE_NONE;
 		}
 		else
 		{
-			for (UINT8 i = 1; i < smpscfg.DrumLib.DrumCount; i++)
+			for (i = 1; i < smpscfg.DrumLib.DrumCount; i++)
 			{
 				smpscfg.DrumLib.DrumData[i].Type = DRMTYPE_DAC;
 				smpscfg.DrumLib.DrumData[i].DrumID = i - 1;	// set DAC sample

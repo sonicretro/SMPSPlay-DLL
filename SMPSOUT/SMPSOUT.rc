@@ -442,6 +442,14 @@ IDR_DAC_B2_S3       DAC            ".\\Data\\DAC\\DAC_B2_S3.bin"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_9F_S3D      DAC            ".\\Data\\DAC\\S3D_DAC_9F.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_DAC_A0_S3D      DAC            ".\\Data\\DAC\\S3D_DAC_A0.bin"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_MISC_INSSET     MISC           ".\\Data\\InsSet.17D8.bin"
 
 
