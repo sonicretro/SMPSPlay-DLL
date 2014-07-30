@@ -240,7 +240,8 @@ enum MusicID {
 	MusicID_S3DIntro,
 	MusicID_S3DCredits,
 	MusicID_S3DInvincibility,
-	MusicID_S3DMenu
+	MusicID_S3DMenu,
+	MusicID_S4E1Boss
 };
 
 #define TrackCount MusicID_HiddenPalace+1
@@ -436,6 +437,7 @@ musicentry MusicFiles[] = {
 	{ 0xE1D9, TrackMode_S3D }, // 93
 	{ 0x8D55, TrackMode_S3D }, // 94
 	{ 0x9127, TrackMode_S3D }, // 95
+	{ 0xCEC7, TrackMode_S3D }, // 96
 };
 
 static const UINT8 DefDPCMData[] =
@@ -654,20 +656,23 @@ const trackoption MidbossTrackOptions[] = {
 	{ "S3", MusicID_S3Midboss },
 	{ "S&K", MusicID_SKMidboss },
 	{ "S3D1", MusicID_S3DBoss1 },
-	{ "S3D2", MusicID_S3DBoss2 }
+	{ "S3D2", MusicID_S3DBoss2 },
+	{ "S4E1", MusicID_S4E1Boss }
 };
 
 const trackoption BossTrackOptions[] = {
 	{ "S3K", MusicID_Boss },
 	{ "S3D1", MusicID_S3DBoss1 },
-	{ "S3D2", MusicID_S3DBoss2 }
+	{ "S3D2", MusicID_S3DBoss2 },
+	{ "S4E1", MusicID_S4E1Boss }
 };
 
 const trackoption DoomsdayTrackOptions[] = {
 	{ "S3K", MusicID_Doomsday },
 	{ "S3D1", MusicID_S3DBoss1 },
 	{ "S3D2", MusicID_S3DBoss2 },
-	{ "FinalFight", MusicID_FinalFight }
+	{ "FinalFight", MusicID_FinalFight },
+	{ "S4E1", MusicID_S4E1Boss }
 };
 
 const trackoption SpecialStageTrackOptions[] = {
@@ -715,7 +720,8 @@ const trackoption FinalBossTrackOptions[] = {
 	{ "S3K", MusicID_FinalBoss },
 	{ "S3D1", MusicID_S3DBoss1 },
 	{ "S3D2", MusicID_S3DBoss2 },
-	{ "FinalFight", MusicID_FinalFight }
+	{ "FinalFight", MusicID_FinalFight },
+	{ "S4E1", MusicID_S4E1Boss }
 };
 
 const trackoption AllClearTrackOptions[] = {

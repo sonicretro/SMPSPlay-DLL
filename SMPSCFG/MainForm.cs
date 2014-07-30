@@ -140,11 +140,11 @@ namespace SMPSCFG
 
 		static readonly string[] LavaReefTrackOptions = { "S3K", "VolcanoValley" };
 
-		static readonly string[] MidbossTrackOptions = { "S3", "S&K", "S3D1", "S3D2" };
+		static readonly string[] MidbossTrackOptions = { "S3", "S&K", "S3D1", "S3D2", "S4E1" };
 
-		static readonly string[] BossTrackOptions = { "S3K", "S3D1", "S3D2" };
+		static readonly string[] BossTrackOptions = { "S3K", "S3D1", "S3D2", "S4E1" };
 
-		static readonly string[] DoomsdayTrackOptions = { "S3K", "S3D1", "S3D2", "FinalFight" };
+		static readonly string[] DoomsdayTrackOptions = { "S3K", "S3D1", "S3D2", "FinalFight", "S4E1" };
 
 		static readonly string[] SpecialStageTrackOptions = { "S3K", "S3D" };
 

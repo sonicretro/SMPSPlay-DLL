@@ -338,6 +338,10 @@ IDR_MUSIC_95       MUSIC          ".\\Data\\Sonic 3D Blast\\1C Main Menu.s3k"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_96       MUSIC          ".\\Data\\Sonic 3D Blast\\S3Db825_Boss.s3k"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_DAC_81          DAC            ".\\Data\\DAC\\DAC_81.bin"
 
 
