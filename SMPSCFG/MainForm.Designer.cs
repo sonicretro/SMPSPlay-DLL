@@ -30,12 +30,12 @@
 		{
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
-			this.tabPage2 = new System.Windows.Forms.TabPage();
-			this.tabPage3 = new System.Windows.Forms.TabPage();
-			this.tabPage4 = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.tabPage4 = new System.Windows.Forms.TabPage();
 			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,47 +75,12 @@
 			this.tabPage1.Text = "All";
 			this.tabPage1.UseVisualStyleBackColor = true;
 			// 
-			// tabPage2
-			// 
-			this.tabPage2.AutoScroll = true;
-			this.tabPage2.Controls.Add(this.tableLayoutPanel2);
-			this.tabPage2.Location = new System.Drawing.Point(4, 22);
-			this.tabPage2.Name = "tabPage2";
-			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage2.Size = new System.Drawing.Size(576, 536);
-			this.tabPage2.TabIndex = 1;
-			this.tabPage2.Text = "Sonic 3 & Knuckles";
-			this.tabPage2.UseVisualStyleBackColor = true;
-			// 
-			// tabPage3
-			// 
-			this.tabPage3.AutoScroll = true;
-			this.tabPage3.Controls.Add(this.tableLayoutPanel3);
-			this.tabPage3.Location = new System.Drawing.Point(4, 22);
-			this.tabPage3.Name = "tabPage3";
-			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage3.Size = new System.Drawing.Size(576, 536);
-			this.tabPage3.TabIndex = 2;
-			this.tabPage3.Text = "Sonic 3";
-			this.tabPage3.UseVisualStyleBackColor = true;
-			// 
-			// tabPage4
-			// 
-			this.tabPage4.AutoScroll = true;
-			this.tabPage4.Controls.Add(this.tableLayoutPanel4);
-			this.tabPage4.Location = new System.Drawing.Point(4, 22);
-			this.tabPage4.Name = "tabPage4";
-			this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage4.Size = new System.Drawing.Size(576, 536);
-			this.tabPage4.TabIndex = 3;
-			this.tabPage4.Text = "Sonic & Knuckles";
-			this.tabPage4.UseVisualStyleBackColor = true;
-			// 
 			// tableLayoutPanel1
 			// 
 			this.tableLayoutPanel1.AutoSize = true;
 			this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnCount = 3;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 6);
@@ -125,11 +90,24 @@
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(0, 0);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
+			// tabPage2
+			// 
+			this.tabPage2.AutoScroll = true;
+			this.tabPage2.Controls.Add(this.tableLayoutPanel2);
+			this.tabPage2.Location = new System.Drawing.Point(4, 22);
+			this.tabPage2.Name = "tabPage2";
+			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage2.Size = new System.Drawing.Size(576, 512);
+			this.tabPage2.TabIndex = 1;
+			this.tabPage2.Text = "Sonic 3 & Knuckles";
+			this.tabPage2.UseVisualStyleBackColor = true;
+			// 
 			// tableLayoutPanel2
 			// 
 			this.tableLayoutPanel2.AutoSize = true;
 			this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel2.ColumnCount = 2;
+			this.tableLayoutPanel2.ColumnCount = 3;
+			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 6);
@@ -139,11 +117,24 @@
 			this.tableLayoutPanel2.Size = new System.Drawing.Size(0, 0);
 			this.tableLayoutPanel2.TabIndex = 1;
 			// 
+			// tabPage3
+			// 
+			this.tabPage3.AutoScroll = true;
+			this.tabPage3.Controls.Add(this.tableLayoutPanel3);
+			this.tabPage3.Location = new System.Drawing.Point(4, 22);
+			this.tabPage3.Name = "tabPage3";
+			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage3.Size = new System.Drawing.Size(576, 512);
+			this.tabPage3.TabIndex = 2;
+			this.tabPage3.Text = "Sonic 3";
+			this.tabPage3.UseVisualStyleBackColor = true;
+			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.AutoSize = true;
 			this.tableLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel3.ColumnCount = 2;
+			this.tableLayoutPanel3.ColumnCount = 3;
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(6, 6);
@@ -153,11 +144,24 @@
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(0, 0);
 			this.tableLayoutPanel3.TabIndex = 1;
 			// 
+			// tabPage4
+			// 
+			this.tabPage4.AutoScroll = true;
+			this.tabPage4.Controls.Add(this.tableLayoutPanel4);
+			this.tabPage4.Location = new System.Drawing.Point(4, 22);
+			this.tabPage4.Name = "tabPage4";
+			this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage4.Size = new System.Drawing.Size(576, 512);
+			this.tabPage4.TabIndex = 3;
+			this.tabPage4.Text = "Sonic & Knuckles";
+			this.tabPage4.UseVisualStyleBackColor = true;
+			// 
 			// tableLayoutPanel4
 			// 
 			this.tableLayoutPanel4.AutoSize = true;
 			this.tableLayoutPanel4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.tableLayoutPanel4.ColumnCount = 2;
+			this.tableLayoutPanel4.ColumnCount = 3;
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel4.Location = new System.Drawing.Point(6, 6);
