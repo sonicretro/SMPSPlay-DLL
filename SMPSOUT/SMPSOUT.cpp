@@ -94,7 +94,7 @@ appendchar:
 				size_t endpos = key.find_last_not_of(" \t");
 				if (string::npos != endpos)
 					key = key.substr(0, endpos + 1);	// trim trailing spaces, see Stack Overflow, Question 216823
-				
+
 				value = line.substr(firstequals + 1);
 				size_t startpos  = value.find_first_not_of(" \t");
 				if (string::npos != endpos)
@@ -129,12 +129,12 @@ HMODULE moduleHandle;
 HWND gameWindow;
 extern "C"
 {
-extern volatile bool PauseThread;	// from Stream.c
-extern volatile bool ThreadPauseConfrm;
-extern volatile bool CloseThread;
-extern UINT32 SampleRate;	// from Sound.c
-extern UINT16 FrameDivider;
-extern UINT32 SmplsPerFrame;
+	extern volatile bool PauseThread;	// from Stream.c
+	extern volatile bool ThreadPauseConfrm;
+	extern volatile bool CloseThread;
+	extern UINT32 SampleRate;	// from Sound.c
+	extern UINT16 FrameDivider;
+	extern UINT32 SmplsPerFrame;
 }
 
 enum MusicID {
@@ -324,7 +324,7 @@ dacentry DACFiles[] = {
 
 UINT8 FMDrumList[] = {
 	// 0    1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
-	      0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x86, 0x87, 0x82, 0x83, 0x82, 0x84, 0x82, 0x85,	// 81..8F
+	0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x86, 0x87, 0x82, 0x83, 0x82, 0x84, 0x82, 0x85,	// 81..8F
 	0x82, 0x83, 0x84, 0x85, 0x82, 0x83, 0x84, 0x85, 0x82, 0x83, 0x84, 0x81, 0x88, 0x86, 0x81, 0x81,	// 90..9F
 	0x87, 0x87, 0x87, 0x81, 0x86, 0x00, 0x00, 0x86, 0x86, 0x87, 0x87, 0x81, 0x85, 0x82, 0x83, 0x82,	// A0..AF
 	0x84, 0x87, 0x82, 0x84, 0x00, 0x00, 0x87, 0x86, 0x86, 0x86, 0x87, 0x87, 0x81, 0x86, 0x00, 0x81,	// B0..BF
@@ -514,7 +514,7 @@ static const UINT8 INSOPS_DEFAULT[] =
 0x70, 0x78, 0x74, 0x7C,
 0x80, 0x88, 0x84, 0x8C,
 0x40, 0x48, 0x44, 0x4C,
-	0x00};	// The 0 is required by the SMPS routines to terminate the array.
+0x00};	// The 0 is required by the SMPS routines to terminate the array.
 
 enum DriverMode {
 	SmpsDrv_S3K
@@ -827,6 +827,8 @@ public:
 	virtual BOOL set_song_tempo(unsigned int pct) = 0; // pct = percentage of delay between beats the song should be set to. lower = faster tempo
 };
 
+bool EnableSKCHacks = true;
+
 class SMPSInterfaceClass : MidiInterfaceClass
 {
 	SMPS_CFG smpscfg;
@@ -1060,7 +1062,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 
 		return;
 	}
-	
+
 	static void PreparseSMPSFile(SMPS_CFG* SmpsCfg)
 	{
 		UINT32 FileLen;
@@ -1189,57 +1191,60 @@ public:
 		UINT32 dataSize;
 		unsigned int i;
 
-		HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
-		if (midimodule)
-		{
-			MIDIFallbackClass = ((MidiInterfaceClass *(*)())GetProcAddress(midimodule, "GetMidiInterface"))();
-			MIDIFallbackClass->initialize(hwnd);
-		}
-
-		gameWindow = hwnd;
 		ZeroMemory(&smpscfg, sizeof(smpscfg));
 		fmdrum_on = false;
 
-		char masterSettings[TrackCount];
-		memset(&masterSettings, MusicID_Default, TrackCount);
+		if (EnableSKCHacks)
+		{
+			HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
+			if (midimodule)
+			{
+				MIDIFallbackClass = ((MidiInterfaceClass *(*)())GetProcAddress(midimodule, "GetMidiInterface"))();
+				MIDIFallbackClass->initialize(hwnd);
+			}
+
+			gameWindow = hwnd;
+
+			char masterSettings[TrackCount];
+			memset(&masterSettings, MusicID_Default, TrackCount);
 
 #ifdef INISUPPORT
-		IniDictionary settings = LoadINI(_T("SMPSOUT.ini"));
+			IniDictionary settings = LoadINI(_T("SMPSOUT.ini"));
 
-		auto iter = settings.find("");
-		if (iter != settings.cend())
-			ReadSettings(iter->second.Element, masterSettings);
+			auto iter = settings.find("");
+			if (iter != settings.cend())
+				ReadSettings(iter->second.Element, masterSettings);
 
-		if (masterSettings[MusicID_HiddenPalace] == MusicID_Default)
-			masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
+			if (masterSettings[MusicID_HiddenPalace] == MusicID_Default)
+				masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
 
-		memmove(trackSettings[0], masterSettings, TrackCount);
-		memmove(trackSettings[1], masterSettings, TrackCount);
-		memmove(trackSettings[2], masterSettings, TrackCount);
+			memmove(trackSettings[0], masterSettings, TrackCount);
+			memmove(trackSettings[1], masterSettings, TrackCount);
+			memmove(trackSettings[2], masterSettings, TrackCount);
 
-		iter = settings.find("S3K");
-		if (iter != settings.cend())
-			ReadSettings(iter->second.Element, trackSettings[0]);
+			iter = settings.find("S3K");
+			if (iter != settings.cend())
+				ReadSettings(iter->second.Element, trackSettings[0]);
 
-		iter = settings.find("S&K");
-		if (iter != settings.cend())
-			ReadSettings(iter->second.Element, trackSettings[1]);
+			iter = settings.find("S&K");
+			if (iter != settings.cend())
+				ReadSettings(iter->second.Element, trackSettings[1]);
 
-		iter = settings.find("S3");
-		if (iter != settings.cend())
-			ReadSettings(iter->second.Element, trackSettings[2]);
+			iter = settings.find("S3");
+			if (iter != settings.cend())
+				ReadSettings(iter->second.Element, trackSettings[2]);
 #else
-		masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
-		memmove(trackSettings[0], masterSettings, TrackCount);
-		memmove(trackSettings[1], masterSettings, TrackCount);
-		memmove(trackSettings[2], masterSettings, TrackCount);
-		fmdrum_on = true;
+			masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
+			memmove(trackSettings[0], masterSettings, TrackCount);
+			memmove(trackSettings[1], masterSettings, TrackCount);
+			memmove(trackSettings[2], masterSettings, TrackCount);
+			fmdrum_on = true;
 #endif
-		if (trackSettings[2][MusicID_Midboss] == MusicID_Default)
-			trackSettings[2][MusicID_Midboss] = MusicID_S3Midboss;
-		if (trackSettings[2][MusicID_Continue] == MusicID_Default)
-			trackSettings[2][MusicID_Continue] = MusicID_S3Continue;
-
+			if (trackSettings[2][MusicID_Midboss] == MusicID_Default)
+				trackSettings[2][MusicID_Midboss] = MusicID_S3Midboss;
+			if (trackSettings[2][MusicID_Continue] == MusicID_Default)
+				trackSettings[2][MusicID_Continue] = MusicID_S3Continue;
+		}
 		LoadSettings(SmpsDrv_S3K, &smpscfg);
 
 		ZeroMemory(&smpscfg.DrumLib, sizeof(smpscfg.DrumLib));
@@ -1263,12 +1268,12 @@ public:
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_S3);
-		
+
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_SK);
-		
+
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_FM_DRUMS), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
@@ -1329,9 +1334,12 @@ public:
 		StartAudioOutput();
 		InitDriver();
 
-		timeBeginPeriod(2);
+		if (EnableSKCHacks)
+		{
+			timeBeginPeriod(2);
 
-		srand(_time32(NULL));
+			srand(_time32(NULL));
+		}
 
 		return TRUE;
 	}
@@ -1348,24 +1356,28 @@ public:
 			while(! ThreadPauseConfrm)
 				Sleep(1);
 		}
-		int newid = id - 1;
-		if (newid == MusicID_LavaReef2)
-			if (Current_zone_and_act == hidden_palace_zone
-				|| Current_zone_and_act == hidden_palace_shrine)
-				newid = MusicID_HiddenPalace;
-		char set = trackSettings[GameSelection][newid];
-		if (MIDIFallbackClass && set == MusicID_MIDI)
+		int newid = id;
+		if (EnableSKCHacks)
 		{
-			trackMIDI = true;
-			return MIDIFallbackClass->load_song(id, bgmmode);
+			--newid;
+			if (newid == MusicID_LavaReef2)
+				if (Current_zone_and_act == hidden_palace_zone
+					|| Current_zone_and_act == hidden_palace_shrine)
+					newid = MusicID_HiddenPalace;
+			char set = trackSettings[GameSelection][newid];
+			if (MIDIFallbackClass && set == MusicID_MIDI)
+			{
+				trackMIDI = true;
+				return MIDIFallbackClass->load_song(id, bgmmode);
+			}
+			else if (set == MusicID_Random)
+			{
+				const tracknameoptions *opt = &TrackOptions[newid];
+				newid = opt->options[rand() % opt->optioncount].id;
+			}
+			else if (set != MusicID_Default)
+				newid = set;
 		}
-		else if (set == MusicID_Random)
-		{
-			const tracknameoptions *opt = &TrackOptions[newid];
-			newid = opt->options[rand() % opt->optioncount].id;
-		}
-		else if (set != MusicID_Default)
-			newid = set;
 		trackMIDI = false;
 		musicentry *song = &MusicFiles[newid];
 		if (song->mode == TrackMode_S3)
@@ -1380,7 +1392,7 @@ public:
 			smpscfg.DACDrv.SmplTbl[0xB2-0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
 			smpscfg.DACDrv.SmplTbl[0xB3-0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
 		}
-		
+
 		UINT8 i;
 		if (! bgmmode && fmdrum_on)
 		{
@@ -1423,7 +1435,7 @@ public:
 				smpscfg.DrumLib.DrumData[i].DrumID = i - 1;	// set DAC sample
 			}
 		}
-		
+
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MUSIC_1 + newid), _T("MUSIC"));
 		smpscfg.SeqBase = song->base;
 		smpscfg.SeqLength = (UINT16)SizeofResource(moduleHandle, hres);
@@ -1441,7 +1453,7 @@ public:
 		while(! ThreadPauseConfrm)
 			Sleep(1);
 		PauseStream(false);
-		
+
 		SmplsPerFrame = SampleRate / FrameDivider;
 		PlayMusic(&smpscfg);
 		PauseThread = false;
@@ -1452,7 +1464,7 @@ public:
 	{
 		if (trackMIDI)
 			return MIDIFallbackClass->stop_song();
-		if (reg_d0 == 0xE1)
+		if (EnableSKCHacks && reg_d0 == 0xE1)
 			FadeOutMusic();
 		else
 		{
@@ -1498,13 +1510,63 @@ public:
 };
 
 SMPSInterfaceClass midiInterface;
+void (*SongStoppedCallback)() = NULL;
 
-extern "C" __declspec(dllexport) SMPSInterfaceClass *GetMidiInterface()
+extern "C"
 {
-	return &midiInterface;
-}
+	__declspec(dllexport) SMPSInterfaceClass *GetMidiInterface()
+	{
+		return &midiInterface;
+	}
 
-extern "C" void NotifySongStopped()
-{
-	PostMessageA(gameWindow, 0x464u, 0, 0);
+	__declspec(dllexport) BOOL InitializeDriver()
+	{
+		EnableSKCHacks = false;
+		return midiInterface.initialize(NULL);
+	}
+
+	__declspec(dllexport) void RegisterSongStoppedCallback(void (*callback)())
+	{
+		SongStoppedCallback = callback;
+	}
+
+	__declspec(dllexport) BOOL PlaySong(unsigned char song)
+	{
+		if (!midiInterface.load_song(song, 0))
+			return FALSE;
+		return midiInterface.play_song();
+	}
+
+	__declspec(dllexport) BOOL StopSong()
+	{
+		return midiInterface.stop_song();
+	}
+
+	__declspec(dllexport) void FadeOutSong()
+	{
+		FadeOutMusic();
+	}
+
+	__declspec(dllexport) BOOL PauseSong()
+	{
+		return midiInterface.pause_song();
+	}
+
+	__declspec(dllexport) BOOL ResumeSong()
+	{
+		return midiInterface.unpause_song();
+	}
+
+	__declspec(dllexport) BOOL SetSongTempo(unsigned int pct)
+	{
+		return midiInterface.set_song_tempo(pct);
+	}
+
+	void NotifySongStopped()
+	{
+		if (EnableSKCHacks)
+			PostMessageA(gameWindow, 0x464u, 0, 0);
+		else if (SongStoppedCallback)
+			SongStoppedCallback();
+	}
 }
