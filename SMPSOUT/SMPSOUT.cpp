@@ -12,118 +12,13 @@
 #include "Stream.h"
 #include <sstream>
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
-#include <unordered_map>
+#include "IniFile.hpp"
 #define INISUPPORT 1
 #endif
 #include <fstream>
 #include <ctime>
 #include "resource.h"
 using namespace std;
-
-#ifdef INISUPPORT
-typedef unordered_map<string, string> IniGroup;
-struct IniGroupStr { IniGroup Element; };
-typedef unordered_map<string, IniGroupStr> IniDictionary;
-
-IniDictionary LoadINI(istream &textfile)
-{
-	IniDictionary result = IniDictionary();
-	result[""] = IniGroupStr();
-	IniGroupStr *curent = &result[""];
-	while (textfile.good())
-	{
-		string line;
-		getline(textfile, line);
-		string sb = string();
-		sb.reserve(line.length());
-		bool startswithbracket = false;
-		int firstequals = -1;
-		int endbracket = -1;
-		for (int c = 0; c < (int)line.length(); c++)
-			switch (line[c])
-		{
-			case '\\': // escape character
-				if (c + 1 == line.length())
-					goto appendchar;
-				c++;
-				switch (line[c])
-				{
-				case 'n': // line feed
-					sb += '\n';
-					break;
-				case 'r': // carriage return
-					sb += '\r';
-					break;
-				default: // literal character
-					goto appendchar;
-				}
-				break;
-			case '=':
-				if (firstequals == -1)
-					firstequals = sb.length();
-				goto appendchar;
-			case '[':
-				if (c == 0)
-					startswithbracket = true;
-				goto appendchar;
-			case ']':
-				endbracket = sb.length();
-				goto appendchar;
-			case ';': // comment character, stop processing this line
-				c = line.length();
-				break;
-			default:
-appendchar:
-				sb += line[c];
-				break;
-		}
-		line = sb;
-		if (startswithbracket && endbracket != -1)
-		{
-			line = line.substr(1, endbracket - 1);
-			result[line] = IniGroupStr();
-			curent = &result[line];
-		}
-		else if (!line.empty())
-		{
-			string key;
-			string value = "";
-			if (firstequals > -1)
-			{
-				key = line.substr(0, firstequals);
-				size_t endpos = key.find_last_not_of(" \t");
-				if (string::npos != endpos)
-					key = key.substr(0, endpos + 1);	// trim trailing spaces, see Stack Overflow, Question 216823
-
-				value = line.substr(firstequals + 1);
-				size_t startpos  = value.find_first_not_of(" \t");
-				if (string::npos != endpos)
-					value = value.substr(startpos);	// trim leading spaces, see Stack Overflow, Question 216823
-			}
-			else
-				key = line;
-			(*curent).Element[key] = value;
-		}
-	}
-	return result;
-}
-
-IniDictionary LoadINI(const string &filename)
-{
-	ifstream str(filename);
-	IniDictionary dict = LoadINI(str);
-	str.close();
-	return dict;
-}
-
-IniDictionary LoadINI(const wstring &filename)
-{
-	ifstream str(filename);
-	IniDictionary dict = LoadINI(str);
-	str.close();
-	return dict;
-}
-#endif
 
 HMODULE moduleHandle;
 HWND gameWindow;
@@ -1144,38 +1039,23 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	}
 
 #ifdef INISUPPORT
-	void ReadSettings(const IniGroup &settings, char *trackSettings)
+	void ReadSettings(const IniGroup *settings, char *trackSettings)
 	{
-		for (auto iter = settings.cbegin(); iter != settings.cend(); iter++)
+		for (int i = 0; i < TrackCount; i++)
 		{
-			if (iter->first == "FMDrums")
-			{
-				const char* cstr = iter->second.c_str();
-				if (! _stricmp(cstr, "True"))
-					fmdrum_on = true;
-				else if (! _stricmp(cstr, "False"))
-					fmdrum_on = false;
-				else
-					fmdrum_on = atoi(cstr) ? true : false;
+			string value = settings->getString(TrackOptions[i].name);
+			if (value == "MIDI")
+				trackSettings[i] = MusicID_MIDI;
+			else if (TrackOptions[i].optioncount < 2)
 				continue;
-			}
+			else if (value == "Random")
+				trackSettings[i] = MusicID_Random;
 			else
-				for (int i = 0; i < TrackCount; i++)
-					if (iter->first == TrackOptions[i].name)
+				for (int j = 0; j < TrackOptions[i].optioncount; j++)
+					if (value == TrackOptions[i].options[j].text)
 					{
-						if (iter->second == "MIDI")
-							trackSettings[i] = MusicID_MIDI;
-						else if (TrackOptions[i].optioncount < 2)
-							continue;
-						else if (iter->second == "Random")
-							trackSettings[i] = MusicID_Random;
-						else
-							for (int j = 0; j < TrackOptions[i].optioncount; j++)
-								if (iter->second == TrackOptions[i].options[j].text)
-								{
-									trackSettings[i] = TrackOptions[i].options[j].id;
-									break; // can't break outer loop due to S3/S&K copies of tracks
-								}
+						trackSettings[i] = TrackOptions[i].options[j].id;
+						break;
 					}
 		}
 	}
@@ -1209,11 +1089,12 @@ public:
 			memset(&masterSettings, MusicID_Default, TrackCount);
 
 #ifdef INISUPPORT
-			IniDictionary settings = LoadINI(_T("SMPSOUT.ini"));
+			IniFile settings(_T("SMPSOUT.ini"));
+			fmdrum_on = settings.getBool("", "FMDrums");
 
-			auto iter = settings.find("");
-			if (iter != settings.cend())
-				ReadSettings(iter->second.Element, masterSettings);
+			const IniGroup *group = settings.getGroup("");
+			if (group != nullptr)
+				ReadSettings(group, masterSettings);
 
 			if (masterSettings[MusicID_HiddenPalace] == MusicID_Default)
 				masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
@@ -1222,17 +1103,17 @@ public:
 			memmove(trackSettings[1], masterSettings, TrackCount);
 			memmove(trackSettings[2], masterSettings, TrackCount);
 
-			iter = settings.find("S3K");
-			if (iter != settings.cend())
-				ReadSettings(iter->second.Element, trackSettings[0]);
+			group = settings.getGroup("S3K");
+			if (group != nullptr)
+				ReadSettings(group, trackSettings[0]);
 
-			iter = settings.find("S&K");
-			if (iter != settings.cend())
-				ReadSettings(iter->second.Element, trackSettings[1]);
+			group = settings.getGroup("S&K");
+			if (group != nullptr)
+				ReadSettings(group, trackSettings[1]);
 
-			iter = settings.find("S3");
-			if (iter != settings.cend())
-				ReadSettings(iter->second.Element, trackSettings[2]);
+			group = settings.getGroup("S3");
+			if (group != nullptr)
+				ReadSettings(group, trackSettings[2]);
 #else
 			masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
 			memmove(trackSettings[0], masterSettings, TrackCount);

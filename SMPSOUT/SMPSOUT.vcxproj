@@ -89,6 +89,7 @@
     <ClInclude Include="Engine\smps_structs.h" />
     <ClInclude Include="Engine\smps_structs_int.h" />
     <ClInclude Include="Engine\stdtype.h" />
+    <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="stdbool.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="Engine\smps_commands.c" />
     <ClCompile Include="Engine\smps_drums.c" />
     <ClCompile Include="Engine\smps_extra.c" />
+    <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="SMPSOUT.cpp" />
     <ClCompile Include="Sound.c" />
     <ClCompile Include="Stream.c" />

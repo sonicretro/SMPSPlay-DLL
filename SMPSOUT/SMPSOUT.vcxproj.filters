@@ -69,6 +69,9 @@
     <ClInclude Include="stdbool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IniFile.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SMPSOUT.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Stream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IniFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
