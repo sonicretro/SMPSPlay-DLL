@@ -213,7 +213,14 @@ dacentry DACFiles[] = {
 	{ IDR_DAC_B4, 0x12 },
 	{ IDR_DAC_B4, 0x0B },
 	{ IDR_DAC_9F_S3D, 0x01 },
-	{ IDR_DAC_A0_S3D, 0x12 }
+	{ IDR_DAC_A0_S3D, 0x12 },
+	{ IDR_DAC_81_S2, 0x17 },
+	{ IDR_DAC_82_S2, 0x01 },
+	{ IDR_DAC_83_S2, 0x06 },
+	{ IDR_DAC_84_S2, 0x08 },
+	{ IDR_DAC_85_S2, 0x1B },
+	{ IDR_DAC_86_S2, 0x0A },
+	{ IDR_DAC_87_S2, 0x1B }
 };
 #define S3D_ID_BASE	(0xC5 - 0x81)
 
@@ -1171,7 +1178,7 @@ public:
 		smpscfg.VolEnvs = VolEnvs_SK;
 
 		ZeroMemory(&smpscfg.DACDrv, sizeof(smpscfg.DACDrv));
-		smpscfg.DACDrv.SmplCount = (IDR_DAC_A0_S3D - IDR_DAC_81) + 1;	// all DAC sounds including S3's B2
+		smpscfg.DACDrv.SmplCount = (IDR_DAC_87_S2 - IDR_DAC_81) + 1;	// all DAC sounds
 		smpscfg.DACDrv.SmplAlloc = smpscfg.DACDrv.SmplCount;
 		smpscfg.DACDrv.Smpls = new DAC_SAMPLE[smpscfg.DACDrv.SmplAlloc];
 		ZeroMemory(smpscfg.DACDrv.Smpls, sizeof(DAC_SAMPLE) * smpscfg.DACDrv.SmplAlloc);
@@ -1269,15 +1276,26 @@ public:
 		}
 		trackMIDI = false;
 		musicentry *song = &MusicFiles[newid];
+		switch (song->mode)
+		{
+		case TrackMode_S1:
+		case TrackMode_S2:
+			smpscfg.VolEnvs = VolEnvs_S2;
+			break;
+		case TrackMode_S3:
+			smpscfg.VolEnvs = VolEnvs_S3;
+			break;
+		default:
+			smpscfg.VolEnvs = VolEnvs_SK;
+			break;
+		}
 		if (song->mode == TrackMode_S3)
 		{
-			smpscfg.VolEnvs = VolEnvs_S3;
 			smpscfg.DACDrv.SmplTbl[0xB2-0x81].Sample = IDR_DAC_B2_S3 - IDR_DAC_81;
 			smpscfg.DACDrv.SmplTbl[0xB3-0x81].Sample = IDR_DAC_B2_S3 - IDR_DAC_81;
 		}
 		else
 		{
-			smpscfg.VolEnvs = VolEnvs_SK;
 			smpscfg.DACDrv.SmplTbl[0xB2-0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
 			smpscfg.DACDrv.SmplTbl[0xB3-0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
 		}

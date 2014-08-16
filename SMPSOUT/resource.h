@@ -138,6 +138,13 @@
 #define IDR_DAC_B2_S3                           348
 #define IDR_DAC_9F_S3D                          349
 #define IDR_DAC_A0_S3D                          350
+#define IDR_DAC_81_S2                           351
+#define IDR_DAC_82_S2                           352
+#define IDR_DAC_83_S2                           353
+#define IDR_DAC_84_S2                           354
+#define IDR_DAC_85_S2                           355
+#define IDR_DAC_86_S2                           356
+#define IDR_DAC_87_S2                           357
 #define IDR_MISC_INSSET                         400
 #define IDR_MISC_MODULAT                        401
 #define IDR_MISC_PSG_SK                         402
