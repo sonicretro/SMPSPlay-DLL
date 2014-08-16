@@ -226,10 +226,12 @@ UINT8 FMDrumList[] = {
 	0x86, 0x00, 0x00, 0x00, 0x00                                                                   	// C0..C4
 };
 
-enum EntryMode {
+enum TrackMode {
 	TrackMode_SK,
 	TrackMode_S3,
-	TrackMode_S3D
+	TrackMode_S3D,
+	TrackMode_S1,
+	TrackMode_S2
 };
 
 struct musicentry { unsigned short base; unsigned char mode; };
@@ -729,6 +731,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	SMPS_CFG smpscfg;
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
+	ENV_LIB VolEnvs_S2;
 	bool fmdrum_on;
 	char trackSettings[3][TrackCount];
 	bool trackMIDI;
@@ -1150,10 +1153,15 @@ public:
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_S3);
 
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG), _T("MISC"));
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_SK), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_SK);
+
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_S2), _T("MISC"));
+		dataSize = SizeofResource(moduleHandle, hres);
+		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
+		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_S2);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_FM_DRUMS), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
