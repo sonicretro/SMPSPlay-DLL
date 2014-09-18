@@ -481,6 +481,7 @@ namespace SMPSCFG
 		Dictionary<string, Dictionary<string, string>> INI;
 
 		static readonly List<ComboBox>[] comboboxes = new List<ComboBox>[4];
+		static readonly List<Button> buttons = new List<Button>();
 
 		#region Native Methods
 		[DllImport("kernel32", SetLastError = true, CharSet = CharSet.Auto)]
@@ -561,7 +562,10 @@ namespace SMPSCFG
 					comboboxes[gn].Add(cb);
 					Button btn = hModule != IntPtr.Zero && opts != null ? new Button() { Enabled = false, Text = "Play" } : null;
 					if (btn != null)
+					{
 						table.Controls.Add(btn, 2, tn);
+						buttons.Add(btn);
+					}
 					if (!group.ContainsKey(track))
 					{
 						group.Add(track, "Default");
@@ -645,6 +649,8 @@ namespace SMPSCFG
 									PlaySong((byte)song);
 									playingButton = btn;
 									playingSongSelection = cb.SelectedIndex;
+									foreach (Button item in buttons)
+										item.Text = "Play";
 									btn.Text = "Stop";
 								}
 							});
