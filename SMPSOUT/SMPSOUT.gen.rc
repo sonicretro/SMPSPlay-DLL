@@ -343,3 +343,251 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_MUSIC_85       MUSIC          ".\\Data\\Sonic 3D Blast\\S3Db825_Boss.s3k"
 
 
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_86       MUSIC          ".\\Data\\Sonic 1\\01 Green Hill Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_87       MUSIC          ".\\Data\\Sonic 1\\02 Labyrinth Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_88       MUSIC          ".\\Data\\Sonic 1\\03 Marble Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_89       MUSIC          ".\\Data\\Sonic 1\\04 Star Light Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_90       MUSIC          ".\\Data\\Sonic 1\\05 Spring Yard Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_91       MUSIC          ".\\Data\\Sonic 1\\06 Scrap Brain Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_92       MUSIC          ".\\Data\\Sonic 1\\07 Invincibility.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_93       MUSIC          ".\\Data\\Sonic 1\\08 1-Up.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_94       MUSIC          ".\\Data\\Sonic 1\\09 Special Stage.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_95       MUSIC          ".\\Data\\Sonic 1\\0A Title Screen.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_96       MUSIC          ".\\Data\\Sonic 1\\0B Ending.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_97       MUSIC          ".\\Data\\Sonic 1\\0C Boss.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_98       MUSIC          ".\\Data\\Sonic 1\\0D Final Zone.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_99       MUSIC          ".\\Data\\Sonic 1\\0E Act Clear.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_100      MUSIC          ".\\Data\\Sonic 1\\0F Game Over.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_101      MUSIC          ".\\Data\\Sonic 1\\10 Continue Screen.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_102      MUSIC          ".\\Data\\Sonic 1\\11 Credits.smp"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_103      MUSIC          ".\\Data\\Sonic 2\\2-00 Casino Night Zone (2P).sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_104      MUSIC          ".\\Data\\Sonic 2\\2-01 Emerald Hill Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_105      MUSIC          ".\\Data\\Sonic 2\\2-02 Metropolis Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_106      MUSIC          ".\\Data\\Sonic 2\\2-03 Casino Night Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_107      MUSIC          ".\\Data\\Sonic 2\\2-04 Mystic Cave Zone.1380.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_108      MUSIC          ".\\Data\\Sonic 2\\2-05 Mystic Cave Zone (2P).1380.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_109      MUSIC          ".\\Data\\Sonic 2\\2-06 Aquatic Ruin Zone.1380.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_110      MUSIC          ".\\Data\\Sonic 2\\2-07 Death Egg Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_111      MUSIC          ".\\Data\\Sonic 2\\2-08 Special Stage.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_112      MUSIC          ".\\Data\\Sonic 2\\2-09 Option Screen.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_113      MUSIC          ".\\Data\\Sonic 2\\2-0A Sweet Sweet Sweet (Ending).sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_114      MUSIC          ".\\Data\\Sonic 2\\2-0B Final Boss.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_115      MUSIC          ".\\Data\\Sonic 2\\2-0C Chemical Plant Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_116      MUSIC          ".\\Data\\Sonic 2\\2-0D Boss.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_117      MUSIC          ".\\Data\\Sonic 2\\2-0E Sky Chase Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_118      MUSIC          ".\\Data\\Sonic 2\\2-0F Oil Ocean Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_119      MUSIC          ".\\Data\\Sonic 2\\2-10 Wing Fortress Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_120      MUSIC          ".\\Data\\Sonic 2\\2-11 Emerald Hill Zone (2P).sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_121      MUSIC          ".\\Data\\Sonic 2\\2-12 2P Results Screen.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_122      MUSIC          ".\\Data\\Sonic 2\\2-13 Super Sonic.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_123      MUSIC          ".\\Data\\Sonic 2\\2-14 Hill Top Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_124      MUSIC          ".\\Data\\Sonic 2\\2-16 Title Screen.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_125      MUSIC          ".\\Data\\Sonic 2\\2-19 Invincibility.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_126      MUSIC          ".\\Data\\Sonic 2\\2-1B Hidden Palace Zone.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_127      MUSIC          ".\\Data\\Sonic 2\\2-1D Credits.sm2"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_128      MUSIC          ".\\Data\\Sonic 2 Beta\\2-00 Casino Night Zone (2P).s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_129      MUSIC          ".\\Data\\Sonic 2 Beta\\2-01 Emerald Hill Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_130      MUSIC          ".\\Data\\Sonic 2 Beta\\2-02 Metropolis Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_131      MUSIC          ".\\Data\\Sonic 2 Beta\\2-03 Casino Night Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_132      MUSIC          ".\\Data\\Sonic 2 Beta\\2-04 Mystic Cave Zone.9DEE.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_133      MUSIC          ".\\Data\\Sonic 2 Beta\\2-05 Mystic Cave Zone (2P).A49E.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_134      MUSIC          ".\\Data\\Sonic 2 Beta\\2-06 Aquatic Ruin Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_135      MUSIC          ".\\Data\\Sonic 2 Beta\\2-07 Death Egg Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_136      MUSIC          ".\\Data\\Sonic 2 Beta\\2-08 Special Stage.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_137      MUSIC          ".\\Data\\Sonic 2 Beta\\2-09 Option Screen.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_138      MUSIC          ".\\Data\\Sonic 2 Beta\\2-0B Final Boss.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_139      MUSIC          ".\\Data\\Sonic 2 Beta\\2-0C Chemical Plant Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_140      MUSIC          ".\\Data\\Sonic 2 Beta\\2-0D Boss.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_141      MUSIC          ".\\Data\\Sonic 2 Beta\\2-0E Sky Chase Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_142      MUSIC          ".\\Data\\Sonic 2 Beta\\2-0F Oil Ocean Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_143      MUSIC          ".\\Data\\Sonic 2 Beta\\2-10 Wing Fortress Zone.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_144      MUSIC          ".\\Data\\Sonic 2 Beta\\2-11 Emerald Hill Zone (2P).s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_145      MUSIC          ".\\Data\\Sonic 2 Beta\\2-12 2P Results Screen.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_146      MUSIC          ".\\Data\\Sonic 2 Beta\\2-13 Super Sonic.s2b"
+
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_147      MUSIC          ".\\Data\\Sonic 2 Beta\\2-14 Hill Top Zone.s2b"
+
+
