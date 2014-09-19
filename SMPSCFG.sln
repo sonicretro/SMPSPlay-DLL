@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSCFG", "SMPSCFG\SMPSCFG.csproj", "{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSOUTBuildTool", "SMPSOUTBuildTool\SMPSOUTBuildTool.csproj", "{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Debug|x86.Build.0 = Debug|x86
 		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|x86.ActiveCfg = Release|x86
 		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|x86.Build.0 = Release|x86
+		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Debug|x86.ActiveCfg = Debug|x86
+		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Debug|x86.Build.0 = Debug|x86
+		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Release|x86.ActiveCfg = Release|x86
+		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

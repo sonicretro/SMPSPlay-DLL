@@ -72,6 +72,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>SMPSOUTBuildTool.exe</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -90,7 +97,10 @@
     <ClInclude Include="Engine\smps_structs_int.h" />
     <ClInclude Include="Engine\stdtype.h" />
     <ClInclude Include="IniFile.hpp" />
+    <ClInclude Include="musicid.gen.h" />
+    <ClInclude Include="resource.gen.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="songinfo.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="stdbool.h" />
     <ClInclude Include="stdtype.h" />
@@ -109,10 +119,12 @@
     <ClCompile Include="Engine\smps_extra.c" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="SMPSOUT.cpp" />
+    <ClCompile Include="songinfo.gen.cpp" />
     <ClCompile Include="Sound.c" />
     <ClCompile Include="Stream.c" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="SMPSOUT.gen.rc" />
     <ResourceCompile Include="SMPSOUT.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

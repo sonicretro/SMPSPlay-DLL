@@ -72,6 +72,15 @@
     <ClInclude Include="IniFile.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="songinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="musicid.gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SMPSOUT.cpp">
@@ -116,9 +125,15 @@
     <ClCompile Include="IniFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="songinfo.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SMPSOUT.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="SMPSOUT.gen.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
