@@ -131,6 +131,26 @@ const musicentry MusicFiles[] = {
 	{ 0x1380, TrackMode_S2 },
 	{ 0x1380, TrackMode_S2 },
 	{ 0xD797, TrackMode_S2 },
+	{ 0x802A, TrackMode_S2B },
+	{ 0x85AC, TrackMode_S2B },
+	{ 0x8D1D, TrackMode_S2B },
+	{ 0x927A, TrackMode_S2B },
+	{ 0x9DEE, TrackMode_S2B },
+	{ 0xA49E, TrackMode_S2B },
+	{ 0xA8E7, TrackMode_S2B },
+	{ 0xB10A, TrackMode_S2B },
+	{ 0xB778, TrackMode_S2B },
+	{ 0xBD7F, TrackMode_S2B },
+	{ 0xBED8, TrackMode_S2B },
+	{ 0xC249, TrackMode_S2B },
+	{ 0xC8AE, TrackMode_S2B },
+	{ 0xCB08, TrackMode_S2B },
+	{ 0xCF0B, TrackMode_S2B },
+	{ 0xD322, TrackMode_S2B },
+	{ 0xD73B, TrackMode_S2B },
+	{ 0xDC54, TrackMode_S2B },
+	{ 0xE0B7, TrackMode_S2B },
+	{ 0xE3BE, TrackMode_S2B },
 };
 
 const trackoption TitleScreenTrackOptions[] = {
@@ -147,6 +167,7 @@ const trackoption AngelIsland1TrackOptions[] = {
 	{ "GreenGrove", MusicID_GreenGrove1 },
 	{ "GreenHill", MusicID_GreenHill },
 	{ "EmeraldHill", MusicID_EmeraldHill },
+	{ "EmeraldHillBeta", MusicID_EmeraldHillBeta },
 };
 
 const trackoption AngelIsland2TrackOptions[] = {
@@ -154,6 +175,7 @@ const trackoption AngelIsland2TrackOptions[] = {
 	{ "GreenGrove", MusicID_GreenGrove2 },
 	{ "GreenHill", MusicID_GreenHill },
 	{ "EmeraldHill", MusicID_EmeraldHill },
+	{ "EmeraldHillBeta", MusicID_EmeraldHillBeta },
 };
 
 const trackoption Hydrocity1TrackOptions[] = {
@@ -161,6 +183,7 @@ const trackoption Hydrocity1TrackOptions[] = {
 	{ "RustyRuin", MusicID_RustyRuin1 },
 	{ "Labyrinth", MusicID_Labyrinth },
 	{ "AquaticRuin", MusicID_AquaticRuin },
+	{ "AquaticRuinBeta", MusicID_AquaticRuinBeta },
 };
 
 const trackoption Hydrocity2TrackOptions[] = {
@@ -168,6 +191,7 @@ const trackoption Hydrocity2TrackOptions[] = {
 	{ "RustyRuin", MusicID_RustyRuin2 },
 	{ "Labyrinth", MusicID_Labyrinth },
 	{ "AquaticRuin", MusicID_AquaticRuin },
+	{ "AquaticRuinBeta", MusicID_AquaticRuinBeta },
 };
 
 const trackoption MarbleGarden1TrackOptions[] = {
@@ -185,6 +209,7 @@ const trackoption CarnivalNight1TrackOptions[] = {
 	{ "SpringStadium", MusicID_SpringStadium1 },
 	{ "SpringYard", MusicID_SpringYard },
 	{ "CasinoNight", MusicID_CasinoNight },
+	{ "CasinoNightBeta", MusicID_CasinoNightBeta },
 };
 
 const trackoption CarnivalNight2TrackOptions[] = {
@@ -192,6 +217,7 @@ const trackoption CarnivalNight2TrackOptions[] = {
 	{ "SpringStadium", MusicID_SpringStadium2 },
 	{ "SpringYard", MusicID_SpringYard },
 	{ "CasinoNight", MusicID_CasinoNight },
+	{ "CasinoNightBeta", MusicID_CasinoNightBeta },
 };
 
 const trackoption FlyingBattery1TrackOptions[] = {
@@ -199,6 +225,7 @@ const trackoption FlyingBattery1TrackOptions[] = {
 	{ "PanicPuppet", MusicID_PanicPuppet1 },
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "WingFortress", MusicID_WingFortress },
+	{ "WingFortressBeta", MusicID_WingFortressBeta },
 };
 
 const trackoption FlyingBattery2TrackOptions[] = {
@@ -206,6 +233,7 @@ const trackoption FlyingBattery2TrackOptions[] = {
 	{ "PanicPuppet", MusicID_PanicPuppet2 },
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "WingFortress", MusicID_WingFortress },
+	{ "WingFortressBeta", MusicID_WingFortressBeta },
 };
 
 const trackoption IceCap1TrackOptions[] = {
@@ -225,6 +253,8 @@ const trackoption LaunchBase1TrackOptions[] = {
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "Metropolis", MusicID_Metropolis },
 	{ "ChemicalPlant", MusicID_ChemicalPlant },
+	{ "MetropolisBeta", MusicID_MetropolisBeta },
+	{ "ChemicalPlantBeta", MusicID_ChemicalPlantBeta },
 };
 
 const trackoption LaunchBase2TrackOptions[] = {
@@ -234,6 +264,8 @@ const trackoption LaunchBase2TrackOptions[] = {
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "Metropolis", MusicID_Metropolis },
 	{ "ChemicalPlant", MusicID_ChemicalPlant },
+	{ "MetropolisBeta", MusicID_MetropolisBeta },
+	{ "ChemicalPlantBeta", MusicID_ChemicalPlantBeta },
 };
 
 const trackoption MushroomHill1TrackOptions[] = {
@@ -242,6 +274,8 @@ const trackoption MushroomHill1TrackOptions[] = {
 	{ "GreenHill", MusicID_GreenHill },
 	{ "EmeraldHill", MusicID_EmeraldHill },
 	{ "HillTop", MusicID_HillTop },
+	{ "EmeraldHillBeta", MusicID_EmeraldHillBeta },
+	{ "HillTopBeta", MusicID_HillTopBeta },
 };
 
 const trackoption MushroomHill2TrackOptions[] = {
@@ -250,16 +284,20 @@ const trackoption MushroomHill2TrackOptions[] = {
 	{ "GreenHill", MusicID_GreenHill },
 	{ "EmeraldHill", MusicID_EmeraldHill },
 	{ "HillTop", MusicID_HillTop },
+	{ "EmeraldHillBeta", MusicID_EmeraldHillBeta },
+	{ "HillTopBeta", MusicID_HillTopBeta },
 };
 
 const trackoption Sandopolis1TrackOptions[] = {
 	{ "S3K", MusicID_Sandopolis1 },
 	{ "OilOcean", MusicID_OilOcean },
+	{ "OilOceanBeta", MusicID_OilOceanBeta },
 };
 
 const trackoption Sandopolis2TrackOptions[] = {
 	{ "S3K", MusicID_Sandopolis2 },
 	{ "OilOcean", MusicID_OilOcean },
+	{ "OilOceanBeta", MusicID_OilOceanBeta },
 };
 
 const trackoption LavaReef1TrackOptions[] = {
@@ -277,6 +315,7 @@ const trackoption LavaReef2TrackOptions[] = {
 const trackoption SkySanctuaryTrackOptions[] = {
 	{ "S3K", MusicID_SkySanctuary },
 	{ "SkyChase", MusicID_SkyChase },
+	{ "SkyChaseBeta", MusicID_SkyChaseBeta },
 };
 
 const trackoption DeathEgg1TrackOptions[] = {
@@ -285,6 +324,7 @@ const trackoption DeathEgg1TrackOptions[] = {
 	{ "PanicPuppet", MusicID_PanicPuppet1 },
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "S2", MusicID_S2DeathEgg },
+	{ "S2Beta", MusicID_S2DeathEggBeta },
 };
 
 const trackoption DeathEgg2TrackOptions[] = {
@@ -293,6 +333,7 @@ const trackoption DeathEgg2TrackOptions[] = {
 	{ "PanicPuppet", MusicID_PanicPuppet2 },
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "S2", MusicID_S2DeathEgg },
+	{ "S2Beta", MusicID_S2DeathEggBeta },
 };
 
 const trackoption MidbossTrackOptions[] = {
@@ -303,6 +344,7 @@ const trackoption MidbossTrackOptions[] = {
 	{ "S4E1", MusicID_S4E1Boss },
 	{ "S1", MusicID_S1Boss },
 	{ "S2", MusicID_S2Boss },
+	{ "S2Beta", MusicID_S2BossBeta },
 };
 
 const trackoption BossTrackOptions[] = {
@@ -312,6 +354,7 @@ const trackoption BossTrackOptions[] = {
 	{ "S4E1", MusicID_S4E1Boss },
 	{ "S1", MusicID_S1Boss },
 	{ "S2", MusicID_S2Boss },
+	{ "S2Beta", MusicID_S2BossBeta },
 };
 
 const trackoption DoomsdayTrackOptions[] = {
@@ -322,6 +365,7 @@ const trackoption DoomsdayTrackOptions[] = {
 	{ "S4E1", MusicID_S4E1Boss },
 	{ "FinalZone", MusicID_FinalZone },
 	{ "S2", MusicID_S2FinalBoss },
+	{ "S2Beta", MusicID_S2FinalBossBeta },
 };
 
 const trackoption SpecialStageTrackOptions[] = {
@@ -329,6 +373,7 @@ const trackoption SpecialStageTrackOptions[] = {
 	{ "S3D", MusicID_S3DSpecialStage },
 	{ "S1", MusicID_S1SpecialStage },
 	{ "S2", MusicID_S2SpecialStage },
+	{ "S2Beta", MusicID_S2SpecialStageBeta },
 };
 
 const trackoption SlotMachineTrackOptions[] = {
@@ -344,6 +389,7 @@ const trackoption KnucklesTrackOptions[] = {
 const trackoption AzureLakeTrackOptions[] = {
 	{ "S3K", MusicID_AzureLake },
 	{ "EmeraldHill2P", MusicID_EmeraldHill2P },
+	{ "EmeraldHill2PBeta", MusicID_EmeraldHill2PBeta },
 };
 
 const trackoption BalloonParkTrackOptions[] = {
@@ -352,11 +398,13 @@ const trackoption BalloonParkTrackOptions[] = {
 	{ "SpringStadium2", MusicID_SpringStadium2 },
 	{ "SpringYard", MusicID_SpringYard },
 	{ "CasinoNight2P", MusicID_CasinoNight2P },
+	{ "CasinoNight2PBeta", MusicID_CasinoNight2PBeta },
 };
 
 const trackoption DesertPalaceTrackOptions[] = {
 	{ "S3K", MusicID_DesertPalace },
 	{ "OilOcean", MusicID_OilOcean },
+	{ "OilOceanBeta", MusicID_OilOceanBeta },
 };
 
 const trackoption ChromeGadgetTrackOptions[] = {
@@ -366,12 +414,16 @@ const trackoption ChromeGadgetTrackOptions[] = {
 	{ "ScrapBrain", MusicID_ScrapBrain },
 	{ "Metropolis", MusicID_Metropolis },
 	{ "ChemicalPlant", MusicID_ChemicalPlant },
+	{ "MetropolisBeta", MusicID_MetropolisBeta },
+	{ "ChemicalPlantBeta", MusicID_ChemicalPlantBeta },
 };
 
 const trackoption EndlessMineTrackOptions[] = {
 	{ "S3K", MusicID_EndlessMine },
 	{ "MysticCave", MusicID_MysticCave },
 	{ "MysticCave2P", MusicID_MysticCave2P },
+	{ "MysticCaveBeta", MusicID_MysticCaveBeta },
+	{ "MysticCave2PBeta", MusicID_MysticCave2PBeta },
 };
 
 const trackoption GameOverTrackOptions[] = {
@@ -384,6 +436,7 @@ const trackoption ContinueTrackOptions[] = {
 	{ "S&K", MusicID_Continue },
 	{ "S1", MusicID_S1Continue },
 	{ "S22PResults", MusicID_S22PResults },
+	{ "S22PResultsBeta", MusicID_S22PResultsBeta },
 };
 
 const trackoption ActClearTrackOptions[] = {
@@ -404,6 +457,7 @@ const trackoption InvincibilityTrackOptions[] = {
 	{ "S1", MusicID_S1Invincibility },
 	{ "S2SuperSonic", MusicID_S2SuperSonic },
 	{ "S2", MusicID_S2Invincibility },
+	{ "S2SuperSonicBeta", MusicID_S2SuperSonicBeta },
 };
 
 const trackoption CompetitionMenuTrackOptions[] = {
@@ -411,6 +465,8 @@ const trackoption CompetitionMenuTrackOptions[] = {
 	{ "S3D", MusicID_S3DMenu },
 	{ "S2Options", MusicID_S2Options },
 	{ "S22PResults", MusicID_S22PResults },
+	{ "S2OptionsBeta", MusicID_S2OptionsBeta },
+	{ "S22PResultsBeta", MusicID_S22PResultsBeta },
 };
 
 const trackoption LevelSelectTrackOptions[] = {
@@ -418,6 +474,7 @@ const trackoption LevelSelectTrackOptions[] = {
 	{ "S3D", MusicID_S3DMenu },
 	{ "PanicPuppet1", MusicID_PanicPuppet1 },
 	{ "S2", MusicID_S2Options },
+	{ "S2Beta", MusicID_S2OptionsBeta },
 };
 
 const trackoption FinalBossTrackOptions[] = {
@@ -428,6 +485,7 @@ const trackoption FinalBossTrackOptions[] = {
 	{ "S4E1", MusicID_S4E1Boss },
 	{ "FinalZone", MusicID_FinalZone },
 	{ "S2", MusicID_S2FinalBoss },
+	{ "S2Beta", MusicID_S2FinalBossBeta },
 };
 
 const trackoption AllClearTrackOptions[] = {

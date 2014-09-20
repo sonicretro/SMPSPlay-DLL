@@ -950,7 +950,7 @@ public:
 				newid = opt->options[rand() % opt->optioncount].id;
 			}
 			else if (set != MusicID_Default)
-				newid = set;
+				newid = (unsigned char)set;
 		}
 		trackMIDI = false;
 		const musicentry *song = &MusicFiles[newid];
