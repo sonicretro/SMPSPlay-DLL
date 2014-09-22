@@ -16,6 +16,7 @@
 #define INISUPPORT 1
 #endif
 #include <fstream>
+#include <vector>
 #include <ctime>
 #include "resource.h"
 #include "resource.gen.h"
@@ -41,7 +42,8 @@ enum MusicID2 {
 	MusicID_Default,
 	MusicID_Midboss = MusicID_SKMidboss,
 	MusicID_Unused = MusicID_S3Midboss,
-	MusicID_HiddenPalace = MusicID_S3CCredits,
+	MusicID_HiddenPalace = MusicID_SKCredits + 1,
+	MusicID_SuperSonic,
 	TrackCount
 };
 
@@ -289,9 +291,17 @@ enum DriverMode {
 	SmpsDrv_S12
 };
 
-unsigned int &GameSelection = *(unsigned int *)0x831188;
-unsigned char &reg_d0 = *(unsigned char *)0x8549A4;
-unsigned short &Current_zone_and_act = *(unsigned short *)0x8FFFE10;
+struct SongInfo { UINT8 *data; UINT16 length; UINT16 base; unsigned char mode; };
+
+vector<SongInfo> songs(SongCount);
+
+#define DataRef(type,name,addr) type &name = *(type *)addr
+
+DataRef(unsigned int, GameSelection, 0x831188);
+DataRef(unsigned char, reg_d0, 0x8549A4);
+DataRef(unsigned char, Super_Tails_flag, 0x8FFF667);
+DataRef(unsigned short, Current_zone_and_act, 0x8FFFE10);
+DataRef(unsigned char, Super_Sonic_Knux_flag, 0x8FFFE19);
 
 #define hidden_palace_zone 0x1601
 #define hidden_palace_shrine 0x1701
@@ -318,7 +328,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
-	char trackSettings[3][TrackCount];
+	short trackSettings[3][TrackCount];
 	bool trackMIDI;
 	MidiInterfaceClass *MIDIFallbackClass;
 
@@ -664,24 +674,36 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	}
 
 #ifdef INISUPPORT
-	void ReadSettings(const IniGroup *settings, char *trackSettings)
+	void ReadSettings(const IniGroup *settings, short *trackSettings)
 	{
 		for (int i = 0; i < TrackCount; i++)
 		{
 			string value = settings->getString(TrackOptions[i].name);
 			if (value == "MIDI")
+			{
 				trackSettings[i] = MusicID_MIDI;
-			else if (TrackOptions[i].optioncount < 2)
 				continue;
-			else if (value == "Random")
-				trackSettings[i] = MusicID_Random;
-			else
-				for (int j = 0; j < TrackOptions[i].optioncount; j++)
-					if (value == TrackOptions[i].options[j].text)
-					{
-						trackSettings[i] = TrackOptions[i].options[j].id;
-						break;
-					}
+			}
+			else if (TrackOptions[i].optioncount >= 2)
+			{
+				if (value == "Random")
+				{
+					trackSettings[i] = MusicID_Random;
+					continue;
+				}
+				else
+				{
+					bool found = false;
+					for (int j = 0; j < TrackOptions[i].optioncount; j++)
+						if (value == TrackOptions[i].options[j].text)
+						{
+							trackSettings[i] = TrackOptions[i].options[j].id;
+							found = true;
+							break;
+						}
+					if (found) continue;
+				}
+			}
 		}
 	}
 #endif
@@ -701,6 +723,15 @@ public:
 		cursmpscfg = NULL;
 		fmdrum_on = false;
 
+		for (int i = 0; i < SongCount; i++)
+		{
+			hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MUSIC_1 + i), _T("MUSIC"));
+			songs[i].mode = MusicFiles[i].mode;
+			songs[i].base = MusicFiles[i].base;
+			songs[i].length = (UINT16)SizeofResource(moduleHandle, hres);
+			songs[i].data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
+		}
+
 		if (EnableSKCHacks)
 		{
 			HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
@@ -712,8 +743,8 @@ public:
 
 			gameWindow = hwnd;
 
-			char masterSettings[TrackCount];
-			memset(&masterSettings, MusicID_Default, TrackCount);
+			short masterSettings[TrackCount];
+			memset(&masterSettings, MusicID_Default, sizeof(short) * TrackCount);
 
 #ifdef INISUPPORT
 			IniFile settings(_T("SMPSOUT.ini"));
@@ -726,9 +757,9 @@ public:
 			if (masterSettings[MusicID_HiddenPalace] == MusicID_Default)
 				masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
 
-			memmove(trackSettings[0], masterSettings, TrackCount);
-			memmove(trackSettings[1], masterSettings, TrackCount);
-			memmove(trackSettings[2], masterSettings, TrackCount);
+			memmove(trackSettings[0], masterSettings, sizeof(short) * TrackCount);
+			memmove(trackSettings[1], masterSettings, sizeof(short) * TrackCount);
+			memmove(trackSettings[2], masterSettings, sizeof(short) * TrackCount);
 
 			group = settings.getGroup("S3K");
 			if (group != nullptr)
@@ -743,9 +774,9 @@ public:
 				ReadSettings(group, trackSettings[2]);
 #else
 			masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
-			memmove(trackSettings[0], masterSettings, TrackCount);
-			memmove(trackSettings[1], masterSettings, TrackCount);
-			memmove(trackSettings[2], masterSettings, TrackCount);
+			memmove(trackSettings[0], masterSettings, sizeof(short) * TrackCount);
+			memmove(trackSettings[1], masterSettings, sizeof(short) * TrackCount);
+			memmove(trackSettings[2], masterSettings, sizeof(short) * TrackCount);
 			fmdrum_on = true;
 #endif
 			if (trackSettings[2][MusicID_Midboss] == MusicID_Default)
@@ -919,8 +950,6 @@ public:
 
 	BOOL load_song(unsigned char id, unsigned int bgmmode)
 	{
-		HRSRC hres;
-
 		if (trackMIDI)
 			MIDIFallbackClass->stop_song();
 		else
@@ -938,7 +967,11 @@ public:
 				if (Current_zone_and_act == hidden_palace_zone
 					|| Current_zone_and_act == hidden_palace_shrine)
 					newid = MusicID_HiddenPalace;
-			char set = trackSettings[GameSelection][newid];
+			if (newid == MusicID_S3Invincibility || newid == MusicID_SKInvincibility)
+				if (Super_Sonic_Knux_flag || Super_Tails_flag)
+					if (trackSettings[GameSelection][MusicID_SuperSonic] != MusicID_Default)
+						newid = MusicID_SuperSonic;
+			short set = trackSettings[GameSelection][newid];
 			if (MIDIFallbackClass && set == MusicID_MIDI)
 			{
 				trackMIDI = true;
@@ -950,10 +983,10 @@ public:
 				newid = opt->options[rand() % opt->optioncount].id;
 			}
 			else if (set != MusicID_Default)
-				newid = (unsigned char)set;
+				newid = set;
 		}
 		trackMIDI = false;
-		const musicentry *song = &MusicFiles[newid];
+		const SongInfo *song = &songs[newid];
 		switch (song->mode)
 		{
 		case TrackMode_S1:
@@ -1048,10 +1081,9 @@ public:
 			break;
 		}	// end switch (song->mode)
 
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MUSIC_1 + newid), _T("MUSIC"));
 		cursmpscfg->SeqBase = song->base;
-		cursmpscfg->SeqLength = (UINT16)SizeofResource(moduleHandle, hres);
-		cursmpscfg->SeqData = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
+		cursmpscfg->SeqLength = song->length;
+		cursmpscfg->SeqData = song->data;
 		PreparseSMPSFile(cursmpscfg);
 		return TRUE;
 	}

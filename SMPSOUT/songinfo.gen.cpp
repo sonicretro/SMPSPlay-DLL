@@ -512,6 +512,16 @@ const trackoption HiddenPalaceTrackOptions[] = {
 	{ "S2HiddenPalace", MusicID_S2HiddenPalace },
 };
 
+const trackoption SuperSonicTrackOptions[] = {
+	{ "S3", MusicID_S3Invincibility },
+	{ "S&K", MusicID_SKInvincibility },
+	{ "S3D", MusicID_S3DInvincibility },
+	{ "S1", MusicID_S1Invincibility },
+	{ "S2", MusicID_S2SuperSonic },
+	{ "S2Invincibility", MusicID_S2Invincibility },
+	{ "S2Beta", MusicID_S2SuperSonicBeta },
+};
+
 const tracknameoptions TrackOptions[] = {
 	trackoptdef(TitleScreenTrack),
 	trackoptdef(AngelIsland1Track),
@@ -570,4 +580,5 @@ const tracknameoptions TrackOptions[] = {
 	trackoptdef(AllClearTrack),
 	trackoptdef(CreditsTrack),
 	trackoptdef(HiddenPalaceTrack),
+	trackoptdef(SuperSonicTrack),
 };

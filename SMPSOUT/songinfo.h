@@ -21,7 +21,7 @@ inline size_t LengthOfArray(const T(&)[N])
 #define LengthOfArray(x)	(sizeof(x) / sizeof((x)[0]))
 #endif
 
-struct trackoption { const char *text; unsigned char id; };
+struct trackoption { const char *text; short id; };
 
 struct tracknameoptions { const char *name; const trackoption *options; int optioncount; };
 

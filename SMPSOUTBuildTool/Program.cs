@@ -49,6 +49,7 @@ namespace SMPSOUTBuildTool
 				sw.WriteLine("enum MusicID {");
 				for (int i = 0; i < songlist.Count; i++)
 					sw.WriteLine("\tMusicID_{0},", songlist[i].Key);
+				sw.WriteLine("\tSongCount");
 				sw.WriteLine("};");
 			}
 			using (StreamWriter sw = File.CreateText("songinfo.gen.cpp"))
