@@ -194,7 +194,7 @@ static const CMD_FLAGS CMDFLAGS_S12[] = {
 	{ CF_DETUNE, 0x00, 0x02 },
 	{ CF_SET_COMM, 0x00, 0x02 },
 	{ CF_RETURN, 0x00, 0x01 },
-	{ CF_TRK_END, 0x00, 0x02 },	// actually CF_FADE_IN_SONG, but that's not supported yet
+	{ CF_TRK_END, 0x00, 0x01 },	// actually CF_FADE_IN_SONG, but that's not supported yet
 	{ CF_TICK_MULT, CFS_TMULT_CUR, 0x02 },
 	{ CF_VOLUME, CFS_VOL_NN_FM, 0x02 },
 	{ CF_HOLD, 0x00, 0x01 },
@@ -215,7 +215,7 @@ static const CMD_FLAGS CMDFLAGS_S12[] = {
 	{ CF_GOTO, 0x00, 0x03, 0x01 },
 	{ CF_LOOP, 0x00, 0x05, 0x03 },
 	{ CF_GOSUB, 0x00, 0x03, 0x01 },
-	{ CF_SND_OFF, 0x00, 0x03, 0x01 }
+	{ CF_SND_OFF, 0x00, 0x01, 0x01 }
 };
 
 static const CMD_FLAGS CMDFLAGS[] = {
