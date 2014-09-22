@@ -79,6 +79,22 @@ int IniGroup::getInt(const string &key, int def) const
 	return (int)strtol(value.c_str(), nullptr, 10);
 }
 
+/**
+ * Get a hexadecimal integer value from the INI group.
+ * @param key Key.
+ * @param def Default value.
+ * @return Integer value.
+ */
+int IniGroup::getHexInt(const string &key, int def) const
+{
+	auto iter = m_data.find(key);
+	if (iter == m_data.end())
+		return def;
+
+	string value = iter->second;
+	return (int)strtol(value.c_str(), nullptr, 16);
+}
+
 /** IniFile **/
 
 IniFile::IniFile(const string &filename)
@@ -190,6 +206,31 @@ int IniFile::getInt(const string &section, const string &key, int def) const
 	if (!group)
 		return def;
 	return group->getInt(key, def);
+}
+
+/**
+ * Get a hexadecimal integer value from the INI file.
+ * @param section Section.
+ * @param key Key.
+ * @param def Default value.
+ * @return Integer value.
+ */
+int IniFile::getHexInt(const string &section, const string &key, int def) const
+{
+	const IniGroup *group = getGroup(section);
+	if (!group)
+		return def;
+	return group->getHexInt(key, def);
+}
+
+std::unordered_map<std::string, IniGroup*>::const_iterator IniFile::begin() const
+{
+	return m_groups.begin();
+}
+
+std::unordered_map<std::string, IniGroup*>::const_iterator IniFile::end() const
+{
+	return m_groups.end();
 }
 
 /**

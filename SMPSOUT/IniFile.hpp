@@ -24,6 +24,7 @@ class IniGroup
 
 		std::string getString(const std::string &key, const std::string &def = "") const;
 		bool getBool(const std::string &key, bool def = false) const;
+		int getHexInt(const std::string &key, int def = 0) const;
 		int getInt(const std::string &key, int def = 0) const;
 
 	protected:
@@ -57,6 +58,10 @@ class IniFile
 		std::string getString(const std::string &section, const std::string &key, const std::string &def = "") const;
 		bool getBool(const std::string &section, const std::string &key, bool def = false) const;
 		int getInt(const std::string &section, const std::string &key, int def = 0) const;
+		int getHexInt(const std::string &section, const std::string &key, int def = 0) const;
+
+		std::unordered_map<std::string, IniGroup*>::const_iterator begin() const;
+		std::unordered_map<std::string, IniGroup*>::const_iterator end() const;
 
 	protected:
 		void load(FILE *f);
