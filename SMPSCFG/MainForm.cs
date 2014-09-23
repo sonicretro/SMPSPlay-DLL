@@ -133,8 +133,8 @@ namespace SMPSCFG
 					{
 						cb.Items.Add("Random");
 						cb.Items.AddRange(optnames);
-						cb.Items.AddRange(CustSongs.ToArray());
 					}
+					cb.Items.AddRange(CustSongs.ToArray());
 					table.Controls.Add(cb, 1, tn);
 					comboboxes[gn].Add(cb);
 					Button btn = hModule != IntPtr.Zero && (opts.Count > 0 || CustSongs.Count > 0) ? new Button() { Enabled = false, Text = "Play" } : null;
@@ -158,9 +158,14 @@ namespace SMPSCFG
 								cb.SelectedIndex = 1;
 								break;
 							case "random":
-								cb.SelectedIndex = opts.Count > 0 ? 2 : 0;
-								if (btn != null)
-									btn.Enabled = true;
+								if (opts.Count > 0)
+								{
+									cb.SelectedIndex = 2;
+									if (btn != null)
+										btn.Enabled = true;
+								}
+								else
+									cb.SelectedIndex = 0;
 								break;
 							default:
 								cb.SelectedIndex = 0;

@@ -762,7 +762,7 @@ public:
 				si.mode = TrackMode_S3;
 			si.base = iter->second->getHexInt("Offset");
 			FILE *fi;
-			fopen_s(&fi, iter->second->getString("File").c_str(), "r");
+			fopen_s(&fi, iter->second->getString("File").c_str(), "rb");
 			if (fi != nullptr)
 			{
 				fseek(fi, 0, SEEK_END);
