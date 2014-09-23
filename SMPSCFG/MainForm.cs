@@ -26,7 +26,8 @@ namespace SMPSCFG
 
 		Dictionary<string, Dictionary<string, string>> INI;
 
-		Dictionary<string, byte> SongNums = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, short> SongNums = new Dictionary<string, short>(StringComparer.OrdinalIgnoreCase);
+		List<string> CustSongs = new List<string>();
 		List<KeyValuePair<string, TrackOptInfo>> TrackOptions = new List<KeyValuePair<string, TrackOptInfo>>();
 
 		static readonly List<ComboBox>[] comboboxes = new List<ComboBox>[4];
@@ -43,7 +44,7 @@ namespace SMPSCFG
 
 		#region Delegates
 		delegate bool InitializeDriverDelegate();
-		delegate bool PlaySongDelegate(byte song);
+		delegate bool PlaySongDelegate(short song);
 		delegate bool StopSongDelegate();
 		delegate void RegisterSongStoppedCallbackDelegate([MarshalAs(UnmanagedType.FunctionPtr)] Action callback);
 		#endregion
@@ -68,9 +69,15 @@ namespace SMPSCFG
 			Dictionary<string, Dictionary<string, string>> ini = IniFileClass.Load("songs.ini");
 			if (File.Exists("songs_SKC.ini"))
 				ini = IniFileClass.Combine(ini, IniFileClass.Load("songs_SKC.ini"));
-			byte b = 0;
+			short b = 0;
 			foreach (string song in IniSerializer.Deserialize<SongList>(ini).songs.Keys)
 				SongNums.Add(song, b++);
+			if (File.Exists("songs_cust.ini"))
+				foreach (string song in IniSerializer.Deserialize<SongList>("songs_cust.ini").songs.Where(s => File.Exists(s.Value.File)).Select(s => s.Key))
+				{
+					CustSongs.Add(song);
+					SongNums.Add(song, b++);
+				}
 			if (!File.Exists("opts.ini"))
 			{
 				MessageBox.Show(this, "Failed to load opts.ini.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -126,10 +133,11 @@ namespace SMPSCFG
 					{
 						cb.Items.Add("Random");
 						cb.Items.AddRange(optnames);
+						cb.Items.AddRange(CustSongs.ToArray());
 					}
 					table.Controls.Add(cb, 1, tn);
 					comboboxes[gn].Add(cb);
-					Button btn = hModule != IntPtr.Zero && opts.Count > 0 ? new Button() { Enabled = false, Text = "Play" } : null;
+					Button btn = hModule != IntPtr.Zero && (opts.Count > 0 || CustSongs.Count > 0) ? new Button() { Enabled = false, Text = "Play" } : null;
 					if (btn != null)
 					{
 						table.Controls.Add(btn, 2, tn);
@@ -157,10 +165,32 @@ namespace SMPSCFG
 							default:
 								cb.SelectedIndex = 0;
 								if (opts.Count > 0)
+								{
+									bool found = false;
 									for (int on = 0; on < optnames.Length; on++)
 										if (group[track].Equals(optnames[on], StringComparison.OrdinalIgnoreCase))
 										{
 											cb.SelectedIndex = on + 3;
+											if (btn != null)
+												btn.Enabled = true;
+											found = true;
+											break;
+										}
+									if (!found)
+										for (int i = 0; i < CustSongs.Count; i++)
+											if (group[track].Equals(CustSongs[i], StringComparison.OrdinalIgnoreCase))
+											{
+												cb.SelectedIndex = i + optnames.Length + 3;
+												if (btn != null)
+													btn.Enabled = true;
+												break;
+											}
+								}
+								else
+									for (int i = 0; i < CustSongs.Count; i++)
+										if (group[track].Equals(CustSongs[i], StringComparison.OrdinalIgnoreCase))
+										{
+											cb.SelectedIndex = i + 2;
 											if (btn != null)
 												btn.Enabled = true;
 											break;
@@ -169,7 +199,7 @@ namespace SMPSCFG
 						}
 					if (tn > 0)
 						table.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-					if (opts.Count == 0)
+					if (opts.Count == 0 && CustSongs.Count == 0)
 						cb.SelectedIndexChanged += new EventHandler((s, ev) =>
 						{
 							string str;
@@ -179,12 +209,53 @@ namespace SMPSCFG
 								str = "Default";
 							INI[game][track] = str;
 						});
+					else if (opts.Count == 0)
+					{
+						cb.SelectedIndexChanged += new EventHandler((s, ev) =>
+						{
+							string str;
+							if (cb.SelectedIndex > 1)
+								str = CustSongs[cb.SelectedIndex - 2];
+							else if (cb.SelectedIndex == 1)
+								str = "MIDI";
+							else
+								str = "Default";
+							INI[game][track] = str;
+							if (btn != null)
+							{
+								btn.Enabled = cb.SelectedIndex > 1;
+								btn.Text = playingButton == btn && playingSongSelection == cb.SelectedIndex ? "Stop" : "Play";
+							}
+						});
+						if (btn != null)
+							btn.Click += new EventHandler((s, ev) =>
+							{
+								if (playingButton == btn && playingSongSelection == cb.SelectedIndex)
+								{
+									StopSong();
+									playingButton = null;
+									btn.Text = "Play";
+								}
+								else
+								{
+									string song = CustSongs[cb.SelectedIndex - 2];
+									PlaySong(SongNums[song]);
+									playingButton = btn;
+									playingSongSelection = cb.SelectedIndex;
+									foreach (Button item in buttons)
+										item.Text = "Play";
+									btn.Text = "Stop";
+								}
+							});
+					}
 					else
 					{
 						cb.SelectedIndexChanged += new EventHandler((s, ev) =>
 						{
 							string str;
-							if (cb.SelectedIndex > 2)
+							if (cb.SelectedIndex > optnames.Length + 2)
+								str = CustSongs[cb.SelectedIndex - (optnames.Length + 3)];
+							else if (cb.SelectedIndex > 2)
 								str = optnames[cb.SelectedIndex - 3];
 							else if (cb.SelectedIndex == 2)
 								str = "Random";
@@ -213,6 +284,8 @@ namespace SMPSCFG
 									string song;
 									if (cb.SelectedIndex == 2) // Random
 										song = optids[songPicker.Next(optids.Length)];
+									else if (cb.SelectedIndex > optnames.Length + 2)
+										song = CustSongs[cb.SelectedIndex - (optids.Length + 3)];
 									else
 										song = optids[cb.SelectedIndex - 3];
 									PlaySong(SongNums[song]);
@@ -254,7 +327,7 @@ namespace SMPSCFG
 
 		private void setAllToRandomToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			foreach (ComboBox cb in comboboxes[tabControl1.SelectedIndex].Where(cb => cb.Items.Count > 2))
+			foreach (ComboBox cb in comboboxes[tabControl1.SelectedIndex].Where(cb => cb.Items.Count > 2 && (string)cb.Items[2] == "Random"))
 				cb.SelectedIndex = 2;
 		}
 
