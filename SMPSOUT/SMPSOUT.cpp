@@ -742,6 +742,41 @@ public:
 			songs[i].data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		}
 
+#ifdef INISUPPORT
+		IniFile custsongs(_T("songs_cust.ini"));
+			
+		for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
+		{
+			if (iter->first.empty()) continue;
+			SongInfo si = { };
+			string str = iter->second->getString("Type");
+			if (str == "S1")
+				si.mode = TrackMode_S1;
+			else if (str == "S2")
+				si.mode = TrackMode_S2;
+			else if (str == "S2B")
+				si.mode = TrackMode_S2B;
+			else if (str == "S3D")
+				si.mode = TrackMode_S3D;
+			else if (str == "S3")
+				si.mode = TrackMode_S3;
+			si.base = iter->second->getHexInt("Offset");
+			FILE *fi;
+			fopen_s(&fi, iter->second->getString("File").c_str(), "r");
+			if (fi != nullptr)
+			{
+				fseek(fi, 0, SEEK_END);
+				si.length = (UINT16)ftell(fi);
+				fseek(fi, 0, SEEK_SET);
+				si.data = new UINT8[si.length];
+				fread(si.data, 1, si.length, fi);
+				fclose(fi);
+				songs.push_back(si);
+				customsongs.push_back(iter->first);
+			}
+		}
+#endif
+
 		if (EnableSKCHacks)
 		{
 			HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
@@ -757,39 +792,6 @@ public:
 			memset(&masterSettings, MusicID_Default, sizeof(short) * TrackCount);
 
 #ifdef INISUPPORT
-			IniFile custsongs(_T("songs_cust.ini"));
-			
-			for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
-			{
-				if (iter->first.empty()) continue;
-				SongInfo si = { };
-				string str = iter->second->getString("Type");
-				if (str == "S1")
-					si.mode = TrackMode_S1;
-				else if (str == "S2")
-					si.mode = TrackMode_S2;
-				else if (str == "S2B")
-					si.mode = TrackMode_S2B;
-				else if (str == "S3D")
-					si.mode = TrackMode_S3D;
-				else if (str == "S3")
-					si.mode = TrackMode_S3;
-				si.base = iter->second->getHexInt("Offset");
-				FILE *fi;
-				fopen_s(&fi, iter->second->getString("File").c_str(), "r");
-				if (fi != nullptr)
-				{
-					fseek(fi, 0, SEEK_END);
-					si.length = (UINT16)ftell(fi);
-					fseek(fi, 0, SEEK_SET);
-					si.data = new UINT8[si.length];
-					fread(si.data, 1, si.length, fi);
-					fclose(fi);
-					songs.push_back(si);
-					customsongs.push_back(iter->first);
-				}
-			}
-
 			IniFile settings(_T("SMPSOUT.ini"));
 			fmdrum_on = settings.getBool("", "FMDrums");
 
