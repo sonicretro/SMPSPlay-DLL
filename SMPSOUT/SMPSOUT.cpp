@@ -312,7 +312,7 @@ class MidiInterfaceClass
 {
 public:
 	virtual BOOL initialize(HWND hwnd) = 0; // hwnd = game window
-	virtual BOOL load_song(unsigned char id, unsigned int bgmmode) = 0; // id = song to be played + 1 (well, +1 compared to the sound test id, it's the ID of the song in the MIDIOUT.DLL's resources); bgmmode = 0 for FM synth, 1 for General MIDI
+	virtual BOOL load_song(short id, unsigned int bgmmode) = 0; // id = song to be played + 1 (well, +1 compared to the sound test id, it's the ID of the song in the MIDIOUT.DLL's resources); bgmmode = 0 for FM synth, 1 for General MIDI
 	virtual BOOL play_song() = 0;
 	virtual BOOL stop_song() = 0;
 	virtual BOOL pause_song() = 0;
@@ -993,7 +993,7 @@ public:
 		return TRUE;
 	}
 
-	BOOL load_song(unsigned char id, unsigned int bgmmode)
+	BOOL load_song(short id, unsigned int bgmmode)
 	{
 		if (trackMIDI)
 			MIDIFallbackClass->stop_song();
@@ -1222,7 +1222,7 @@ extern "C"
 		SongStoppedCallback = callback;
 	}
 
-	__declspec(dllexport) BOOL PlaySong(unsigned char song)
+	__declspec(dllexport) BOOL PlaySong(short song)
 	{
 		if (!midiInterface.load_song(song, 0))
 			return FALSE;
