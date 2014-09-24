@@ -295,7 +295,7 @@ struct SongInfo { UINT8 *data; UINT16 length; UINT16 base; unsigned char mode; }
 
 vector<SongInfo> songs(SongCount);
 
-vector<string> customsongs;
+vector<const char *> customsongs;
 
 #define DataRef(type,name,addr) type &name = *(type *)addr
 
@@ -772,7 +772,10 @@ public:
 				fread(si.data, 1, si.length, fi);
 				fclose(fi);
 				songs.push_back(si);
-				customsongs.push_back(iter->first);
+				char *buf = new char[iter->first.length() + 1];
+				strncpy_s(buf, iter->first.length() + 1, iter->first.c_str(), iter->first.length());
+				buf[iter->first.length()] = 0;
+				customsongs.push_back(buf);
 			}
 		}
 #endif
@@ -1252,6 +1255,12 @@ extern "C"
 	__declspec(dllexport) BOOL SetSongTempo(unsigned int pct)
 	{
 		return midiInterface.set_song_tempo(pct);
+	}
+
+	__declspec(dllexport) const char **GetCustomSongs(unsigned int &count)
+	{
+		count = customsongs.size();
+		return customsongs.data();
 	}
 
 	void NotifySongStopped()

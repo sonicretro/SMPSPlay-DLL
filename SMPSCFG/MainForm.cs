@@ -46,6 +46,7 @@ namespace SMPSCFG
 		delegate bool InitializeDriverDelegate();
 		delegate bool PlaySongDelegate(short song);
 		delegate bool StopSongDelegate();
+		unsafe delegate IntPtr *GetCustomSongsDelegate(out uint count);
 		delegate void RegisterSongStoppedCallbackDelegate([MarshalAs(UnmanagedType.FunctionPtr)] Action callback);
 		#endregion
 
@@ -72,12 +73,6 @@ namespace SMPSCFG
 			short b = 0;
 			foreach (string song in IniSerializer.Deserialize<SongList>(ini).songs.Keys)
 				SongNums.Add(song, b++);
-			if (File.Exists("songs_cust.ini"))
-				foreach (string song in IniSerializer.Deserialize<SongList>("songs_cust.ini").songs.Where(s => File.Exists(s.Value.File)).Select(s => s.Key))
-				{
-					CustSongs.Add(song);
-					SongNums.Add(song, b++);
-				}
 			if (!File.Exists("opts.ini"))
 			{
 				MessageBox.Show(this, "Failed to load opts.ini.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -94,12 +89,13 @@ namespace SMPSCFG
 			IntPtr ptr;
 			foreach (string file in Directory.GetFiles(Environment.CurrentDirectory, "*.dll"))
 			{
-				IntPtr handle = LoadLibrary("MIDIOUT.DLL");
+				IntPtr handle = LoadLibrary(file);
 				ptr = GetProcAddress(handle, "InitializeDriver");
 				if (ptr == IntPtr.Zero)
 					continue;
 				hModule = handle;
 				((InitializeDriverDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(InitializeDriverDelegate)))();
+				break;
 			}
 			if (hModule != IntPtr.Zero)
 			{
@@ -109,6 +105,8 @@ namespace SMPSCFG
 				StopSong = (StopSongDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(StopSongDelegate));
 				ptr = GetProcAddress(hModule, "RegisterSongStoppedCallback");
 				((RegisterSongStoppedCallbackDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(RegisterSongStoppedCallbackDelegate)))(SongStoppedCallback);
+				ptr = GetProcAddress(hModule, "GetCustomSongs");
+				GetCustomSongs(ref b, ptr);
 			}
 			for (int gn = 0; gn < GameIDs.Length; gn++)
 			{
@@ -304,6 +302,18 @@ namespace SMPSCFG
 					}
 				}
 				table.ResumeLayout();
+			}
+		}
+
+		unsafe private void GetCustomSongs(ref short b, IntPtr ptr)
+		{
+			uint custcnt;
+			IntPtr *p = ((GetCustomSongsDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(GetCustomSongsDelegate)))(out custcnt);
+			for (uint i = 0; i < custcnt; i++)
+			{
+				string str = Marshal.PtrToStringAnsi(*(p++));
+				CustSongs.Add(str);
+				SongNums.Add(str, b++);
 			}
 		}
 
