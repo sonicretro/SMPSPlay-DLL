@@ -92,7 +92,10 @@ namespace SMPSCFG
 				IntPtr handle = LoadLibrary(file);
 				ptr = GetProcAddress(handle, "InitializeDriver");
 				if (ptr == IntPtr.Zero)
+				{
+					FreeLibrary(handle);
 					continue;
+				}
 				hModule = handle;
 				((InitializeDriverDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(InitializeDriverDelegate)))();
 				break;
