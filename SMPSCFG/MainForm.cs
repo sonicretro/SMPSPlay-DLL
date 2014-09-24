@@ -361,8 +361,6 @@ namespace SMPSCFG
 					INI.Remove(game);
 			}
 			IniFileClass.Save(INI, "SMPSOUT.ini");
-			if (hModule != IntPtr.Zero)
-				FreeLibrary(hModule);
 		}
 	}
 
