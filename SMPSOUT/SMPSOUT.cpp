@@ -333,6 +333,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	short trackSettings[3][TrackCount];
 	bool trackMIDI;
 	MidiInterfaceClass *MIDIFallbackClass;
+	void *segaSnd;
 
 	INLINE UINT16 ReadBE16(const UINT8* Data)
 	{
@@ -782,6 +783,9 @@ public:
 
 		if (EnableSKCHacks)
 		{
+			hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_SEGA), _T("MISC"));
+			segaSnd = LockResource(LoadResource(moduleHandle, hres));
+
 			HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
 			if (midimodule)
 			{
@@ -1157,6 +1161,13 @@ public:
 
 	BOOL stop_song()
 	{
+		if (EnableSKCHacks)
+		{
+			if (reg_d0 == 0xFF)
+				return PlaySound((LPCTSTR)segaSnd, NULL, SND_MEMORY | SND_ASYNC);
+			else if (reg_d0 == 0xFE)
+				return PlaySound(NULL, NULL, SND_ASYNC);
+		}
 		if (trackMIDI)
 			return MIDIFallbackClass->stop_song();
 		if (EnableSKCHacks && reg_d0 == 0xE1)
