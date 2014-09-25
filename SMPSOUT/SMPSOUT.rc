@@ -258,6 +258,6 @@ IDR_MISC_FM_DRUMS   MISC           ".\\Data\\Drums_FM_Columns3.bin"
 
 
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-IDR_MISC_SEGA       MISC           ".\\Data\\SEGA.wav"
+IDR_WAVE_SEGA       WAVE           ".\\Data\\SEGA.wav"
 
 
