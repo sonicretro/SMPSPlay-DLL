@@ -44,6 +44,7 @@ enum MusicID2 {
 	MusicID_Unused = MusicID_S3Midboss,
 	MusicID_HiddenPalace = MusicID_SKCredits + 1,
 	MusicID_SuperSonic,
+	MusicID_Ending,
 	TrackCount
 };
 
@@ -301,10 +302,36 @@ vector<const char *> customsongs;
 
 DataRef(unsigned int, GameSelection, 0x831188);
 DataRef(unsigned char, reg_d0, 0x8549A4);
+DataRef(unsigned short, Ending_running_flag, 0x8FFEF72);
+DataRef(unsigned char, Game_mode, 0x8FFF600);
 DataRef(unsigned char, Super_Tails_flag, 0x8FFF667);
 DataRef(unsigned short, Current_zone_and_act, 0x8FFFE10);
 DataRef(unsigned char, Super_Sonic_Knux_flag, 0x8FFFE19);
 
+#define GameModeID_SegaScreen 0
+#define GameModeID_TitleScreen 4
+#define GameModeID_Demo 8
+#define GameModeID_Level 0xC
+#define GameModeID_SegaScreen2 0x10
+#define GameModeID_ContinueScreen 0x14
+#define GameModeID_SegaScreen3 0x18
+#define GameModeID_LevelSelect 0x1C
+#define GameModeID_S3Credits 0x20
+#define GameModeID_LevelSelect2 0x24
+#define GameModeID_LevelSelect3 0x28
+#define GameModeID_BlueSpheresTitle 0x2C
+#define GameModeID_BlueSpheresDifficulty 0x2C
+#define GameModeID_BlueSpheresResults 0x30
+#define GameModeID_SpecialStage 0x34
+#define GameModeID_CompetitionMenu 0x38
+#define GameModeID_CompetitionPlayerSelect 0x3C
+#define GameModeID_CompetitionLevelSelect 0x40
+#define GameModeID_CompetitionResults 0x44
+#define GameModeID_SpecialStageResults 0x48
+#define GameModeID_SaveScreen 0x4C
+#define GameModeID_TimeAttackRecords 0x50
+
+#define ending 0x0D01
 #define hidden_palace_zone 0x1601
 #define hidden_palace_shrine 0x1701
 
@@ -321,6 +348,7 @@ public:
 };
 
 bool EnableSKCHacks = true;
+const char *const INISections[] = { "S3K", "S&K", "S3" };
 
 class SMPSInterfaceClass : MidiInterfaceClass
 {
@@ -330,7 +358,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
-	short trackSettings[3][TrackCount];
+	short trackSettings[TrackCount];
 	bool trackMIDI;
 	MidiInterfaceClass *MIDIFallbackClass;
 
@@ -791,8 +819,7 @@ public:
 
 			gameWindow = hwnd;
 
-			short masterSettings[TrackCount];
-			memset(&masterSettings, MusicID_Default, sizeof(short) * TrackCount);
+			memset(&trackSettings, MusicID_Default, sizeof(short) * TrackCount);
 
 #ifdef INISUPPORT
 			IniFile settings(_T("SMPSOUT.ini"));
@@ -800,37 +827,26 @@ public:
 
 			const IniGroup *group = settings.getGroup("");
 			if (group != nullptr)
-				ReadSettings(group, masterSettings);
+				ReadSettings(group, trackSettings);
 
-			if (masterSettings[MusicID_HiddenPalace] == MusicID_Default)
-				masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
-
-			memmove(trackSettings[0], masterSettings, sizeof(short) * TrackCount);
-			memmove(trackSettings[1], masterSettings, sizeof(short) * TrackCount);
-			memmove(trackSettings[2], masterSettings, sizeof(short) * TrackCount);
-
-			group = settings.getGroup("S3K");
+			group = settings.getGroup(INISections[GameSelection]);
 			if (group != nullptr)
-				ReadSettings(group, trackSettings[0]);
+				ReadSettings(group, trackSettings);
 
-			group = settings.getGroup("S&K");
-			if (group != nullptr)
-				ReadSettings(group, trackSettings[1]);
-
-			group = settings.getGroup("S3");
-			if (group != nullptr)
-				ReadSettings(group, trackSettings[2]);
 #else
-			masterSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
-			memmove(trackSettings[0], masterSettings, sizeof(short) * TrackCount);
-			memmove(trackSettings[1], masterSettings, sizeof(short) * TrackCount);
-			memmove(trackSettings[2], masterSettings, sizeof(short) * TrackCount);
 			fmdrum_on = true;
 #endif
-			if (trackSettings[2][MusicID_Midboss] == MusicID_Default)
-				trackSettings[2][MusicID_Midboss] = MusicID_S3Midboss;
-			if (trackSettings[2][MusicID_Continue] == MusicID_Default)
-				trackSettings[2][MusicID_Continue] = MusicID_S3Continue;
+			if (trackSettings[MusicID_HiddenPalace] == MusicID_Default)
+				trackSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
+			if (trackSettings[MusicID_Ending] == MusicID_Default)
+				trackSettings[MusicID_Ending] = MusicID_SkySanctuary;
+			if (GameSelection == 2)
+			{
+				if (trackSettings[MusicID_Midboss] == MusicID_Default)
+					trackSettings[MusicID_Midboss] = MusicID_S3Midboss;
+				if (trackSettings[MusicID_Continue] == MusicID_Default)
+					trackSettings[MusicID_Continue] = MusicID_S3Continue;
+			}
 		}
 		LoadSettings(SmpsDrv_S3K, &smpscfg_3K);
 		LoadSettings(SmpsDrv_S12, &smpscfg_12);
@@ -1011,15 +1027,25 @@ public:
 		if (EnableSKCHacks)
 		{
 			--newid;
-			if (newid == MusicID_LavaReef2)
+			switch (newid)
+			{
+			case MusicID_LavaReef2:
 				if (Current_zone_and_act == hidden_palace_zone
 					|| Current_zone_and_act == hidden_palace_shrine)
 					newid = MusicID_HiddenPalace;
-			if (newid == MusicID_S3Invincibility || newid == MusicID_SKInvincibility)
+				break;
+			case MusicID_SkySanctuary:
+				if (Current_zone_and_act == ending || Ending_running_flag)
+					newid = MusicID_Ending;
+				break;
+			case MusicID_S3Invincibility:
+			case MusicID_SKInvincibility:
 				if (Super_Sonic_Knux_flag || Super_Tails_flag)
-					if (trackSettings[GameSelection][MusicID_SuperSonic] != MusicID_Default)
+					if (trackSettings[MusicID_SuperSonic] != MusicID_Default)
 						newid = MusicID_SuperSonic;
-			short set = trackSettings[GameSelection][newid];
+				break;
+			}
+			short set = trackSettings[newid];
 			if (MIDIFallbackClass && set == MusicID_MIDI)
 			{
 				trackMIDI = true;

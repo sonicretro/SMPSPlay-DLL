@@ -522,6 +522,14 @@ const trackoption SuperSonicTrackOptions[] = {
 	{ "S2Beta", MusicID_S2SuperSonicBeta },
 };
 
+const trackoption EndingTrackOptions[] = {
+	{ "SkySanctuary", MusicID_SkySanctuary },
+	{ "S3Credits", MusicID_S3Credits },
+	{ "S1", MusicID_S1Ending },
+	{ "S2", MusicID_S2Ending },
+	{ "S3D", MusicID_S3DEnding },
+};
+
 const tracknameoptions TrackOptions[] = {
 	trackoptdef(TitleScreenTrack),
 	trackoptdef(AngelIsland1Track),
@@ -581,4 +589,5 @@ const tracknameoptions TrackOptions[] = {
 	trackoptdef(CreditsTrack),
 	trackoptdef(HiddenPalaceTrack),
 	trackoptdef(SuperSonicTrack),
+	trackoptdef(EndingTrack),
 };
