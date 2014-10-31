@@ -45,6 +45,7 @@ enum MusicID2 {
 	MusicID_HiddenPalace = MusicID_SKCredits + 1,
 	MusicID_SuperSonic,
 	MusicID_Ending,
+	MusicID_DataSelect,
 	TrackCount
 };
 
@@ -1043,6 +1044,11 @@ public:
 				if (Super_Sonic_Knux_flag || Super_Tails_flag)
 					if (trackSettings[MusicID_SuperSonic] != MusicID_Default)
 						newid = MusicID_SuperSonic;
+				break;
+			case MusicID_LevelSelect:
+				if (Game_mode == GameModeID_SaveScreen)
+					if (trackSettings[MusicID_DataSelect] != MusicID_Default)
+						newid = MusicID_DataSelect;
 				break;
 			}
 			short set = trackSettings[newid];

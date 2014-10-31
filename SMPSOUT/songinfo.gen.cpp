@@ -530,6 +530,14 @@ const trackoption EndingTrackOptions[] = {
 	{ "S3D", MusicID_S3DEnding },
 };
 
+const trackoption DataSelectTrackOptions[] = {
+	{ "S3K", MusicID_LevelSelect },
+	{ "S3D", MusicID_S3DMenu },
+	{ "PanicPuppet1", MusicID_PanicPuppet1 },
+	{ "S2", MusicID_S2Options },
+	{ "S2Beta", MusicID_S2OptionsBeta },
+};
+
 const tracknameoptions TrackOptions[] = {
 	trackoptdef(TitleScreenTrack),
 	trackoptdef(AngelIsland1Track),
@@ -590,4 +598,5 @@ const tracknameoptions TrackOptions[] = {
 	trackoptdef(HiddenPalaceTrack),
 	trackoptdef(SuperSonicTrack),
 	trackoptdef(EndingTrack),
+	trackoptdef(DataSelectTrack),
 };
