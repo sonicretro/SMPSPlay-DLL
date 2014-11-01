@@ -46,6 +46,11 @@ enum MusicID2 {
 	MusicID_SuperSonic,
 	MusicID_Ending,
 	MusicID_DataSelect,
+	MusicID_SpecialStageResult,
+	MusicID_BlueSphereResult,
+	MusicID_BlueSphereTitle,
+	MusicID_BlueSphereDifficulty,
+	MusicID_TimeAttackRecords,
 	TrackCount
 };
 
@@ -841,6 +846,12 @@ public:
 				trackSettings[MusicID_HiddenPalace] = MusicID_LavaReef2;
 			if (trackSettings[MusicID_Ending] == MusicID_Default)
 				trackSettings[MusicID_Ending] = MusicID_SkySanctuary;
+			if (trackSettings[MusicID_BlueSphereTitle] == MusicID_Default)
+				trackSettings[MusicID_BlueSphereTitle] = GameSelection == 2 ? MusicID_S3Continue : MusicID_Continue;
+			if (trackSettings[MusicID_BlueSphereDifficulty] == MusicID_Default)
+				trackSettings[MusicID_BlueSphereDifficulty] = MusicID_SKInvincibility;
+			if (trackSettings[MusicID_TimeAttackRecords] == MusicID_Default)
+				trackSettings[MusicID_TimeAttackRecords] = GameSelection == 2 ? MusicID_S3Continue : MusicID_Continue;
 			if (GameSelection == 2)
 			{
 				if (trackSettings[MusicID_Midboss] == MusicID_Default)
@@ -1039,9 +1050,29 @@ public:
 				if (Current_zone_and_act == ending || Ending_running_flag)
 					newid = MusicID_Ending;
 				break;
+			case MusicID_Continue:
+				if (Game_mode == GameModeID_BlueSpheresTitle)
+					newid = MusicID_BlueSphereTitle;
+				else if (Game_mode == GameModeID_TimeAttackRecords)
+					newid = MusicID_TimeAttackRecords;
+				break;
+			case MusicID_ActClear:
+				if (Game_mode == GameModeID_SpecialStageResults)
+				{
+					if (trackSettings[MusicID_SpecialStageResult] != MusicID_Default)
+						newid = MusicID_SpecialStageResult;
+				}
+				else if (Game_mode == GameModeID_BlueSpheresResults)
+				{
+					if (trackSettings[MusicID_BlueSphereResult] != MusicID_Default)
+						newid = MusicID_BlueSphereResult;
+				}
+				break;
 			case MusicID_S3Invincibility:
 			case MusicID_SKInvincibility:
-				if (Super_Sonic_Knux_flag || Super_Tails_flag)
+				if (Game_mode == GameModeID_BlueSpheresDifficulty)
+					newid = MusicID_BlueSphereDifficulty;
+				else if (Super_Sonic_Knux_flag || Super_Tails_flag)
 					if (trackSettings[MusicID_SuperSonic] != MusicID_Default)
 						newid = MusicID_SuperSonic;
 				break;

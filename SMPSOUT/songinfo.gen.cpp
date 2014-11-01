@@ -435,8 +435,6 @@ const trackoption ContinueTrackOptions[] = {
 	{ "S3", MusicID_S3Continue },
 	{ "S&K", MusicID_Continue },
 	{ "S1", MusicID_S1Continue },
-	{ "S22PResults", MusicID_S22PResults },
-	{ "S22PResultsBeta", MusicID_S22PResultsBeta },
 };
 
 const trackoption ActClearTrackOptions[] = {
@@ -538,6 +536,39 @@ const trackoption DataSelectTrackOptions[] = {
 	{ "S2Beta", MusicID_S2OptionsBeta },
 };
 
+const trackoption SpecialStageResultTrackOptions[] = {
+	{ "S3K", MusicID_ActClear },
+	{ "S1", MusicID_S1ActClear },
+};
+
+const trackoption BlueSphereResultTrackOptions[] = {
+	{ "S3K", MusicID_ActClear },
+	{ "S1", MusicID_S1ActClear },
+};
+
+const trackoption BlueSphereTitleTrackOptions[] = {
+	{ "S3", MusicID_S3Continue },
+	{ "S&K", MusicID_Continue },
+	{ "S3KLevelSelect", MusicID_LevelSelect },
+	{ "S3DMenu", MusicID_S3DMenu },
+	{ "PanicPuppet1", MusicID_PanicPuppet1 },
+	{ "S2Options", MusicID_S2Options },
+	{ "S2OptionsBeta", MusicID_S2OptionsBeta },
+};
+
+const trackoption BlueSphereDifficultyTrackOptions[] = {
+	{ "SKInvincibility", MusicID_SKInvincibility },
+	{ "S22PResults", MusicID_S22PResults },
+	{ "S22PResultsBeta", MusicID_S22PResultsBeta },
+};
+
+const trackoption TimeAttackRecordsTrackOptions[] = {
+	{ "S3", MusicID_S3Continue },
+	{ "S&K", MusicID_Continue },
+	{ "S2", MusicID_S22PResults },
+	{ "S2Beta", MusicID_S22PResultsBeta },
+};
+
 const tracknameoptions TrackOptions[] = {
 	trackoptdef(TitleScreenTrack),
 	trackoptdef(AngelIsland1Track),
@@ -599,4 +630,9 @@ const tracknameoptions TrackOptions[] = {
 	trackoptdef(SuperSonicTrack),
 	trackoptdef(EndingTrack),
 	trackoptdef(DataSelectTrack),
+	trackoptdef(SpecialStageResultTrack),
+	trackoptdef(BlueSphereResultTrack),
+	trackoptdef(BlueSphereTitleTrack),
+	trackoptdef(BlueSphereDifficultyTrack),
+	trackoptdef(TimeAttackRecordsTrack),
 };
