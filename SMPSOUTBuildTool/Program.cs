@@ -107,6 +107,8 @@ namespace SMPSOUTBuildTool
 	class TrackOptInfo
 	{
 		public string Name { get; set; }
+		public bool EnableByZone { get; set; }
+		public bool EnableByCharacter { get; set; }
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, string> Options { get; set; }
 	}

@@ -82,7 +82,7 @@ namespace SMPSCFG
 				ini = IniFileClass.Combine(ini, IniFileClass.Load("opts_SKC.ini"));
 			foreach (KeyValuePair<string, TrackOptInfo> item in IniSerializer.Deserialize<Dictionary<string, TrackOptInfo>>(ini))
 			{
-				TrackInfoInternal track = new TrackInfoInternal(item.Key, item.Value.Name);
+				TrackInfoInternal track = new TrackInfoInternal(item.Key, item.Value.Name, item.Value.EnableByZone, item.Value.EnableByCharacter);
 				if (item.Value.Options != null && item.Value.Options.Count > 0)
 				{
 					track.Options.Add(new TrackOptionInternal("Random"));
@@ -135,6 +135,14 @@ namespace SMPSCFG
 					table.Controls.Add(new Label() { Text = TrackOptions[tn].Name + ":", AutoSize = true, TextAlign = ContentAlignment.MiddleLeft }, 0, tn);
 					ComboBox cb = new ComboBox() { DropDownStyle = ComboBoxStyle.DropDownList };
 					List<TrackOptionInternal> opts = TrackOptions[tn].Options;
+					if (gn == 1)
+					{
+						opts = new List<TrackOptionInternal>(opts);
+						if (TrackOptions[tn].EnableByCharacter)
+							opts.Insert(2, new TrackOptionInternal("ByCharacter"));
+						if (TrackOptions[tn].EnableByZone)
+							opts.Insert(2, new TrackOptionInternal("ByZone"));
+					}
 					foreach (TrackOptionInternal opt in opts)
 						cb.Items.Add(opt.Name);
 					table.Controls.Add(cb, 1, tn);
@@ -270,12 +278,16 @@ namespace SMPSCFG
 	{
 		public string Key { get; set; }
 		public string Name { get; set; }
+		public bool EnableByZone { get; set; }
+		public bool EnableByCharacter { get; set; }
 		public List<TrackOptionInternal> Options { get; set; }
 
-		public TrackInfoInternal(string key, string name)
+		public TrackInfoInternal(string key, string name, bool enableByZone, bool enableByCharacter)
 		{
 			Key = key;
 			Name = name;
+			EnableByZone = enableByZone;
+			EnableByCharacter = enableByCharacter;
 			Options = new List<TrackOptionInternal>() { new TrackOptionInternal("Default"), new TrackOptionInternal("MIDI") };
 		}
 	}
@@ -316,6 +328,8 @@ namespace SMPSCFG
 	class TrackOptInfo
 	{
 		public string Name { get; set; }
+		public bool EnableByZone { get; set; }
+		public bool EnableByCharacter { get; set; }
 		[IniCollection(IniCollectionMode.IndexOnly)]
 		public Dictionary<string, string> Options { get; set; }
 	}

@@ -37,7 +37,9 @@ extern "C"
 }
 
 enum MusicID2 {
-	MusicID_MIDI = -3,
+	MusicID_ByCharacter = -5,
+	MusicID_ByZone,
+	MusicID_MIDI,
 	MusicID_Random,
 	MusicID_Default,
 	MusicID_Midboss = MusicID_SKMidboss,
@@ -313,6 +315,8 @@ DataRef(unsigned char, Game_mode, 0x8FFF600);
 DataRef(unsigned char, Super_Tails_flag, 0x8FFF667);
 DataRef(unsigned short, Current_zone_and_act, 0x8FFFE10);
 DataRef(unsigned char, Super_Sonic_Knux_flag, 0x8FFFE19);
+DataRef(unsigned short, Saved_zone_and_act, 0x8FFFE2C);
+DataRef(unsigned short, Player_mode, 0x8FFFF08);
 
 #define GameModeID_SegaScreen 0
 #define GameModeID_TitleScreen 4
@@ -337,6 +341,11 @@ DataRef(unsigned char, Super_Sonic_Knux_flag, 0x8FFFE19);
 #define GameModeID_SaveScreen 0x4C
 #define GameModeID_TimeAttackRecords 0x50
 
+#define flying_battery_zone 4
+#define mushroom_hill_zone 7
+#define gumball_bonus 0x13
+#define glowing_spheres_bonus 0x14
+#define slot_bonus 0x15
 #define ending 0x0D01
 #define hidden_palace_zone 0x1601
 #define hidden_palace_shrine 0x1701
@@ -364,7 +373,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
-	short trackSettings[TrackCount];
+	short trackSettings[TrackCount], s3TrackSettings[TrackCount], skTrackSettings[TrackCount];
 	bool trackMIDI;
 	MidiInterfaceClass *MIDIFallbackClass;
 
@@ -715,7 +724,17 @@ class SMPSInterfaceClass : MidiInterfaceClass
 		for (int i = 0; i < TrackCount; i++)
 		{
 			string value = settings->getString(TrackOptions[i].name);
-			if (value == "MIDI")
+			if (value == "ByCharacter")
+			{
+				trackSettings[i] = MusicID_ByCharacter;
+				continue;
+			}
+			else if (value == "ByZone")
+			{
+				trackSettings[i] = MusicID_ByZone;
+				continue;
+			}
+			else if (value == "MIDI")
 			{
 				trackSettings[i] = MusicID_MIDI;
 				continue;
@@ -835,9 +854,24 @@ public:
 			if (group != nullptr)
 				ReadSettings(group, trackSettings);
 
+			memcpy(s3TrackSettings, trackSettings, sizeof(short) * TrackCount);
+			memcpy(skTrackSettings, trackSettings, sizeof(short) * TrackCount);
+
 			group = settings.getGroup(INISections[GameSelection]);
 			if (group != nullptr)
 				ReadSettings(group, trackSettings);
+
+			group = settings.getGroup("S3");
+			if (group != nullptr)
+				ReadSettings(group, s3TrackSettings);
+			if (s3TrackSettings[MusicID_Midboss] == MusicID_Default)
+				s3TrackSettings[MusicID_Midboss] = MusicID_S3Midboss;
+			if (s3TrackSettings[MusicID_Continue] == MusicID_Default)
+				s3TrackSettings[MusicID_Continue] = MusicID_S3Continue;
+
+			group = settings.getGroup("S&K");
+			if (group != nullptr)
+				ReadSettings(group, skTrackSettings);
 
 #else
 			fmdrum_on = true;
@@ -1058,31 +1092,58 @@ public:
 				break;
 			case MusicID_ActClear:
 				if (Game_mode == GameModeID_SpecialStageResults)
-				{
-					if (trackSettings[MusicID_SpecialStageResult] != MusicID_Default)
-						newid = MusicID_SpecialStageResult;
-				}
+					newid = MusicID_SpecialStageResult;
 				else if (Game_mode == GameModeID_BlueSpheresResults)
-				{
-					if (trackSettings[MusicID_BlueSphereResult] != MusicID_Default)
-						newid = MusicID_BlueSphereResult;
-				}
+					newid = MusicID_BlueSphereResult;
 				break;
 			case MusicID_S3Invincibility:
 			case MusicID_SKInvincibility:
 				if (Game_mode == GameModeID_BlueSpheresDifficulty)
 					newid = MusicID_BlueSphereDifficulty;
 				else if (Super_Sonic_Knux_flag || Super_Tails_flag)
-					if (trackSettings[MusicID_SuperSonic] != MusicID_Default)
-						newid = MusicID_SuperSonic;
+					newid = MusicID_SuperSonic;
 				break;
 			case MusicID_LevelSelect:
 				if (Game_mode == GameModeID_SaveScreen)
-					if (trackSettings[MusicID_DataSelect] != MusicID_Default)
-						newid = MusicID_DataSelect;
+					newid = MusicID_DataSelect;
 				break;
 			}
-			short set = trackSettings[newid];
+			short *settings = trackSettings;
+			if (!GameSelection)
+			{
+				if (settings[newid] == MusicID_ByCharacter)
+					if (Player_mode == 3)
+						settings = skTrackSettings;
+					else
+						settings = s3TrackSettings;
+				else if (!GameSelection && settings[newid] == MusicID_ByZone)
+				{
+					unsigned char level = Current_zone_and_act >> 8;
+					switch (level)
+					{
+					case gumball_bonus:
+					case glowing_spheres_bonus:
+					case slot_bonus:
+						level = Saved_zone_and_act >> 8;
+						break;
+					}
+					if (level == flying_battery_zone || level >= mushroom_hill_zone)
+						settings = skTrackSettings;
+					else
+						settings = s3TrackSettings;
+				}
+			}
+			switch (newid)
+			{
+			case MusicID_SuperSonic:
+			case MusicID_DataSelect:
+			case MusicID_SpecialStageResult:
+			case MusicID_BlueSphereResult:
+				if (settings[newid] == MusicID_Default)
+					newid = id - 1;
+				break;
+			}
+			short set = settings[newid];
 			if (MIDIFallbackClass && set == MusicID_MIDI)
 			{
 				trackMIDI = true;
