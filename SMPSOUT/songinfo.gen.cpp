@@ -106,6 +106,8 @@ const musicentry MusicFiles[] = {
 	{ 0x0000, TrackMode_S1 },
 	{ 0x0000, TrackMode_S1 },
 	{ 0x0000, TrackMode_S1 },
+	{ 0x0000, TrackMode_S1 },
+	{ 0x0000, TrackMode_S1 },
 	{ 0x1380, TrackMode_S2 },
 	{ 0x1380, TrackMode_S2 },
 	{ 0x1380, TrackMode_S2 },
@@ -448,6 +450,11 @@ const trackoption OneUpTrackOptions[] = {
 	{ "S1", MusicID_S11Up },
 };
 
+const trackoption ChaosEmeraldTrackOptions[] = {
+	{ "S3K", MusicID_ChaosEmerald },
+	{ "S1", MusicID_S1ChaosEmerald },
+};
+
 const trackoption InvincibilityTrackOptions[] = {
 	{ "S3", MusicID_S3Invincibility },
 	{ "S&K", MusicID_SKInvincibility },
@@ -484,6 +491,11 @@ const trackoption FinalBossTrackOptions[] = {
 	{ "FinalZone", MusicID_FinalZone },
 	{ "S2", MusicID_S2FinalBoss },
 	{ "S2Beta", MusicID_S2FinalBossBeta },
+};
+
+const trackoption DrowningTrackOptions[] = {
+	{ "S3K", MusicID_Drowning },
+	{ "S1", MusicID_S1Drowning },
 };
 
 const trackoption AllClearTrackOptions[] = {
@@ -611,13 +623,13 @@ const tracknameoptions TrackOptions[] = {
 	trackoptdef(ContinueTrack),
 	trackoptdef(ActClearTrack),
 	trackoptdef(OneUpTrack),
-	{ "ChaosEmeraldTrack" },
+	trackoptdef(ChaosEmeraldTrack),
 	trackoptdef(InvincibilityTrack),
 	trackoptdef(CompetitionMenuTrack),
 	{ "UnusedTrack" },
 	trackoptdef(LevelSelectTrack),
 	trackoptdef(FinalBossTrack),
-	{ "DrowningTrack" },
+	trackoptdef(DrowningTrack),
 	trackoptdef(AllClearTrack),
 	trackoptdef(CreditsTrack),
 	trackoptdef(KnucklesTrack),

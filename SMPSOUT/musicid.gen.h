@@ -103,6 +103,8 @@ enum MusicID {
 	MusicID_S1GameOver,
 	MusicID_S1Continue,
 	MusicID_S1Credits,
+	MusicID_S1Drowning,
+	MusicID_S1ChaosEmerald,
 	MusicID_CasinoNight2P,
 	MusicID_EmeraldHill,
 	MusicID_Metropolis,
