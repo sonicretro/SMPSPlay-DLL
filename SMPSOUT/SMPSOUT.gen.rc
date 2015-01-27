@@ -599,3 +599,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDR_MUSIC_149      MUSIC          ".\\Data\\Sonic 2 Beta\\2-14 Hill Top Zone.s2b"
 
 
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+IDR_MUSIC_150      MUSIC          ".\\Data\\Sonic 3D Blast\\1F unused S3D Special Stage Tune.s3k"
+
+

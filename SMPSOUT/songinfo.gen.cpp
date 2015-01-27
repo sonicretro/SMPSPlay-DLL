@@ -153,6 +153,7 @@ const musicentry MusicFiles[] = {
 	{ 0xDC54, TrackMode_S2B },
 	{ 0xE0B7, TrackMode_S2B },
 	{ 0xE3BE, TrackMode_S2B },
+	{ 0x9D65, TrackMode_S3D },
 };
 
 const trackoption TitleScreenTrackOptions[] = {
@@ -376,6 +377,7 @@ const trackoption SpecialStageTrackOptions[] = {
 	{ "S1", MusicID_S1SpecialStage },
 	{ "S2", MusicID_S2SpecialStage },
 	{ "S2Beta", MusicID_S2SpecialStageBeta },
+	{ "S3DBeta", MusicID_S3DSpecialStageBeta },
 };
 
 const trackoption SlotMachineTrackOptions[] = {

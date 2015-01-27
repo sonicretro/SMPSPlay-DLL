@@ -149,3 +149,4 @@
 #define IDR_MUSIC_147 446
 #define IDR_MUSIC_148 447
 #define IDR_MUSIC_149 448
+#define IDR_MUSIC_150 449

@@ -150,5 +150,6 @@ enum MusicID {
 	MusicID_S22PResultsBeta,
 	MusicID_S2SuperSonicBeta,
 	MusicID_HillTopBeta,
+	MusicID_S3DSpecialStageBeta,
 	SongCount
 };
