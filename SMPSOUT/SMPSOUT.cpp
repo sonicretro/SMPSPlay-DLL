@@ -1284,9 +1284,9 @@ public:
 		if (EnableSKCHacks)
 		{
 			if (reg_d0 == 0xFF)
-				return PlaySound(MAKEINTRESOURCE(IDR_WAVE_SEGA), moduleHandle, SND_RESOURCE | SND_ASYNC);
+				return PlaySega();
 			else if (reg_d0 == 0xFE)
-				return PlaySound(NULL, NULL, SND_ASYNC);
+				return StopSega();
 		}
 		if (trackMIDI)
 			return MIDIFallbackClass->stop_song();
@@ -1392,6 +1392,16 @@ extern "C"
 	{
 		count = customsongs.size();
 		return customsongs.data();
+	}
+
+	__declspec(dllexport) BOOL PlaySega()
+	{
+		return PlaySound(MAKEINTRESOURCE(IDR_WAVE_SEGA), moduleHandle, SND_RESOURCE | SND_ASYNC);
+	}
+
+	__declspec(dllexport) BOOL StopSega()
+	{
+		return PlaySound(NULL, NULL, SND_ASYNC);
 	}
 
 	void NotifySongStopped()
