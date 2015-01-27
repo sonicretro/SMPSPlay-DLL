@@ -34,6 +34,9 @@ extern "C"
 	extern UINT32 SampleRate;	// from Sound.c
 	extern UINT16 FrameDivider;
 	extern UINT32 SmplsPerFrame;
+
+	__declspec(dllexport) BOOL PlaySega();
+	__declspec(dllexport) BOOL StopSega();
 }
 
 enum MusicID2 {
