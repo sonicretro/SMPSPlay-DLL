@@ -118,7 +118,7 @@ namespace SMPSCFG
 				ptr = GetProcAddress(hModule, "RegisterSongStoppedCallback");
 				((RegisterSongStoppedCallbackDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(RegisterSongStoppedCallbackDelegate)))(SongStoppedCallback);
 				ptr = GetProcAddress(hModule, "GetCustomSongs");
-				GetCustomSongs(songCount, ptr);
+				GetCustomSongs(++songCount, ptr);
 			}
 			for (int gn = 0; gn < GameIDs.Length; gn++)
 			{
