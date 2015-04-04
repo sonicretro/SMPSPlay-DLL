@@ -34,6 +34,7 @@ extern "C"
 	extern UINT32 SampleRate;	// from Sound.c
 	extern UINT16 FrameDivider;
 	extern UINT32 SmplsPerFrame;
+	double VolumeLevel = 1;
 
 	__declspec(dllexport) BOOL PlaySega();
 	__declspec(dllexport) BOOL StopSega();
@@ -1405,6 +1406,11 @@ extern "C"
 	__declspec(dllexport) BOOL StopSega()
 	{
 		return PlaySound(NULL, NULL, SND_ASYNC);
+	}
+
+	__declspec(dllexport) void SetVolume(double volume)
+	{
+		VolumeLevel = volume;
 	}
 
 	void NotifySongStopped()

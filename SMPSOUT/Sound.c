@@ -6,7 +6,7 @@
 #include "Engine/smps.h"
 #include "Engine/dac.h"
 
-
+extern double VolumeLevel;
 
 typedef void (*strm_func)(UINT8 ChipID, stream_sample_t **outputs, int samples);
 
@@ -493,6 +493,8 @@ UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize)
 		
 		TempBuf.Left = TempBuf.Left >> 7;
 		TempBuf.Right = TempBuf.Right >> 7;
+		TempBuf.Left = (int)(TempBuf.Left * VolumeLevel);
+		TempBuf.Right = (int)(TempBuf.Right * VolumeLevel);
 		Buffer[CurSmpl].Left = Limit2Short(TempBuf.Left);
 		Buffer[CurSmpl].Right = Limit2Short(TempBuf.Right);
 	}
