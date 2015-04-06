@@ -740,7 +740,8 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			}
 			else if (value == "MIDI")
 			{
-				trackSettings[i] = MusicID_MIDI;
+				if (MIDIFallbackClass) // don't use MIDI if fallback DLL wasn't found
+					trackSettings[i] = MusicID_MIDI;
 				continue;
 			}
 			else if (value == "Default")
@@ -840,7 +841,9 @@ public:
 		if (EnableSKCHacks)
 		{
 			HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
-			if (midimodule)
+			if (!midimodule)
+				midimodule = LoadLibrary(_T("MIDIOUT.DLL")); // in case this DLL is SMPSOUT.DLL, MIDIOUT.DLL will be the original
+			if (midimodule && midimodule != moduleHandle) // don't want to recursively call ourself
 			{
 				MIDIFallbackClass = ((MidiInterfaceClass *(*)())GetProcAddress(midimodule, "GetMidiInterface"))();
 				MIDIFallbackClass->initialize(hwnd);
