@@ -294,7 +294,7 @@ void IniFile::load(FILE *f)
 
 				case '=':
 					if (firstequals == -1)
-						firstequals = sb.length();
+						firstequals = (int)sb.length();
 					goto appendchar;
 
 				case '[':
@@ -303,7 +303,7 @@ void IniFile::load(FILE *f)
 					goto appendchar;
 
 				case ']':
-					endbracket = sb.length();
+					endbracket = (int)sb.length();
 					goto appendchar;
 
 				case ';':	// comment character

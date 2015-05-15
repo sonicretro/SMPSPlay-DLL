@@ -25,7 +25,7 @@ struct trackoption { const char *text; short id; };
 
 struct tracknameoptions { const char *name; const trackoption *options; int optioncount; };
 
-#define arrayptrandlength(x) x, LengthOfArray(x)
+#define arrayptrandlength(x) x, (int)LengthOfArray(x)
 
 #define trackoptdef(x) { #x, arrayptrandlength(x##Options) }
 

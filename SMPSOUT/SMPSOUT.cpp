@@ -310,6 +310,7 @@ vector<SongInfo> songs(SongCount);
 
 vector<const char *> customsongs;
 
+#ifdef _M_IX86
 #define DataRef(type,name,addr) type &name = *(type *)addr
 
 DataRef(unsigned int, GameSelection, 0x831188);
@@ -353,6 +354,7 @@ DataRef(unsigned short, Player_mode, 0x8FFFF08);
 #define ending 0x0D01
 #define hidden_palace_zone 0x1601
 #define hidden_palace_shrine 0x1701
+#endif
 
 class MidiInterfaceClass
 {
@@ -377,7 +379,9 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
+#ifdef _M_IX86
 	short trackSettings[TrackCount], s3TrackSettings[TrackCount], skTrackSettings[TrackCount];
+#endif
 	bool trackMIDI;
 	MidiInterfaceClass *MIDIFallbackClass;
 
@@ -444,8 +448,8 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->PtrFmt = PTRFMT_Z80;
 
 			SmpsCfg->InsMode = INSMODE_DEF;
-			LoadRegisterList(SmpsCfg, LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
-			SmpsCfg->FMChnCnt = LengthOfArray(FMCHN_ORDER);
+			LoadRegisterList(SmpsCfg, (UINT8)LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
+			SmpsCfg->FMChnCnt = (UINT8)LengthOfArray(FMCHN_ORDER);
 			memcpy(SmpsCfg->FMChnList, FMCHN_ORDER, 7);
 
 			SmpsCfg->TempoMode = TEMPO_TIMEOUT;
@@ -463,15 +467,15 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->FMFreqs = (UINT16*)&DEF_FMFREQ_VAL[0];
 			SmpsCfg->FMFreqCnt = 12;
 			SmpsCfg->PSGFreqs = (UINT16*)DEF_PSGFREQ_68K_VAL;
-			SmpsCfg->PSGFreqCnt = LengthOfArray(DEF_PSGFREQ_68K_VAL);
+			SmpsCfg->PSGFreqCnt = (UINT8)LengthOfArray(DEF_PSGFREQ_68K_VAL);
 			SmpsCfg->FM3Freqs = (UINT16*)FM3FREQS;
-			SmpsCfg->FM3FreqCnt = LengthOfArray(FM3FREQS);
+			SmpsCfg->FM3FreqCnt = (UINT8)LengthOfArray(FM3FREQS);
 
 			SmpsCfg->EnvCmds[0] = ENVCMD_HOLD;
 
 			SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S12;
 			SmpsCfg->CmdList.FlagBase = 0xE0;
-			SmpsCfg->CmdList.FlagCount = LengthOfArray(CMDFLAGS);
+			SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS);
 
 			SmpsCfg->CmdMetaList.CmdData = NULL;
 			SmpsCfg->CmdMetaList.FlagBase = 0x00;
@@ -481,8 +485,8 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->PtrFmt = PTRFMT_Z80;
 
 			SmpsCfg->InsMode = INSMODE_DEF;
-			LoadRegisterList(SmpsCfg, LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
-			SmpsCfg->FMChnCnt = LengthOfArray(FMCHN_ORDER);
+			LoadRegisterList(SmpsCfg, (UINT8)LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
+			SmpsCfg->FMChnCnt = (UINT8)LengthOfArray(FMCHN_ORDER);
 			memcpy(SmpsCfg->FMChnList, FMCHN_ORDER, 7);
 
 			SmpsCfg->TempoMode = TEMPO_OVERFLOW;
@@ -500,9 +504,9 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->FMFreqs = (UINT16*)&DEF_FMFREQ_VAL[1];
 			SmpsCfg->FMFreqCnt = 12;
 			SmpsCfg->PSGFreqs = (UINT16*)DEF_PSGFREQ_Z80_T2_VAL;
-			SmpsCfg->PSGFreqCnt = LengthOfArray(DEF_PSGFREQ_Z80_T2_VAL);
+			SmpsCfg->PSGFreqCnt = (UINT8)LengthOfArray(DEF_PSGFREQ_Z80_T2_VAL);
 			SmpsCfg->FM3Freqs = (UINT16*)FM3FREQS;
-			SmpsCfg->FM3FreqCnt = LengthOfArray(FM3FREQS);
+			SmpsCfg->FM3FreqCnt = (UINT8)LengthOfArray(FM3FREQS);
 
 			SmpsCfg->EnvCmds[0] = ENVCMD_RESET;
 			SmpsCfg->EnvCmds[1] = ENVCMD_HOLD;
@@ -512,11 +516,11 @@ class SMPSInterfaceClass : MidiInterfaceClass
 
 			SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS;
 			SmpsCfg->CmdList.FlagBase = 0xE0;
-			SmpsCfg->CmdList.FlagCount = LengthOfArray(CMDFLAGS);
+			SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS);
 
 			SmpsCfg->CmdMetaList.CmdData = (CMD_FLAGS*)CMDMETAFLAGS;
 			SmpsCfg->CmdMetaList.FlagBase = 0x00;
-			SmpsCfg->CmdMetaList.FlagCount = LengthOfArray(CMDMETAFLAGS);
+			SmpsCfg->CmdMetaList.FlagCount = (UINT16)LengthOfArray(CMDMETAFLAGS);
 			break;
 		}
 	}
@@ -722,7 +726,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 		}
 	}
 
-#ifdef INISUPPORT
+#if defined(INISUPPORT) && defined(_M_IX86)
 	void ReadSettings(const IniGroup *settings, short *trackSettings)
 	{
 		for (int i = 0; i < TrackCount; i++)
@@ -838,6 +842,7 @@ public:
 		}
 #endif
 
+#ifdef _M_IX86
 		if (EnableSKCHacks)
 		{
 			HMODULE midimodule = LoadLibrary(_T("MIDIOUTY.DLL"));
@@ -901,6 +906,7 @@ public:
 					trackSettings[MusicID_Continue] = MusicID_S3Continue;
 			}
 		}
+#endif
 		LoadSettings(SmpsDrv_S3K, &smpscfg_3K);
 		LoadSettings(SmpsDrv_S12, &smpscfg_12);
 
@@ -917,7 +923,7 @@ public:
 		}
 
 		ZeroMemory(&smpscfg_12.DrumLib, sizeof(smpscfg_12.DrumLib));
-		smpscfg_12.DrumLib.DrumCount = LengthOfArray(S2DrumList);
+		smpscfg_12.DrumLib.DrumCount = (UINT8)LengthOfArray(S2DrumList);
 		smpscfg_12.DrumLib.DrumData = new DRUM_DATA[smpscfg_12.DrumLib.DrumCount];
 		ZeroMemory(smpscfg_12.DrumLib.DrumData, sizeof(DRUM_DATA) * smpscfg_12.DrumLib.DrumCount);
 
@@ -985,7 +991,7 @@ public:
 		smpscfg_3K.DACDrv.Cfg.Channels = 1;
 		smpscfg_3K.DACDrv.Cfg.VolDiv = 1;
 
-		smpscfg_3K.DACDrv.TblCount = LengthOfArray(DACFiles);
+		smpscfg_3K.DACDrv.TblCount = (UINT16)LengthOfArray(DACFiles);
 		smpscfg_3K.DACDrv.TblAlloc = smpscfg_3K.DACDrv.TblCount;
 		smpscfg_3K.DACDrv.SmplTbl = new DAC_TABLE[smpscfg_3K.DACDrv.TblAlloc];
 		ZeroMemory(smpscfg_3K.DACDrv.SmplTbl, smpscfg_3K.DACDrv.TblAlloc * sizeof(DAC_TABLE));
@@ -1019,7 +1025,7 @@ public:
 		smpscfg_12.DACDrv.Cfg.Channels = 1;
 		smpscfg_12.DACDrv.Cfg.VolDiv = 1;
 
-		smpscfg_12.DACDrv.TblCount = LengthOfArray(DACFiles_S2);
+		smpscfg_12.DACDrv.TblCount = (UINT16)LengthOfArray(DACFiles_S2);
 		smpscfg_12.DACDrv.TblAlloc = smpscfg_12.DACDrv.TblCount;
 		smpscfg_12.DACDrv.SmplTbl = new DAC_TABLE[smpscfg_12.DACDrv.TblAlloc];
 		ZeroMemory(smpscfg_12.DACDrv.SmplTbl, smpscfg_12.DACDrv.TblAlloc * sizeof(DAC_TABLE));
@@ -1055,12 +1061,14 @@ public:
 		StartAudioOutput();
 		InitDriver();
 
+#ifdef _M_IX86
 		if (EnableSKCHacks)
 		{
 			timeBeginPeriod(2);
 
 			srand(_time32(NULL));
 		}
+#endif
 
 		return TRUE;
 	}
@@ -1077,6 +1085,7 @@ public:
 				Sleep(1);
 		}
 		int newid = id;
+#ifdef _M_IX86
 		if (EnableSKCHacks)
 		{
 			--newid;
@@ -1164,6 +1173,7 @@ public:
 			else if (set != MusicID_Default)
 				newid = set;
 		}
+#endif
 		trackMIDI = false;
 		const SongInfo *song = &songs[newid];
 		switch (song->mode)
@@ -1177,19 +1187,19 @@ public:
 			case TrackMode_S1:
 				cursmpscfg->PtrFmt = PTRFMT_68K;
 				cursmpscfg->InsMode = INSMODE_DEF;
-				LoadRegisterList(cursmpscfg, LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
+				LoadRegisterList(cursmpscfg, (UINT8)LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
 				cursmpscfg->TempoMode = TEMPO_TIMEOUT;
 				break;
 			case TrackMode_S2B:
 				cursmpscfg->PtrFmt = PTRFMT_Z80;
 				cursmpscfg->InsMode = INSMODE_HW;
-				LoadRegisterList(cursmpscfg, LengthOfArray(INSOPS_HARDWARE), INSOPS_HARDWARE);
+				LoadRegisterList(cursmpscfg, (UINT8)LengthOfArray(INSOPS_HARDWARE), INSOPS_HARDWARE);
 				cursmpscfg->TempoMode = TEMPO_TIMEOUT;
 				break;
 			case TrackMode_S2:
 				cursmpscfg->PtrFmt = PTRFMT_Z80;
 				cursmpscfg->InsMode = INSMODE_HW;
-				LoadRegisterList(cursmpscfg, LengthOfArray(INSOPS_HARDWARE), INSOPS_HARDWARE);
+				LoadRegisterList(cursmpscfg, (UINT8)LengthOfArray(INSOPS_HARDWARE), INSOPS_HARDWARE);
 				cursmpscfg->TempoMode = TEMPO_OVERFLOW2;
 				break;
 			}
@@ -1288,6 +1298,7 @@ public:
 
 	BOOL stop_song()
 	{
+#ifdef _M_IX86
 		if (EnableSKCHacks)
 		{
 			if (reg_d0 == 0xFF)
@@ -1295,18 +1306,23 @@ public:
 			else if (reg_d0 == 0xFE)
 				return StopSega();
 		}
+#endif
 		if (trackMIDI)
 			return MIDIFallbackClass->stop_song();
+#ifdef _M_IX86
 		if (EnableSKCHacks && reg_d0 == 0xE1)
 			FadeOutMusic();
 		else
 		{
+#endif
 			ThreadPauseConfrm = false;
 			PauseThread = true;
 			while(! ThreadPauseConfrm)
 				Sleep(1);
 			StopAllSound();
+#ifdef _M_IX86
 		}
+#endif
 		return TRUE;
 	}
 
@@ -1338,7 +1354,10 @@ public:
 	{
 		StopAllSound();
 		CloseThread = true;
-		timeEndPeriod(2);
+#if _M_IX86
+		if (EnableSKCHacks)
+			timeEndPeriod(2);
+#endif
 	}
 };
 
@@ -1354,7 +1373,9 @@ extern "C"
 
 	__declspec(dllexport) BOOL InitializeDriver()
 	{
+#ifdef _M_IX86
 		EnableSKCHacks = false;
+#endif
 		return midiInterface.initialize(NULL);
 	}
 
@@ -1397,7 +1418,7 @@ extern "C"
 
 	__declspec(dllexport) const char **GetCustomSongs(unsigned int &count)
 	{
-		count = customsongs.size();
+		count = (unsigned int)customsongs.size();
 		return customsongs.data();
 	}
 
@@ -1418,9 +1439,13 @@ extern "C"
 
 	void NotifySongStopped()
 	{
+#ifdef _M_IX86
 		if (EnableSKCHacks)
 			PostMessageA(gameWindow, 0x464u, 0, 0);
 		else if (SongStoppedCallback)
+#else
+		if (SongStoppedCallback)
+#endif
 			SongStoppedCallback();
 	}
 }
