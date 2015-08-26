@@ -60,9 +60,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Stream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stdtype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -119,13 +116,16 @@
     <ClCompile Include="Sound.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Stream.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IniFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="songinfo.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loader_smps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loader_data.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

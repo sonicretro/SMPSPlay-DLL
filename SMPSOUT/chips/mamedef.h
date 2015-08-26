@@ -1,12 +1,7 @@
 #ifndef __MAMEDEF_H__
 #define __MAMEDEF_H__
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "../stdtype.h"
+#include <common_def.h>
 
 /* offsets and addresses are 32-bit (for now...) */
 typedef UINT32	offs_t;
@@ -25,9 +20,5 @@ typedef INT32	stream_sample_t;
 #endif
 
 extern stream_sample_t* DUMMYBUF[];
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	// __MAMEDEF_H__

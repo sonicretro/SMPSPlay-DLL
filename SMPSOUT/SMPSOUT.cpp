@@ -6,10 +6,22 @@
 #else
 #define _T(x) L ## x
 #endif
+#include <windows.h>
+
+extern "C"
+{
+// defines required for SMPSPlay files:
+//  DISABLE_DLOAD_FILE
+//  DISABLE_DEBUG_MSGS
+//  DISABLE_NECPCM
+#include <common_def.h>
 #include "Engine\smps.h"
 #include "Engine\smps_commands.h"
 #include "Sound.h"
-#include "Stream.h"
+#include "loader_data.h"
+#include "loader_smps.h"
+}
+
 #include <sstream>
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 #include "IniFile.hpp"
@@ -28,16 +40,16 @@ HMODULE moduleHandle;
 HWND gameWindow;
 extern "C"
 {
-	extern volatile bool PauseThread;	// from Stream.c
-	extern volatile bool ThreadPauseConfrm;
-	extern volatile bool CloseThread;
-	extern UINT32 SampleRate;	// from Sound.c
+	//extern UINT32 SampleRate;	// from Sound.c
 	extern UINT16 FrameDivider;
-	extern UINT32 SmplsPerFrame;
-	double VolumeLevel = 1;
+	//extern UINT32 SmplsPerFrame;
+	extern INT32 OutputVolume;
+	extern AUDIO_CFG AudioCfg;
 
 	__declspec(dllexport) BOOL PlaySega();
 	__declspec(dllexport) BOOL StopSega();
+
+	void NotifySongStopped(void);
 }
 
 enum MusicID2 {
@@ -181,6 +193,7 @@ static const UINT8 DefDPCMData[] =
 	0x80, 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0};
 
 static const UINT8 FMCHN_ORDER[] = {0x16, 0, 1, 2, 4, 5, 6};
+static const UINT8 PSGCHN_ORDER[] = {0x80, 0xA0, 0xC0};
 
 static const UINT16 DEF_FMFREQ_VAL[13] =
 {0x25E, 0x284, 0x2AB, 0x2D3, 0x2FE, 0x32D, 0x35C, 0x38F, 0x3C5, 0x3FF, 0x43C, 0x47C, 0x4C0};
@@ -209,7 +222,8 @@ static const CMD_FLAGS CMDFLAGS_S12[] = {
 	{ CF_DETUNE, 0x00, 0x02 },
 	{ CF_SET_COMM, 0x00, 0x02 },
 	{ CF_RETURN, 0x00, 0x01 },
-	{ CF_TRK_END, 0x00, 0x01 },	// actually CF_FADE_IN_SONG, but that's not supported yet
+	//{ CF_TRK_END, 0x00, 0x01 },	// actually CF_FADE_IN_SONG, but that's not supported yet
+	{ CF_FADE_IN_SONG, 0x00, 0x01 },
 	{ CF_TICK_MULT, CFS_TMULT_CUR, 0x02 },
 	{ CF_VOLUME, CFS_VOL_NN_FM, 0x02 },
 	{ CF_HOLD, 0x00, 0x01 },
@@ -236,7 +250,8 @@ static const CMD_FLAGS CMDFLAGS_S12[] = {
 static const CMD_FLAGS CMDFLAGS[] = {
 	{ CF_PANAFMS, CFS_PAFMS_PAN, 0x02 },
 	{ CF_DETUNE, 0x00, 0x02 },
-	{ CF_FADE_IN, 0x00, 0x02 },
+	{ CF_FADE_IN_SONG, 0x00, 0x02 },
+	//{ CF_SET_COMM, 0x00, 0x02 },
 	{ CF_TRK_END, CFS_TEND_MUTE, 0x01 },
 	{ CF_VOLUME, CFS_VOL_ABS_S3K, 0x02 },
 	{ CF_VOLUME, CFS_VOL_CC_FMP2, 0x03 },
@@ -369,6 +384,8 @@ public:
 };
 
 bool EnableSKCHacks = true;
+UINT8* SmpsReloadState;
+UINT8* SmpsMusicSaveState;
 const char *const INISections[] = { "S3K", "S&K", "S3" };
 
 class SMPSInterfaceClass : MidiInterfaceClass
@@ -376,6 +393,7 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	SMPS_CFG smpscfg_3K;
 	SMPS_CFG smpscfg_12;
 	SMPS_CFG* cursmpscfg;
+	SMPS_SET cursmps;
 	ENV_LIB VolEnvs_S3;
 	ENV_LIB VolEnvs_SK;
 	bool fmdrum_on;
@@ -393,19 +411,6 @@ class SMPSInterfaceClass : MidiInterfaceClass
 	INLINE UINT16 ReadLE16(const UINT8* Data)
 	{
 		return (Data[0x01] << 8) | (Data[0x00] << 0);
-	}
-
-	INLINE UINT16 ReadRawPtr(const UINT8* Data, const SMPS_CFG* SmpsCfg)
-	{
-		if ((SmpsCfg->PtrFmt & PTRFMT_EMASK) == PTRFMT_BE)
-			return ReadBE16(Data);
-		else
-			return ReadLE16(Data);
-	}
-
-	INLINE UINT16 ReadPtr(const UINT8* Data, const SMPS_CFG* SmpsCfg)
-	{
-		return ReadRawPtr(Data, SmpsCfg) - SmpsCfg->SeqBase;
 	}
 
 	static void LoadRegisterList(SMPS_CFG* SmpsCfg, UINT8 RegCnt, const UINT8* RegPtr)
@@ -431,11 +436,11 @@ class SMPSInterfaceClass : MidiInterfaceClass
 		}
 
 		SmpsCfg->InsRegCnt = RegCnt;
-		SmpsCfg->InsRegs = RegPtr;
+		SmpsCfg->InsRegs = (UINT8*)RegPtr;
 		if (RegTL_Idx == 0xFF)
 			SmpsCfg->InsReg_TL = NULL;
 		else
-			SmpsCfg->InsReg_TL = &RegPtr[RegTL_Idx];
+			SmpsCfg->InsReg_TL = (UINT8*)&RegPtr[RegTL_Idx];
 
 		return;
 	}
@@ -450,9 +455,13 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->InsMode = INSMODE_DEF;
 			LoadRegisterList(SmpsCfg, (UINT8)LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
 			SmpsCfg->FMChnCnt = (UINT8)LengthOfArray(FMCHN_ORDER);
-			memcpy(SmpsCfg->FMChnList, FMCHN_ORDER, 7);
+			memcpy(SmpsCfg->FMChnList, FMCHN_ORDER, SmpsCfg->FMChnCnt);
+			SmpsCfg->PSGChnCnt = (UINT8)LengthOfArray(PSGCHN_ORDER);
+			memcpy(SmpsCfg->PSGChnList, PSGCHN_ORDER, SmpsCfg->PSGChnCnt);
+			SmpsCfg->AddChnCnt = 0;
 
 			SmpsCfg->TempoMode = TEMPO_TIMEOUT;
+			SmpsCfg->Tempo1Tick = T1TICK_DOTEMPO;	// S1/S2B: T1TICK_DOTEMPO, S2F: T1TICK_NOTEMPO
 			SmpsCfg->FMBaseNote = FMBASEN_B;
 			SmpsCfg->FMBaseOct = 0;
 			SmpsCfg->FMOctWrap = 0;
@@ -471,12 +480,22 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->FM3Freqs = (UINT16*)FM3FREQS;
 			SmpsCfg->FM3FreqCnt = (UINT8)LengthOfArray(FM3FREQS);
 
+			SmpsCfg->FadeMode = FADEMODE_68K;
+			SmpsCfg->FadeOut.Steps = 0x28;
+			SmpsCfg->FadeOut.Delay = 3;
+			SmpsCfg->FadeOut.AddFM = 1;
+			SmpsCfg->FadeOut.AddPSG = 1;
+			SmpsCfg->FadeIn.Steps = 0x28;
+			SmpsCfg->FadeIn.Delay = 2;
+			SmpsCfg->FadeIn.AddFM = 1;
+			SmpsCfg->FadeIn.AddPSG = 1;
+
 			SmpsCfg->EnvCmds[0] = ENVCMD_HOLD;
 
+			SmpsCfg->NoteBase = 0x80;
 			SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S12;
 			SmpsCfg->CmdList.FlagBase = 0xE0;
 			SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS);
-
 			SmpsCfg->CmdMetaList.CmdData = NULL;
 			SmpsCfg->CmdMetaList.FlagBase = 0x00;
 			SmpsCfg->CmdMetaList.FlagCount = 0;
@@ -487,9 +506,13 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->InsMode = INSMODE_DEF;
 			LoadRegisterList(SmpsCfg, (UINT8)LengthOfArray(INSOPS_DEFAULT), INSOPS_DEFAULT);
 			SmpsCfg->FMChnCnt = (UINT8)LengthOfArray(FMCHN_ORDER);
-			memcpy(SmpsCfg->FMChnList, FMCHN_ORDER, 7);
+			memcpy(SmpsCfg->FMChnList, FMCHN_ORDER, SmpsCfg->FMChnCnt);
+			SmpsCfg->PSGChnCnt = (UINT8)LengthOfArray(PSGCHN_ORDER);
+			memcpy(SmpsCfg->PSGChnList, PSGCHN_ORDER, SmpsCfg->PSGChnCnt);
+			SmpsCfg->AddChnCnt = 0;
 
 			SmpsCfg->TempoMode = TEMPO_OVERFLOW;
+			SmpsCfg->Tempo1Tick = T1TICK_DOTEMPO;
 			SmpsCfg->FMBaseNote = FMBASEN_C;
 			SmpsCfg->FMBaseOct = 0;
 			SmpsCfg->FMOctWrap = 0;
@@ -508,221 +531,30 @@ class SMPSInterfaceClass : MidiInterfaceClass
 			SmpsCfg->FM3Freqs = (UINT16*)FM3FREQS;
 			SmpsCfg->FM3FreqCnt = (UINT8)LengthOfArray(FM3FREQS);
 
+			SmpsCfg->FadeMode = FADEMODE_Z80;
+			SmpsCfg->FadeOut.Steps = 0x28;
+			SmpsCfg->FadeOut.Delay = 6;
+			SmpsCfg->FadeOut.AddFM = 1;
+			SmpsCfg->FadeOut.AddPSG = 1;
+			SmpsCfg->FadeIn.Steps = 0x40;
+			SmpsCfg->FadeIn.Delay = 2;
+			SmpsCfg->FadeIn.AddFM = 1;
+			SmpsCfg->FadeIn.AddPSG = 1;
+
 			SmpsCfg->EnvCmds[0] = ENVCMD_RESET;
 			SmpsCfg->EnvCmds[1] = ENVCMD_HOLD;
 			SmpsCfg->EnvCmds[2] = ENVCMD_LOOP;
 			SmpsCfg->EnvCmds[3] = ENVCMD_STOP;
 			SmpsCfg->EnvCmds[4] = ENVCMD_CHGMULT;
 
+			SmpsCfg->NoteBase = 0x80;
 			SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS;
 			SmpsCfg->CmdList.FlagBase = 0xE0;
 			SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS);
-
 			SmpsCfg->CmdMetaList.CmdData = (CMD_FLAGS*)CMDMETAFLAGS;
 			SmpsCfg->CmdMetaList.FlagBase = 0x00;
 			SmpsCfg->CmdMetaList.FlagCount = (UINT16)LengthOfArray(CMDMETAFLAGS);
 			break;
-		}
-	}
-
-	static void GetEnvelopeData(UINT32 DataLen, const UINT8* Data, ENV_LIB *EnvLib)
-	{
-		UINT32 CurPos;
-		UINT8 CurEnv;
-		ENV_DATA* TempEnv;
-
-		CurPos = 0x07;
-		EnvLib->EnvCount = Data[CurPos];	CurPos ++;
-		EnvLib->EnvData = new ENV_DATA[EnvLib->EnvCount];
-		for (CurEnv = 0x00; CurEnv < EnvLib->EnvCount; CurEnv ++)
-		{
-			TempEnv = &EnvLib->EnvData[CurEnv];
-			CurPos += 0x01 + Data[CurPos];
-			if (CurPos >= DataLen)
-			{
-				EnvLib->EnvCount = CurEnv;
-				break;
-			}
-
-			TempEnv->Len = Data[CurPos];	CurPos ++;
-			TempEnv->Data = new UINT8[TempEnv->Len];
-			memcpy(TempEnv->Data, &Data[CurPos], TempEnv->Len);
-			CurPos += TempEnv->Len;
-		}
-	}
-
-	static UINT8 LoadDrumTracks(UINT32 DataLen, const UINT8* Data, DRUM_TRK_LIB* DrumLib, UINT8 DrumMode)
-	{
-		UINT8 InsCount;
-		UINT16 DrumOfs;
-		UINT16 InsOfs;
-		UINT16 InsBaseOfs;
-		UINT16 BaseOfs;
-		UINT8 CurItm;
-		UINT16 CurPos;
-		UINT16 TempOfs;
-
-		if (Data[0x04] != DrumMode)
-			return 0xC0;	// wrong drum mode
-		switch(DrumMode)
-		{
-		case 0x00:	// PSG drums (without Instrument lib.)
-			if (DataLen < 0x0A)
-				return 0x80;	// invalid file
-			DrumLib->DrumCount = Data[0x05];
-			DrumOfs = ReadLE16(&Data[0x06]);
-			DrumLib->DrumBase = ReadLE16(&Data[0x08]);
-			InsCount = 0x00;
-			InsOfs = 0x0000;
-			break;
-		case 0x01:	// FM drums (with Instrument lib.)
-			if (DataLen < 0x10)
-				return 0x80;	// invalid file
-			DrumLib->DrumCount = Data[0x05];
-			DrumOfs = ReadLE16(&Data[0x06]);
-			DrumLib->DrumBase = ReadLE16(&Data[0x08]);
-			InsCount = Data[0x0B];
-			InsOfs = ReadLE16(&Data[0x0C]);
-			InsBaseOfs = ReadLE16(&Data[0x0E]);
-			break;
-		}
-		if (! DrumOfs)
-			return 0xC1;	// invalid drum offset
-
-		BaseOfs = DrumOfs;
-		if (InsOfs && InsOfs < BaseOfs)
-			BaseOfs = InsOfs;
-
-		DrumLib->DataLen = DataLen - BaseOfs;
-		DrumLib->Data = (UINT8*)malloc(DrumLib->DataLen);
-		memcpy(DrumLib->Data, &Data[BaseOfs], DrumLib->DataLen);
-
-		DrumLib->DrumList = (UINT16*)malloc(DrumLib->DrumCount * sizeof(UINT16));
-		CurPos = DrumOfs - BaseOfs;
-		DrumLib->DrumBase -= CurPos;
-		for (CurItm = 0x00; CurItm < DrumLib->DrumCount; CurItm ++, CurPos += 0x02)
-			DrumLib->DrumList[CurItm] = ReadLE16(&DrumLib->Data[CurPos]);
-
-		DrumLib->InsLib.InsCount = InsCount;
-		DrumLib->InsLib.InsPtrs = NULL;
-		if (InsCount)
-		{
-			DrumLib->InsLib.InsPtrs = (UINT8**)malloc(InsCount * sizeof(UINT8*));
-			CurPos = InsOfs - BaseOfs;
-			InsBaseOfs -= CurPos;
-			for (CurItm = 0x00; CurItm < InsCount; CurItm ++, CurPos += 0x02)
-			{
-				TempOfs = ReadLE16(&DrumLib->Data[CurPos]) - InsBaseOfs;
-				if (TempOfs >= BaseOfs && TempOfs < DrumLib->DataLen - 0x10)
-					DrumLib->InsLib.InsPtrs[CurItm] = &DrumLib->Data[TempOfs];
-				else
-					DrumLib->InsLib.InsPtrs[CurItm] = NULL;
-			}
-		}
-
-		return 0x00;
-	}
-
-	static void FreeDrumTracks(DRUM_TRK_LIB* DrumLib)
-	{
-		if (DrumLib->DrumList == NULL)
-			return;
-
-		DrumLib->DrumCount = 0x00;
-		free(DrumLib->DrumList);
-		DrumLib->DrumList = NULL;
-
-		if (DrumLib->InsLib.InsPtrs != NULL)
-		{
-			DrumLib->InsLib.InsCount = 0x00;
-			free(DrumLib->InsLib.InsPtrs);
-			DrumLib->InsLib.InsPtrs = NULL;
-		}
-
-		DrumLib->DataLen = 0x00;
-		free(DrumLib->Data);
-		DrumLib->DrumList = NULL;
-
-		return;
-	}
-
-	static void PreparseSMPSFile(SMPS_CFG* SmpsCfg)
-	{
-		UINT32 FileLen;
-		UINT8* FileData;
-		CMD_LIB* CmdList;
-		CMD_LIB* CmdMetaList;
-		DAC_CFG* DACDrv;
-		UINT16 InsPtr;
-		UINT8 FMTrkCnt;
-		UINT8 PSGTrkCnt;
-		UINT8 TrkCount;
-		UINT8 CurTrk;
-		UINT16 CurPos;
-		UINT16 TrkOfs[0x10];
-		UINT16 TempOfs;
-
-		FileLen = SmpsCfg->SeqLength;
-		FileData = SmpsCfg->SeqData;
-		CmdList = &SmpsCfg->CmdList;
-		CmdMetaList = &SmpsCfg->CmdMetaList;
-		DACDrv = &SmpsCfg->DACDrv;
-
-		CurPos = 0x00;
-		InsPtr = ReadPtr(&FileData[CurPos + 0x00], SmpsCfg);
-		FMTrkCnt = FileData[CurPos + 0x02];
-		PSGTrkCnt = FileData[CurPos + 0x03];
-
-		CurPos += 0x06;
-		TempOfs = CurPos + FMTrkCnt * 0x04 + PSGTrkCnt * 0x06;
-
-		TrkCount = 0x00;
-		for (CurTrk = 0x00; CurTrk < FMTrkCnt; CurTrk ++, TrkCount ++, CurPos += 0x04)
-			TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
-		for (CurTrk = 0x00; CurTrk < PSGTrkCnt; CurTrk ++, TrkCount ++, CurPos += 0x06)
-			TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
-		for (CurTrk = 0x00; CurTrk < SmpsCfg->AddChnCnt; CurTrk ++, TrkCount ++, CurPos += 0x04)
-			TrkOfs[TrkCount] = ReadPtr(&FileData[CurPos], SmpsCfg);
-
-		if (InsPtr < FileLen)
-		{
-			INS_LIB* InsLib;
-
-			InsLib = (INS_LIB*)malloc(sizeof(INS_LIB));
-			SmpsCfg->InsLib = InsLib;
-			InsLib->InsCount = (FileLen - InsPtr) / SmpsCfg->InsRegCnt;
-			if (InsLib->InsCount > 0x100)
-				InsLib->InsCount = 0x100;
-			InsLib->InsPtrs = (UINT8**)malloc(InsLib->InsCount * sizeof(UINT8*));
-			for (CurTrk = 0; CurTrk < InsLib->InsCount; CurTrk ++)
-				InsLib->InsPtrs[CurTrk] = &FileData[InsPtr + CurTrk * SmpsCfg->InsRegCnt];
-		}
-		else if (SmpsCfg->GlbInsData != NULL)
-		{
-			InsPtr += SmpsCfg->SeqBase;
-			if (InsPtr > SmpsCfg->GlbInsBase && InsPtr < SmpsCfg->GlbInsBase + SmpsCfg->GlbInsLen)
-			{
-				INS_LIB* InsLib;
-				UINT16 BaseOfs;
-
-				BaseOfs = InsPtr - SmpsCfg->GlbInsBase;
-				InsLib = (INS_LIB*)malloc(sizeof(INS_LIB));
-				SmpsCfg->InsLib = InsLib;
-				InsLib->InsCount = (SmpsCfg->GlbInsLen - BaseOfs) / SmpsCfg->InsRegCnt;
-				if (InsLib->InsCount > 0x100)
-					InsLib->InsCount = 0x100;
-				InsLib->InsPtrs = (UINT8**)malloc(InsLib->InsCount * sizeof(UINT8*));
-				for (CurTrk = 0; CurTrk < InsLib->InsCount; CurTrk ++)
-					InsLib->InsPtrs[CurTrk] = &SmpsCfg->GlbInsData[BaseOfs + CurTrk * SmpsCfg->InsRegCnt];
-			}
-			else
-			{
-				SmpsCfg->InsLib = &SmpsCfg->GlbInsLib;
-			}
-		}
-		else
-		{
-			SmpsCfg->InsLib = NULL;
 		}
 	}
 
@@ -783,6 +615,74 @@ class SMPSInterfaceClass : MidiInterfaceClass
 public:
 	SMPSInterfaceClass() { }
 
+	void GenerateDACAlgos(DAC_ALGO* DACAlgo, UINT8 Mode, UINT32 DacCycles)
+	{
+		DACAlgo->BaseCycles = DacCycles;	// BaseCyles overrides BaseRate and Divider
+		if (Mode == COMPR_DPCM)
+		{
+			DACAlgo->LoopCycles = 26;
+			DACAlgo->LoopSamples = 2;
+		}
+		else //if (Mode == COMPR_PCM)
+		{
+			DACAlgo->LoopCycles = 13;
+			DACAlgo->LoopSamples = 1;
+		}
+		DACAlgo->RateMode = DACRM_DELAY;
+		DACAlgo->DefCompr = Mode;
+		return;
+	}
+
+	void GenerateDACDrv(DAC_CFG* DACDrv, UINT16 smplCount, WORD startID, UINT32 dacCycles,
+						unsigned int smplTblSize, const dacentry* smplTblList)
+	{
+		unsigned int i;
+		DAC_SETTINGS* DACCfg;
+		HRSRC hres;
+		
+		memset(DACDrv, 0x00, sizeof(DAC_CFG));
+		
+		DACDrv->SmplAlloc = smplCount;
+		DACDrv->Smpls = new DAC_SAMPLE[DACDrv->SmplAlloc];
+		memset(DACDrv->Smpls, 0x00, DACDrv->SmplAlloc * sizeof(DAC_SAMPLE));
+		for (i = 0; i < smplCount; i++)
+		{
+			hres = FindResource(moduleHandle, MAKEINTRESOURCE(startID + i), _T("DAC"));
+			DACDrv->Smpls[i].Compr = COMPR_DPCM;
+			DACDrv->Smpls[i].DPCMArr = (UINT8*)DefDPCMData;
+			DACDrv->Smpls[i].Size = SizeofResource(moduleHandle, hres);
+			DACDrv->Smpls[i].Data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
+		}
+		DACDrv->SmplCount = smplCount;
+		
+		DACCfg = &DACDrv->Cfg;
+		DACCfg->AlgoAlloc = 1;
+		DACCfg->Algos = new DAC_ALGO[DACCfg->AlgoAlloc];
+		memset(DACCfg->Algos, 0x00, DACCfg->AlgoAlloc * sizeof(DAC_ALGO));
+		GenerateDACAlgos(&DACCfg->Algos[0], COMPR_DPCM, 297);
+		DACCfg->AlgoCount = 1;
+		
+		DACCfg->SmplMode = DACSM_NORMAL;
+		DACCfg->Channels = 1;
+		DACCfg->VolDiv = 1;
+		
+		DACDrv->TblAlloc = (UINT16)smplTblSize;
+		DACDrv->SmplTbl = new DAC_TABLE[DACDrv->TblAlloc];
+		memset(DACDrv->SmplTbl, 0x00, DACDrv->TblAlloc * sizeof(DAC_TABLE));
+		for (i = 0; i < smplTblSize; i++)
+		{
+			DACDrv->SmplTbl[i].Sample = smplTblList[i].resid - startID;
+			DACDrv->SmplTbl[i].Rate = smplTblList[i].rate;
+		}
+		DACDrv->TblCount = (UINT16)smplTblSize;
+		
+		DACDrv->BankCount = 0;
+		DACDrv->BankAlloc = 0;
+		DACDrv->BankTbl = NULL;
+		
+		return;
+	}
+	
 	BOOL initialize(HWND hwnd)
 	{
 		HRSRC hres;
@@ -806,7 +706,7 @@ public:
 
 #ifdef INISUPPORT
 		IniFile custsongs(_T("songs_cust.ini"));
-			
+		
 		for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
 		{
 			if (iter->first.empty()) continue;
@@ -945,121 +845,87 @@ public:
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_MODULAT), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		GetEnvelopeData(dataSize, dataPtr, &smpscfg_3K.ModEnvs);
+		LoadEnvelopeData_Mem(dataSize, dataPtr, &smpscfg_3K.ModEnvs);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_S3), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_S3);
+		LoadEnvelopeData_Mem(dataSize, dataPtr, &VolEnvs_S3);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_SK), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		GetEnvelopeData(dataSize, dataPtr, &VolEnvs_SK);
+		LoadEnvelopeData_Mem(dataSize, dataPtr, &VolEnvs_SK);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_S2), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		GetEnvelopeData(dataSize, dataPtr, &smpscfg_12.VolEnvs);
+		LoadEnvelopeData_Mem(dataSize, dataPtr, &smpscfg_12.VolEnvs);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_FM_DRUMS), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		LoadDrumTracks(dataSize, dataPtr, &smpscfg_3K.FMDrums, 0x01);	// 0x01 - FM drums
+		LoadDrumTracks_Mem(dataSize, dataPtr, &smpscfg_3K.FMDrums, 0x01);	// 0x01 - FM drums
 
 		smpscfg_3K.VolEnvs = VolEnvs_SK;
 
-		ZeroMemory(&smpscfg_3K.DACDrv, sizeof(smpscfg_3K.DACDrv));
-		smpscfg_3K.DACDrv.SmplCount = (IDR_DAC_A0_S3D - IDR_DAC_81) + 1;	// all DAC sounds
-		smpscfg_3K.DACDrv.SmplAlloc = smpscfg_3K.DACDrv.SmplCount;
-		smpscfg_3K.DACDrv.Smpls = new DAC_SAMPLE[smpscfg_3K.DACDrv.SmplAlloc];
-		ZeroMemory(smpscfg_3K.DACDrv.Smpls, sizeof(DAC_SAMPLE) * smpscfg_3K.DACDrv.SmplAlloc);
+		GenerateDACDrv(&smpscfg_3K.DACDrv, (IDR_DAC_A0_S3D - IDR_DAC_81) + 1, IDR_DAC_81, 297,
+						LengthOfArray(DACFiles), DACFiles);
 
-		for (i = 0; i < smpscfg_3K.DACDrv.SmplCount; i++)
-		{
-			hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_DAC_81 + i), _T("DAC"));
-			smpscfg_3K.DACDrv.Smpls[i].Compr = COMPR_DPCM;
-			smpscfg_3K.DACDrv.Smpls[i].DPCMArr = DefDPCMData;
-			smpscfg_3K.DACDrv.Smpls[i].Size = SizeofResource(moduleHandle, hres);
-			smpscfg_3K.DACDrv.Smpls[i].Data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		}
-
-		smpscfg_3K.DACDrv.Cfg.BaseCycles = 297;	// BaseCyles overrides BaseRate and Divider
-		smpscfg_3K.DACDrv.Cfg.LoopCycles = 26;
-		smpscfg_3K.DACDrv.Cfg.LoopSamples = 2;
-		smpscfg_3K.DACDrv.Cfg.RateMode = DACRM_DELAY;
-		smpscfg_3K.DACDrv.Cfg.Channels = 1;
-		smpscfg_3K.DACDrv.Cfg.VolDiv = 1;
-
-		smpscfg_3K.DACDrv.TblCount = (UINT16)LengthOfArray(DACFiles);
-		smpscfg_3K.DACDrv.TblAlloc = smpscfg_3K.DACDrv.TblCount;
-		smpscfg_3K.DACDrv.SmplTbl = new DAC_TABLE[smpscfg_3K.DACDrv.TblAlloc];
-		ZeroMemory(smpscfg_3K.DACDrv.SmplTbl, smpscfg_3K.DACDrv.TblAlloc * sizeof(DAC_TABLE));
-
-		for (i = 0; i < LengthOfArray(DACFiles); i++)
-		{
-			smpscfg_3K.DACDrv.SmplTbl[i].Sample = DACFiles[i].resid - IDR_DAC_81;
-			smpscfg_3K.DACDrv.SmplTbl[i].Rate = DACFiles[i].rate;
-		}
-
-
-		ZeroMemory(&smpscfg_12.DACDrv, sizeof(smpscfg_12.DACDrv));
-		smpscfg_12.DACDrv.SmplCount = (IDR_DAC_87_S2 - IDR_DAC_81_S2) + 1;
-		smpscfg_12.DACDrv.SmplAlloc = smpscfg_12.DACDrv.SmplCount;
-		smpscfg_12.DACDrv.Smpls = new DAC_SAMPLE[smpscfg_12.DACDrv.SmplAlloc];
-		ZeroMemory(smpscfg_12.DACDrv.Smpls, sizeof(DAC_SAMPLE) * smpscfg_12.DACDrv.SmplAlloc);
-
-		for (i = 0; i < smpscfg_12.DACDrv.SmplCount; i++)
-		{
-			hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_DAC_81_S2 + i), _T("DAC"));
-			smpscfg_12.DACDrv.Smpls[i].Compr = COMPR_DPCM;
-			smpscfg_12.DACDrv.Smpls[i].DPCMArr = DefDPCMData;
-			smpscfg_12.DACDrv.Smpls[i].Size = SizeofResource(moduleHandle, hres);
-			smpscfg_12.DACDrv.Smpls[i].Data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		}
-
-		smpscfg_12.DACDrv.Cfg.BaseCycles = 288;	// Note: 301 for Sonic 1, 296 for S2B (and 425 for Generic SMPS 68k)
-		smpscfg_12.DACDrv.Cfg.LoopCycles = 26;
-		smpscfg_12.DACDrv.Cfg.LoopSamples = 2;
-		smpscfg_12.DACDrv.Cfg.RateMode = DACRM_DELAY;
-		smpscfg_12.DACDrv.Cfg.Channels = 1;
-		smpscfg_12.DACDrv.Cfg.VolDiv = 1;
-
-		smpscfg_12.DACDrv.TblCount = (UINT16)LengthOfArray(DACFiles_S2);
-		smpscfg_12.DACDrv.TblAlloc = smpscfg_12.DACDrv.TblCount;
-		smpscfg_12.DACDrv.SmplTbl = new DAC_TABLE[smpscfg_12.DACDrv.TblAlloc];
-		ZeroMemory(smpscfg_12.DACDrv.SmplTbl, smpscfg_12.DACDrv.TblAlloc * sizeof(DAC_TABLE));
-
-		for (i = 0; i < LengthOfArray(DACFiles_S2); i++)
-		{
-			smpscfg_12.DACDrv.SmplTbl[i].Sample = DACFiles_S2[i].resid - IDR_DAC_81_S2;
-			smpscfg_12.DACDrv.SmplTbl[i].Rate = DACFiles_S2[i].rate;
-		}
+		GenerateDACDrv(&smpscfg_12.DACDrv, (IDR_DAC_87_S2 - IDR_DAC_81_S2) + 1, IDR_DAC_81_S2, 288,
+						LengthOfArray(DACFiles_S2), DACFiles_S2);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_INSSET), _T("MISC"));
-		smpscfg_3K.GlbInsLen = (UINT16)SizeofResource(moduleHandle, hres);
-		smpscfg_3K.GlbInsData = (UINT8 *)LockResource(LoadResource(moduleHandle, hres));
+		LoadGlobalInstrumentLib_Mem((UINT16)SizeofResource(moduleHandle, hres),
+									(UINT8 *)LockResource(LoadResource(moduleHandle, hres)), &smpscfg_3K);
+		/*smpscfg_3K.GblIns.alloc = 0x00;
+		smpscfg_3K.GblIns.Len = (UINT16)SizeofResource(moduleHandle, hres);
+		smpscfg_3K.GblIns.Data = (UINT8 *)LockResource(LoadResource(moduleHandle, hres));
 
-		UINT16 InsCount = smpscfg_3K.GlbInsLen / smpscfg_3K.InsRegCnt;
-		smpscfg_3K.GlbInsLib.InsCount = InsCount;
-		smpscfg_3K.GlbInsLib.InsPtrs = NULL;
+		UINT16 InsCount = smpscfg_3K.GblIns.Len / smpscfg_3K.InsRegCnt;
+		smpscfg_3K.GblInsLib.InsCount = InsCount;
+		smpscfg_3K.GblInsLib.InsPtrs = NULL;
 		if (InsCount)
 		{
-			smpscfg_3K.GlbInsLib.InsPtrs = new UINT8*[InsCount];
+			smpscfg_3K.GblInsLib.InsPtrs = new UINT8*[InsCount];
 			UINT16 CurPos = 0x0000;
 			for (UINT16 CurIns = 0x00; CurIns < InsCount; CurIns ++, CurPos += smpscfg_3K.InsRegCnt)
-				smpscfg_3K.GlbInsLib.InsPtrs[CurIns] = &smpscfg_3K.GlbInsData[CurPos];
-		}
-		smpscfg_3K.GlbInsBase = 0x17D8;
+				smpscfg_3K.GblInsLib.InsPtrs[CurIns] = &smpscfg_3K.GblIns.Data[CurPos];
+		}*/
+		smpscfg_3K.GblInsBase = 0x17D8;
 
-		smpscfg_12.GlbInsLen = 0x0000;
-		smpscfg_12.GlbInsData = NULL;
-		smpscfg_12.GlbInsLib.InsCount = InsCount;
-		smpscfg_12.GlbInsLib.InsPtrs = NULL;
+		smpscfg_12.GblIns.alloc = 0x00;
+		smpscfg_12.GblIns.Len = 0x0000;
+		smpscfg_12.GblIns.Data = NULL;
+		smpscfg_12.GblInsLib.InsCount = 0;
+		smpscfg_12.GblInsLib.InsPtrs = NULL;
 
 		DAC_Reset();
-		StartAudioOutput();
+		InitAudioOutput();
+		{
+			const char* const AudAPIList[] = {"WASAPI", "XAudio2", "DirectSound", "WinMM"};
+			unsigned int curADrv;
+			UINT8 retVal;
+			
+			for (curADrv = 0; curADrv < 4; curADrv ++)
+			{
+				retVal = QueryDeviceParams(AudAPIList[curADrv], &AudioCfg);
+				if (retVal)
+					continue;
+				AudioCfg.AudAPIName = (char*)AudAPIList[curADrv];
+				AudioCfg.AudioBufs = 5;
+				AudioCfg.AudioBufSize = (curADrv < 3) ? 4 : 8;	// WinMM: use 8+ buffers
+				AudioCfg.Volume = 1.0f;
+				
+				retVal = StartAudioOutput();
+				if (! retVal)
+					break;
+			}
+		}
 		InitDriver();
+		SMPSExtra_SetCallbacks(SMPSCB_STOP, &NotifySongStopped);
+		SmpsReloadState = SmpsGetVariable(SMPSVAR_RESTORE_REQ);
+		SmpsMusicSaveState = SmpsGetVariable(SMPSVAR_MUSSTATE_USE);
 
 #ifdef _M_IX86
 		if (EnableSKCHacks)
@@ -1077,13 +943,8 @@ public:
 	{
 		if (trackMIDI)
 			MIDIFallbackClass->stop_song();
-		else
-		{
-			ThreadPauseConfrm = false;
-			PauseThread = true;
-			while(! ThreadPauseConfrm)
-				Sleep(1);
-		}
+		//else
+		//	ThreadSync(1);
 		int newid = id;
 #ifdef _M_IX86
 		if (EnableSKCHacks)
@@ -1175,6 +1036,8 @@ public:
 		}
 #endif
 		trackMIDI = false;
+		if ((size_t)newid >= songs.size())
+			return FALSE;
 		const SongInfo *song = &songs[newid];
 		switch (song->mode)
 		{
@@ -1204,7 +1067,10 @@ public:
 				break;
 			}
 			break;
-		default:
+		//default:
+		case TrackMode_SK:
+		case TrackMode_S3:
+		case TrackMode_S3D:
 			DRUM_LIB* drumLib;
 			
 			cursmpscfg = &smpscfg_3K;
@@ -1270,29 +1136,36 @@ public:
 			break;
 		}	// end switch (song->mode)
 
-		cursmpscfg->SeqBase = song->base;
-		cursmpscfg->SeqLength = song->length;
-		cursmpscfg->SeqData = song->data;
-		PreparseSMPSFile(cursmpscfg);
+		memset(&cursmps, 0x00, sizeof(SMPS_SET));
+		cursmps.Cfg = cursmpscfg;
+		cursmps.SeqBase = song->base;
+		cursmps.Seq.alloc = 0x00;
+		cursmps.Seq.Len = song->length;
+		cursmps.Seq.Data = song->data;
+		PreparseSMPSFile(&cursmps);
 		return TRUE;
 	}
-
+	
 	BOOL play_song()
 	{
 		if (trackMIDI)
+		{
+			ThreadSync(1);
+			StopAllSound();	// make sure to clean SMPS memory (might prevent 1up bugs)
+			ThreadSync(0);
 			return MIDIFallbackClass->play_song();
+		}
 		if (cursmpscfg == NULL)
 			return TRUE;
 		
-		ThreadPauseConfrm = false;
-		PauseThread = true;
-		while(! ThreadPauseConfrm)
-			Sleep(1);
-		PauseStream(false);
-
-		SmplsPerFrame = SampleRate / FrameDivider;
-		PlayMusic(cursmpscfg);
-		PauseThread = false;
+		ThreadSync(1);
+		
+		//SmplsPerFrame = SampleRate / FrameDivider;
+		FrameDivider = 60;
+		PlayMusic(&cursmps);
+		
+		ThreadSync(0);
+		PauseStream(0);
 		return TRUE;
 	}
 
@@ -1310,19 +1183,22 @@ public:
 		if (trackMIDI)
 			return MIDIFallbackClass->stop_song();
 #ifdef _M_IX86
-		if (EnableSKCHacks && reg_d0 == 0xE1)
-			FadeOutMusic();
-		else
+		if (EnableSKCHacks && reg_d0 > 0)
 		{
-#endif
-			ThreadPauseConfrm = false;
-			PauseThread = true;
-			while(! ThreadPauseConfrm)
-				Sleep(1);
-			StopAllSound();
-#ifdef _M_IX86
+			//if (reg_d0 == 0x2A)
+			//	return TRUE;	// silently skip stopping before playing 1-up tune
+			if (reg_d0 < 0xE0)
+				return TRUE;	// don't stop if we're going to play a new song anyway
+			if (reg_d0 == 0xE1)
+			{
+				FadeOutMusic();
+				return TRUE;
+			}
 		}
 #endif
+		ThreadSync(1);
+		StopAllSound();
+		ThreadSync(0);
 		return TRUE;
 	}
 
@@ -1330,7 +1206,7 @@ public:
 	{
 		if (trackMIDI)
 			return MIDIFallbackClass->pause_song();
-		PauseStream(true);
+		PauseStream(1);
 		return TRUE;
 	}
 
@@ -1338,7 +1214,7 @@ public:
 	{
 		if (trackMIDI)
 			return MIDIFallbackClass->unpause_song();
-		PauseStream(false);
+		PauseStream(0);
 		return TRUE;
 	}
 
@@ -1346,14 +1222,45 @@ public:
 	{
 		if (trackMIDI)
 			return MIDIFallbackClass->set_song_tempo(pct);
-		SmplsPerFrame = (SampleRate * pct) / (FrameDivider * 100);
+		//SmplsPerFrame = (SampleRate * pct) / (FrameDivider * 100);
+		FrameDivider = 60 * 100 / pct;
 		return TRUE;
 	}
 
 	~SMPSInterfaceClass()
 	{
+		SMPSExtra_SetCallbacks(SMPSCB_OFF, NULL);	// doing callbacks now can cause crashes
+		ThreadSync(1);
 		StopAllSound();
-		CloseThread = true;
+		
+		DeinitDriver();
+		//StopAudioOutput();	// It's already too late to do this.
+		//DeinitAudioOutput();
+		{
+			delete [] smpscfg_3K.DrumLib.DrumData;
+			delete [] smpscfg_12.DrumLib.DrumData;
+			FreeEnvelopeData(&smpscfg_3K.ModEnvs);
+			FreeEnvelopeData(&smpscfg_12.ModEnvs);
+			FreeEnvelopeData(&VolEnvs_S3);
+			FreeEnvelopeData(&VolEnvs_SK);
+			FreeEnvelopeData(&smpscfg_12.VolEnvs);
+			//FreeDACData(&smpscfg_3K.DACDrv);
+			{
+				delete [] smpscfg_3K.DACDrv.Smpls;
+				delete [] smpscfg_3K.DACDrv.Cfg.Algos;
+				delete [] smpscfg_3K.DACDrv.SmplTbl;
+			}
+			//FreeDACData(&smpscfg_12.DACDrv);
+			{
+				delete [] smpscfg_12.DACDrv.Smpls;
+				delete [] smpscfg_12.DACDrv.Cfg.Algos;
+				delete [] smpscfg_12.DACDrv.SmplTbl;
+			}
+			FreeDrumTracks(&smpscfg_3K.FMDrums);
+			FreeDrumTracks(&smpscfg_3K.PSGDrums);
+			FreeGlobalInstrumentLib(&smpscfg_3K);
+			FreeGlobalInstrumentLib(&smpscfg_12);
+		}
 #if _M_IX86
 		if (EnableSKCHacks)
 			timeEndPeriod(2);
@@ -1434,18 +1341,22 @@ extern "C"
 
 	__declspec(dllexport) void SetVolume(double volume)
 	{
-		VolumeLevel = volume;
+		OutputVolume = (INT32)(volume * 0x100 + 0.5);
 	}
 
-	void NotifySongStopped()
+	void NotifySongStopped(void)
 	{
 #ifdef _M_IX86
-		if (EnableSKCHacks)
+		// The SMPS driver restores the previous song automatically if:
+		// 1. the "reload save state" flag is set
+		// 2. there is a save state to load
+		if (EnableSKCHacks && ! (*SmpsReloadState == 0x01 && *SmpsMusicSaveState))
+		{
 			PostMessageA(gameWindow, 0x464u, 0, 0);
-		else if (SongStoppedCallback)
-#else
-		if (SongStoppedCallback)
+			return;
+		}
 #endif
+		if (SongStoppedCallback != NULL)
 			SongStoppedCallback();
 	}
 }

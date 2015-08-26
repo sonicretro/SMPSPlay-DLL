@@ -1,7 +1,7 @@
 #ifndef __SMPS_STRUCTS_INT_H__
 #define __SMPS_STRUCTS_INT_H__
 
-#include "stdtype.h"
+#include <stdtype.h>
 #include "smps_structs.h"
 
 // --- Internal SMPS structures ---
@@ -35,21 +35,35 @@ typedef struct _lfo_modulation
 	UINT8 ToutInit;		// 15 - delay between FMS increments (reset value for Timeout)
 	UINT8 MaxFMS;		// 16 - destination FMS value
 } LFO_MOD;
+#define ADSRM_REPT_AD	0x08	// repeat Attack/Decay phase
+typedef struct _adsr_volume_data
+{
+	UINT8 State;		// 1D - ADSR Envelope State (current Phase and Mode bits)
+	UINT8 Mode;			// 1E
+	UINT8 Level;		// 1F - Volume Level
+	UINT8 AtkRate;		// 20 - Attack Rate
+	UINT8 DecRate;		// 21 - Decay Rate
+	UINT8 DecLvl;		// 22 - Decay Level
+	UINT8 SusRate;		// 23 - Sustain Rate
+	UINT8 RelRate;		// 24 - Release Rate
+} ADSR_DATA;
 
 #define TRK_STACK_SIZE		8
-#define PBKFLG_SPCMODE		0x01	// Bit 0 - Special Mode (Special FM 3 or Noise)
+#define PBKFLG_SPCMODE		0x01	// Bit 0 - Special Mode (Special FM 3 or Noise) [Z80 only]
 #define PBKFLG_HOLD			0x02	// Bit 1 - Hold Note
 #define PBKFLG_OVERRIDDEN	0x04	// Bit 2 - overridden by SFX
-#define PBKFLG_RAWFREQ		0x08	// Bit 3 - raw frequency mode
+#define PBKFLG_RAWFREQ		0x08	// Bit 3 - raw frequency mode [Z80 only]
 #define PBKFLG_ATREST		0x10	// Bit 4 - at rest
-#define PBKFLG_PITCHSLIDE	0x20	// Bit 5 - Pitch Slide
-#define PBKFLG_LOCKFREQ		0x40	// Bit 6 - lock frequence
+#define PBKFLG_PITCHSLIDE	0x20	// Bit 5 - Pitch Slide [Z80 only]
+#define PBKFLG_LOCKFREQ		0x40	// Bit 6 - lock frequency [Z80 only]
 #define PBKFLG_ACTIVE		0x80	// Bit 7 - track is active
+#define PBKFLG_PAUSED		0x100	// Bit 8 - track was paused via coordination flags [68k only]
+#define PBKFLG_HOLD_LOCK	0x200	// Bit 9 - hold all coming notes [preSMPS Z80 only]
 typedef struct _track_ram
 {
-	SMPS_CFG* SmpsCfg;
+	SMPS_SET* SmpsSet;
 	
-	UINT8 PlaybkFlags;	// 00 - Playback Flags
+	UINT16 PlaybkFlags;	// 00 - Playback Flags (actually 8-bit, but that's not enough for all Z80 and 68k bits)
 	UINT8 ChannelMask;	// 01 - Channel Bits (various chip-dependent bits)
 	UINT8 TickMult;		// 02 - Tick Multiplier
 	UINT16 Pos;			// 03/04 - Track Pointer
@@ -59,7 +73,7 @@ typedef struct _track_ram
 	UINT8 Instrument;	// 08 - FM/PSG Instrument
 	UINT8 StackPtr;		// 09 - GoSub Stack Pointer
 	UINT8 PanAFMS;		// 0A - Pan/AMS/FMS bits (YM2612 Register B4)
-	UINT8 Timeout;		// 0B - current Note Timeout
+	UINT8 RemTicks;		// 0B - current Note Timeout
 	UINT8 NoteLen;		// 0C - last Note Length (Timeout gets set to NoteLen when playing a note)
 	union
 	{
@@ -71,9 +85,10 @@ typedef struct _track_ram
 		} DAC;
 	};
 	UINT8 FMInsSong;	// 0F - Song ID of the song that contains the FM instrument data
-	INT8 Detune;		// 10 - Frequency Detune or Pitch Slide Speed
+	INT16 Detune;		// 10 - Frequency Detune or Pitch Slide Speed
 	PAN_ANIM PanAni;	// 11-16 - Pan Animation
 	LFO_MOD LFOMod;		// 11-16 - LFO Modulation (Ghostbusters only)
+	ADSR_DATA ADSR;		// 1D-24 - ADSR Data (Sonic 2 SMS only)
 	UINT8 VolEnvIdx;	// 17 - Volume Envelope Index
 	UINT8 VolEnvCache;	// [not in driver]
 	union
@@ -104,11 +119,29 @@ typedef struct _track_ram
 	INT8 PS4_DacMode;	// DAC On/Off, Volume Control On/Off
 	UINT8 PS4_AltTrkMode;
 	UINT8 GA3_DacMode;	// 2-note DAC mode on/off
+	UINT8 CoI_VolBase;	// Volume Base value (added to all volume changes)
 	
 	UINT8 LoopStack[TRK_STACK_SIZE];	// 28-2F - Loop Data and GoSub Stack
-	UINT16 LoopOfs;		// [not in driver] Loop Offset (for loop detection)
+	
+#ifdef ENABLE_LOOP_DETECTION
+	SMPS_LOOPPTR LoopOfs;	// [not in driver] Loop Offset (for loop detection)
+#endif
+	UINT16 LastJmpPos;		// for loop detection
 } TRK_RAM;
-
+typedef struct _drum_track_ram
+{
+	TRK_RAM* Trk;
+	
+	UINT8 PlaybkFlags;		// 00 - Playback Flags
+	const UINT8* InsPtr;	// 01/02 - Instrument Pointer
+	UINT8 Freq1MSB;			// 03 - Frequency MSB, 1st Operator
+	UINT8 Freq1LSB;			// 04 - Frequency LSB, 1st Operator
+	UINT8 Freq2MSB;			// 05 - Frequency MSB, 2nd Operator
+	UINT8 Freq2LSB;			// 06 - Frequency LSB, 2nd Operator
+	UINT8 Freq1Inc;			// 07 - Frequency Increment, 1st Operator
+	UINT8 Freq2Inc;			// 08 - Frequency Increment, 2nd Operator
+	UINT8 RemTicks;			// 09 - Ticks until Note Off
+} DRUM_TRK_RAM;
 
 enum MUSIC_TRACKS
 {
@@ -120,14 +153,18 @@ enum MUSIC_TRACKS
 	TRACK_MUS_FM4,
 	TRACK_MUS_FM5,
 	TRACK_MUS_FM6,
-	TRACK_MUS_PSG1,
+	TRACK_MUS_FM_END,
+	TRACK_MUS_PSG1 = TRACK_MUS_FM_END,
 	TRACK_MUS_PSG2,
 	TRACK_MUS_PSG3,
-	TRACK_MUS_PWM1,
+	TRACK_MUS_PSG4,	// PSG noise for Master System SMPS
+	TRACK_MUS_PSG_END,
+	TRACK_MUS_PWM1 = TRACK_MUS_PSG_END,
 	TRACK_MUS_PWM2,
 	TRACK_MUS_PWM3,
 	TRACK_MUS_PWM4,
-	MUS_TRKCNT
+	TRACK_MUS_PWM_END,
+	MUS_TRKCNT = TRACK_MUS_PWM_END
 };
 enum SFX_TRACKS
 {
@@ -154,15 +191,24 @@ typedef struct _fade_info
 	UINT8 DlyInit;	// 1C0E - initial Timeout value
 	UINT8 DlyCntr;	// 1C0F - Timeout Counter
 } FADE_INF;
+typedef struct _fade_special_info
+{
+	UINT8 Mode;		// F028 - Mode
+	UINT8 AddDAC;	// F02x - DAC Increment [Metal Head]
+	UINT8 AddFM;	// F029 - FM Increment
+	UINT8 AddPSG;	// F02A - PSG Increment
+	UINT8 AddPWM;	// F02x - PWM Increment [Metal Head]
+} FADE_SPC_INF;
 
 #define TRKMODE_MUSIC	0x00
 #define TRKMODE_SFX		0x01
 #define TRKMODE_SPCSFX	0x80
 typedef struct _sound_ram
 {
-	SMPS_CFG* MusCfg;
-	SMPS_CFG* SFXCfg[SFX_TRKCNT + SPCSFX_TRKCNT];
-	SMPS_CFG DrumCfg[0x02];
+	// Note: SMPS_SET is stored as pointers, so that multiple SFX tracks can reference the same data.
+	SMPS_SET* MusSet;
+	SMPS_SET* SFXSet[SFX_TRKCNT + SPCSFX_TRKCNT];
+	SMPS_SET DrumSet[0x02];	// Note: These always reuse data from MusSet and don't require memory management.
 	
 	// SMPS Z80 Type 1:
 	// 1C00/1C01 - Data Bank
@@ -171,7 +217,7 @@ typedef struct _sound_ram
 	UINT8 TimerBVal;	// 1C06 - YM2612 Timer B Value (for SFX Timing)
 	// 1C07 - Timing Mode:
 	//		00 - update all on Vertical Interrupt (NTSC: 60 Hz/PAL: 50 Hz)
-	//		20 - update all when YM2612 Timer A expires [not in actual driver]
+	//		20 - update all when YM2612 Timer A expires [SMPS Z80 Type 1/DAC only]
 	//		40 - update all when YM2612 Timer B expires (Note: often used with Timer B = CBh)
 	//		80 - update music when Timer A expires, update SFX when Timer B expires
 	UINT8 TimingMode;
@@ -185,7 +231,7 @@ typedef struct _sound_ram
 	UINT8 DacChVol[2];	// 1C07/1C08 - Chou Yakyuu Miracle Nine DAC channel volume
 	
 	// SMPS Z80 Type 2:
-	// 1C00/1C01 - ??? (unused)
+	// 1C00/1C01 - [unused]
 	// 1C02/1C03 - Pointer List Offset
 	// 1C04/1C05 - DAC Bank
 	// 1C06/1C07 - Music/SFX Data Bank
@@ -196,14 +242,22 @@ typedef struct _sound_ram
 	// 1C09 - PlaySound ID (00 = StopAllSound, 80 = do nothing)
 	// 1C0A-0C - Sound Queue (sound IDs that get checked against Sound Priority and moved to 1C09)
 	FADE_INF FadeOut;
+	FADE_INF FadeIn;
+	
+	FADE_SPC_INF FadeSpc;	// SMPS 68k/Type 2 only
 	
 	UINT8 PauseMode;		// 1C10
+	UINT8 MusicPaused;		// 1C11
 	// 1C11 - Music is paused via in-sequence commands
 	UINT8 SpcFM3Mode;		// 1C12 - Special FM3 Mode Bits (YM2612 Register 027)
+	UINT8 NoiseDrmVol;		// DD16 - Base Volume for Noise Drums [Master System SMPS only]
+	UINT8 NecPcmOverride;	// SMPS Pico only
+	UINT8 MusMultUpdate;	// Music Multi-Update (number of times the music will get processed)
 	UINT8 TempoCntr;		// 1C13 - Tempo Counter/Tempo Timeout
 	UINT8 TempoInit;		// 1C14 - Initial Tempo Value
 	// 1C15 - unknown (set to 00 when SFX is started, set to 1F when a track ends)
 	UINT8 CommData;			// 1C16 - Communication Data Byte
+	UINT8 LoadSaveRequest;	// 1C16 - [present in Sonic 3, sort of]
 	// 1C17 - unknown (set to a random value (Z80 register R) when executing DoSoundQueue
 	UINT8 CurSFXPrio;		// 1C18 - current SFX Priority
 	UINT8 TrkMode;			// 1C19 - Music/SFX Mode
@@ -213,6 +267,10 @@ typedef struct _sound_ram
 	UINT16 FM3Freqs_Mus[4];		// 1C2A - Special FM3 Frequencies: Music
 	
 	UINT8 CondJmpVal;
+	UINT8 SpinDashRev;		// 1C27 - Spindash Rev. Counter [Sonic 3K]
+	UINT8 ContSfxID;		// 1C25 - Continuous SFX: current SFX ID [Sonic 3K]
+	UINT8 ContSfxFlag;		// 1C26 - Continuous SFX: Enable Flag [Sonic 3K]
+	UINT8 ContSfxLoop;		// 1C31 - Continuous SFX: Loop Counter [Sonic 3K]
 	
 	// 1C32 - GetSFXChnPtrs saves the current Channel ID to this byte
 	// 1C33 - PlayMusic variable: Track Header offset
@@ -224,10 +282,31 @@ typedef struct _sound_ram
 	// 1C3D - DAC sound Bank Number
 	// 1C3E-3F - unused
 	
+	DRUM_TRK_RAM MusDrmTrks[2];			// 1819/1829 - preSMPS FM3 2-op Drum Tracks
 	TRK_RAM MusicTrks[MUS_TRKCNT];		// 1C40 - Music Tracks
 	TRK_RAM SFXTrks[SFX_TRKCNT];		// 1DF0 - SFX Tracks
 	TRK_RAM SpcSFXTrks[SPCSFX_TRKCNT];	// 1F40 - Special SFX Tracks
+	const UINT8* ModData;				// [SMPS Z80 Type 1] last value of IY register
 } SND_RAM;
+
+typedef struct _music_save_state
+{
+	SMPS_SET* MusSet;
+	UINT8 InUse;
+	UINT16 TimerAVal;
+	UINT8 TimerBVal;
+	UINT8 TimingMode;
+	UINT8 LockTimingMode;
+	UINT8 DacChVol[2];
+	UINT8 MusicPaused;
+	UINT8 SpcFM3Mode;
+	UINT8 NoiseDrmVol;
+	UINT8 TempoCntr;
+	UINT8 TempoInit;
+	UINT16 FM3Freqs_Mus[4];
+	//DRUM_TRK_RAM MusDrmTrks[2];	// These are not required.
+	TRK_RAM MusicTrks[MUS_TRKCNT];
+} MUS_STATE;
 
 
 #endif // __SMPS_STRUCTS_INT_H__

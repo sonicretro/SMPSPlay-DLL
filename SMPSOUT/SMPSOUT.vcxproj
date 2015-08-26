@@ -33,7 +33,6 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -46,7 +45,6 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -66,27 +64,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_Win32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -94,12 +100,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_x64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,14 +115,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_Win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>SMPSOUTBuildTool.exe</Command>
@@ -133,14 +139,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>SMPSOUTBuildTool.exe</Command>
@@ -174,7 +180,6 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="stdbool.h" />
     <ClInclude Include="stdtype.h" />
-    <ClInclude Include="Stream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chips\2612intf.c" />
@@ -188,10 +193,11 @@
     <ClCompile Include="Engine\smps_drums.c" />
     <ClCompile Include="Engine\smps_extra.c" />
     <ClCompile Include="IniFile.cpp" />
+    <ClCompile Include="loader_data.c" />
+    <ClCompile Include="loader_smps.c" />
     <ClCompile Include="SMPSOUT.cpp" />
     <ClCompile Include="songinfo.gen.cpp" />
     <ClCompile Include="Sound.c" />
-    <ClCompile Include="Stream.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SMPSOUT.gen.rc" />

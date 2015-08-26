@@ -1,14 +1,56 @@
-#include "chips/mamedef.h"
+#define _CRTDBG_MAP_ALLOC	// note: no effect in Release builds
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+
+// mutex functions/types
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
+
+#include <stdtype.h>
 #include "Sound.h"
-#include "Stream.h"
+#include <audio/AudioStream.h>
+#include <audio/AudioStream_SpcDrvFuns.h>
+
+#include "chips/mamedef.h"
 #include "chips/2612intf.h"
 #include "chips/sn764intf.h"
+#ifndef DISABLE_NECPCM
+#include "chips/upd7759.h"
+#endif
 #include "Engine/smps.h"
 #include "Engine/dac.h"
+#ifndef DISABLE_NECPCM
+#include "Engine/necpcm.h"
+#endif
+#ifdef ENABLE_VGM_LOGGING
+#include "vgmwrite.h"
+#endif
 
-extern double VolumeLevel;
+
+#ifdef _MSC_VER
+#define stricmp		_stricmp
+#else
+#define stricmp		strcasecmp
+#endif
+
 
 typedef void (*strm_func)(UINT8 ChipID, stream_sample_t **outputs, int samples);
+
+typedef struct waveform_16bit_stereo
+{
+	INT16 Left;
+	INT16 Right;
+} WAVE_16BS;
+typedef struct waveform_32bit_stereo
+{
+	INT32 Left;
+	INT32 Right;
+} WAVE_32BS;
 
 typedef struct chip_audio_attributes CAUD_ATTR;
 struct chip_audio_attributes
@@ -36,16 +78,31 @@ typedef struct chip_audio_struct
 {
 	CAUD_ATTR SN76496;
 	CAUD_ATTR YM2612;
+#ifndef DISABLE_NECPCM
+	CAUD_ATTR uPD7759;
+#endif
 } CHIP_AUDIO;
 
 
+//void InitAudioOutput(void);
+//void DeinitAudioOutput(void);
+static UINT32 GetAudioDriver(UINT8 Type, const char* PreferredDrv);
+static void InitalizeChips(void);
+static void DeinitChips(void);
+//UINT8 QueryDeviceParams(const char* audAPIName, AUDIO_CFG* retAudioCfg);
+//void SetAudioHWnd(void* hWnd);
 //UINT8 StartAudioOutput(void);
 //UINT8 StopAudioOutput(void);
+//void PauseStream(UINT8 PauseOn);
+//UINT8 ToggleMuteAudioChannel(CHIP chip, UINT8 nChannel);
 static void SetupResampler(CAUD_ATTR* CAA);
-INLINE INT16 Limit2Short(INT32 Value);
+INLINE UINT8 Limit8Bit(INT32 Value);
+INLINE INT16 Limit16Bit(INT32 Value);
+INLINE INT32 Limit24Bit(INT32 Value);
+INLINE INT32 Limit32Bit(INT32 Value);
 static void null_update(UINT8 ChipID, stream_sample_t **outputs, int samples);
 static void ResampleChipStream(CAUD_ATTR* CAA, WAVE_32BS* RetSample, UINT32 Length);
-//UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize);
+static UINT32 FillBuffer(void* Params, UINT32 bufSize, void* data);
 static void YM2612_Callback(void *param, int irq);
 
 //void ym2612_fm_write(UINT8 ChipID, UINT8 Port, UINT8 Register, UINT8 Data);
@@ -55,9 +112,19 @@ static void YM2612_Callback(void *param, int irq);
 #define CLOCK_YM2612	7670454
 #define CLOCK_SN76496	3579545
 
+#ifdef DISABLE_NECPCM
 #define CHIP_COUNT		0x02
+#else
+#define CHIP_COUNT		0x03
+#endif
 
+//#define VOL_SHIFT		7	// shift X bits to the right after mixing everything together
+#define VOL_SHIFT		10	// 7 [main shift] + (8-5) [OutputVolume post-shift]
+
+AUDIO_CFG AudioCfg;
+static AUDIO_OPTS* audOpts;
 UINT32 SampleRate;	// Note: also used by some sound cores to determinate the chip sample rate
+INT32 OutputVolume = 0x100;
 
 UINT8 ResampleMode;	// 00 - HQ both, 01 - LQ downsampling, 02 - LQ both
 UINT8 CHIP_SAMPLING_MODE;
@@ -69,29 +136,95 @@ static CHIP_AUDIO ChipAudio;
 static INT32* StreamBufs[0x02];
 stream_sample_t* DUMMYBUF[0x02] = {NULL, NULL};
 
-static UINT8 DeviceState = 0x00;	// 00 - not running, 01 - running
+static UINT8 DeviceState = 0xFF;	// FF - not initialized, 00 - not running, 01 - running
+static void* audDrv;
+static void* audDrvLog;
+
 static UINT8 TimerExpired;
 UINT16 FrameDivider = 60;
-UINT32 SmplsPerFrame;
+//static UINT32 SmplsPerFrame;
 static UINT32 SmplsTilFrame;
 static UINT8 TimerMask;
+static UINT32 MuteChannelMaskYm2612 = 0;
+static UINT32 MuteChannelMaskSn76496 = 0;
 
-UINT32 PlayingTimer;
-INT32 StoppedTimer;
+volatile UINT32 SMPS_PlayingTimer;
+volatile INT32 SMPS_StoppedTimer;
+volatile INT32 SMPS_CountdownTimer;
+extern SMPS_CB_SIGNAL CB_Signal;
 
-UINT8 StartAudioOutput(void)
+#ifdef _WIN32
+HANDLE hMutex = NULL;
+HWND hWndSnd = NULL;
+#else
+pthread_mutex_t hMutex = 0;
+#endif
+static UINT8 lastMutexLockMode;
+
+void InitAudioOutput(void)
+{
+	memset(&AudioCfg, 0x00, sizeof(AUDIO_CFG));
+	
+	Audio_Init();
+	
+	DeviceState = 0x00;
+	return;
+}
+
+void DeinitAudioOutput(void)
+{
+	Audio_Deinit();
+	
+	return;
+}
+
+static UINT32 GetAudioDriver(UINT8 Type, const char* PreferredDrv)
+{
+	UINT32 idDrv;
+	AUDDRV_INFO* drvInfo;
+	UINT32 drvCount;
+	UINT32 curDrv;
+	
+	drvCount = Audio_GetDriverCount();
+	idDrv = (UINT32)-1;
+	for (curDrv = 0; curDrv < drvCount; curDrv ++)
+	{
+		Audio_GetDriverInfo(curDrv, &drvInfo);
+		if (drvInfo->drvType != Type)
+			continue;
+		
+		if (PreferredDrv != NULL)
+		{
+			if (! stricmp(drvInfo->drvName, PreferredDrv))
+				return curDrv;
+		}
+		else
+		{
+			if (drvInfo->drvSig == ADRVSIG_WASAPI)
+				continue;	// WASAPI is crap due to limited sample rates
+			
+			// uncomment to use the first possible device
+			//if (idDrv == (UINT32)-1)
+			// We use the last device ID here, because the more "advanced" devices
+			// have later IDs.
+			idDrv = curDrv;
+		}
+	}
+	return idDrv;
+}
+
+static void InitalizeChips(void)
 {
 	UINT8 CurChip;
-	UINT8 RetVal;
 	CAUD_ATTR* CAA;
 	
 	if (DeviceState)
-		return 0x80;	// already running
+		return;
 	
-	SampleRate = 44100;
 	ResampleMode = 0x00;
 	CHIP_SAMPLING_MODE = 0x00;
 	CHIP_SAMPLE_RATE = 0x00000000;
+	SampleRate = audOpts->sampleRate;	// used by some chips as output sample rate
 	
 	for (CurChip = 0x00; CurChip < CHIP_COUNT; CurChip ++)
 	{
@@ -122,19 +255,169 @@ UINT8 StartAudioOutput(void)
 	device_reset_sn764xx(0x00);
 	SetupResampler(CAA);
 	
-	DeviceState = 0x01;
+#ifndef DISABLE_NECPCM
+	CAA = &ChipAudio.uPD7759;
+	CAA->SmpRate = device_start_upd7759(0x00, 0x80000000 | (UPD7759_STANDARD_CLOCK * 2));
+	CAA->StreamUpdate = &upd7759_update;
+	CAA->Volume = 0x2B;	// ~0.33 * PSG according to Kega Fusion 3.64
+	device_reset_upd7759(0x00);
+	SetupResampler(CAA);
+#endif
+	
 	TimerExpired = 0xFF;
 	TimerMask = 0x03;
-	PlayingTimer = 0;
-	StoppedTimer = -1;
+	SMPS_PlayingTimer = 0;
+	SMPS_StoppedTimer = -1;
+	SMPS_CountdownTimer = 0;
 	
-	SmplsPerFrame = SampleRate / FrameDivider;
+	//SmplsPerFrame = SampleRate / 60;
 	SmplsTilFrame = 0;
 	
-	RetVal = StartStream(0x00);
+	DeviceState = 0x01;
+	return;
+}
+
+static void DeinitChips(void)
+{
+	if (DeviceState != 0x01)
+		return;
+	
+	free(StreamBufs[0x00]);	StreamBufs[0x00] = NULL;
+	free(StreamBufs[0x01]);	StreamBufs[0x01] = NULL;
+	
+	device_stop_ym2612(0x00);
+	device_stop_sn764xx(0x00);
+#ifndef DISABLE_NECPCM
+	device_stop_upd7759(0x00);
+#endif
+	DeviceState = 0x00;
+	
+	return;
+}
+
+
+UINT8 QueryDeviceParams(const char* audAPIName, AUDIO_CFG* retAudioCfg)
+{
+	UINT8 RetVal;
+	UINT32 idWaveOut;
+	void* tempAudDrv;
+	AUDDRV_INFO* drvInfo;
+	AUDIO_OPTS* tempAudOpts;
+	
+	idWaveOut = GetAudioDriver(ADRVTYPE_OUT, audAPIName);
+	if (idWaveOut == (UINT32)-1)
+		return 0xFF;
+	
+	RetVal = AudioDrv_Init(idWaveOut, &tempAudDrv);
+	if (RetVal)
+		return 0xC0;
+	Audio_GetDriverInfo(idWaveOut, &drvInfo);
+	
+	tempAudOpts = AudioDrv_GetOptions(tempAudDrv);
+	memset(retAudioCfg, 0x00, sizeof(AUDIO_CFG));
+	retAudioCfg->AudAPIName = (char*)audAPIName;
+	retAudioCfg->AudioBufs = tempAudOpts->numBuffers;
+	retAudioCfg->AudioBufSize = (tempAudOpts->usecPerBuf + 500) / 1000;
+	retAudioCfg->SamplePerSec = tempAudOpts->sampleRate;
+	retAudioCfg->BitsPerSample = tempAudOpts->numBitsPerSmpl;
+	
+	AudioDrv_Deinit(&tempAudDrv);
+	
+	return 0x00;
+}
+
+#ifdef _WIN32
+void SetAudioHWnd(void* hWnd)
+{
+	hWndSnd = (HWND)hWnd;
+	
+	return;
+}
+#endif
+
+UINT8 StartAudioOutput(void)
+{
+	UINT8 RetVal;
+	UINT32 idWaveOut;
+	UINT32 idWaveWrt;
+	AUDDRV_INFO* drvInfo;
+	AUDIO_OPTS* optsLog;
+	void* aDrv;
+	
+	if (DeviceState)
+		return 0x80;	// already running
+	
+	audDrv = audDrvLog = NULL;
+	idWaveOut = GetAudioDriver(ADRVTYPE_OUT, AudioCfg.AudAPIName);
+	idWaveWrt = GetAudioDriver(ADRVTYPE_DISK, "WaveWrite");
+	
+	RetVal = AudioDrv_Init(idWaveOut, &audDrv);
 	if (RetVal)
 	{
-		//printf("Error openning Sound Device!\n");
+		audDrv = NULL;
+		printf("Error loading Audio Driver!\n");
+		StopAudioOutput();
+		return 0xC0;
+	}
+	Audio_GetDriverInfo(idWaveOut, &drvInfo);
+#if defined(_WIN32) && defined(AUDDRV_DSOUND)
+	if (drvInfo->drvSig == ADRVSIG_DSOUND)
+	{
+		aDrv = AudioDrv_GetDrvData(audDrv);
+		DSound_SetHWnd(aDrv, hWndSnd);
+	}
+#endif
+	if (AudioCfg.LogWave && idWaveWrt != (UINT32)-1 && AudioCfg.WaveLogPath != NULL)
+	{
+		RetVal = AudioDrv_Init(idWaveWrt, &audDrvLog);
+		if (! RetVal)
+		{
+			Audio_GetDriverInfo(idWaveWrt, &drvInfo);
+			if (drvInfo->drvSig == ADRVSIG_WAVEWRT)
+			{
+				aDrv = AudioDrv_GetDrvData(audDrvLog);
+				WavWrt_SetFileName(aDrv, AudioCfg.WaveLogPath);
+			}
+		}
+	}
+	
+	audOpts = AudioDrv_GetOptions(audDrv);
+	if (AudioCfg.SamplePerSec)
+		audOpts->sampleRate = AudioCfg.SamplePerSec;
+	audOpts->numChannels = 2;
+	if (AudioCfg.BitsPerSample)
+		audOpts->numBitsPerSmpl = AudioCfg.BitsPerSample;
+	if (AudioCfg.AudioBufs)
+		audOpts->numBuffers = AudioCfg.AudioBufs;
+	if (AudioCfg.AudioBufSize)
+		audOpts->usecPerBuf = AudioCfg.AudioBufSize * 1000;
+	if (AudioCfg.Volume > 0.0f)
+		OutputVolume = (INT32)(AudioCfg.Volume * 0x100 + 0.5f);
+	if (audDrvLog != NULL)
+	{
+		optsLog = AudioDrv_GetOptions(audDrvLog);
+		*optsLog = *audOpts;
+	}
+	
+	AudioDrv_SetCallback(audDrv, FillBuffer);
+	if (audDrvLog != NULL)
+	{
+		AudioDrv_DataForward_Add(audDrv, audDrvLog);
+		RetVal = AudioDrv_Start(audDrvLog, 0);
+		if (RetVal)
+			AudioDrv_Deinit(&audDrvLog);
+	}
+#ifdef _WIN32
+	hMutex = CreateMutex(NULL, FALSE, NULL);
+#else
+	pthread_mutex_init(&hMutex, NULL);
+#endif
+	lastMutexLockMode = 0;
+	InitalizeChips();
+	RetVal = AudioDrv_Start(audDrv, AudioCfg.AudAPIDev);
+	if (RetVal)
+	{
+		printf("Error openning Sound Device! (Error Code %02X)\n", RetVal);
 		StopAudioOutput();
 		return 0xC0;
 	}
@@ -146,21 +429,122 @@ UINT8 StopAudioOutput(void)
 {
 	UINT8 RetVal;
 	
-	if (! DeviceState)
-		return 0x00;	// not running
+#ifdef _WIN32
+	if (hMutex != NULL)
+	{
+		ReleaseMutex(hMutex);
+		CloseHandle(hMutex);
+		hMutex = NULL;
+	}
+#else
+	if (hMutex)
+	{
+		pthread_mutex_unlock(&hMutex);
+		pthread_mutex_destroy(&hMutex);
+		hMutex = 0;
+	}
+#endif
 	
-	RetVal = StopStream();
+	if (audDrv != NULL)
+	{
+		RetVal = AudioDrv_Stop(audDrv);
+		RetVal = AudioDrv_Deinit(&audDrv);
+	}
+	if (audDrvLog != NULL)
+	{
+		RetVal = AudioDrv_Stop(audDrvLog);
+		RetVal = AudioDrv_Deinit(&audDrvLog);
+	}
 	
-	free(StreamBufs[0x00]);	StreamBufs[0x00] = NULL;
-	free(StreamBufs[0x01]);	StreamBufs[0x01] = NULL;
-	
-	device_stop_ym2612(0x00);
-	device_stop_sn764xx(0x00);
-	DeviceState = 0x00;
+	DeinitChips();
 	
 	return 0x00;
 }
 
+void PauseStream(UINT8 PauseOn)
+{
+	if (audDrv == NULL)
+		return;
+	
+	if (PauseOn)
+		AudioDrv_Pause(audDrv);
+	else
+		AudioDrv_Resume(audDrv);
+	
+	return;
+}
+
+void ThreadSync(UINT8 PauseAndWait)
+{
+	if (PauseAndWait == lastMutexLockMode)
+		return;
+	
+#ifdef _WIN32
+	if (PauseAndWait)
+	{
+		DWORD RetVal;
+		
+		RetVal = WaitForSingleObject(hMutex, INFINITE);
+		if (RetVal == WAIT_OBJECT_0)	// success
+			lastMutexLockMode = 1;
+	}
+	else
+	{
+		BOOL RetVal;
+		
+		RetVal = ReleaseMutex(hMutex);
+		if (RetVal)
+			lastMutexLockMode = 0;
+	}
+#else
+	int RetVal;
+	
+	if (PauseAndWait)
+	{
+		RetVal = pthread_mutex_lock(&hMutex);
+		if (! RetVal)
+			lastMutexLockMode = 1;
+	}
+	else
+	{
+		RetVal = pthread_mutex_unlock(&hMutex);
+		if (! RetVal)
+			lastMutexLockMode = 0;
+	}
+#endif
+	
+	return;
+}
+
+
+
+UINT8 ToggleMuteAudioChannel(CHIP chip, UINT8 nChannel)
+{
+	UINT8 result;
+	UINT32 mask = 1 << nChannel;
+	UINT32* CurrentMuteMask;
+	void(*fMuteMask)(UINT8 ChipID, UINT32 MuteMask);
+	
+	switch (chip)
+	{
+	case CHIP_YM2612:
+		CurrentMuteMask = &MuteChannelMaskYm2612;
+		fMuteMask = ym2612_set_mute_mask;
+		break;
+	case CHIP_SN76496:
+		CurrentMuteMask = &MuteChannelMaskSn76496;
+		fMuteMask = sn764xx_set_mute_mask;
+		break;
+	}
+	result = *CurrentMuteMask & mask;
+	if (result != 0)
+		*CurrentMuteMask &= ~mask;
+	else
+		*CurrentMuteMask |= mask;
+	fMuteMask(0, *CurrentMuteMask);
+	
+	return result;
+}
 
 static void SetupResampler(CAUD_ATTR* CAA)
 {
@@ -203,17 +587,67 @@ static void SetupResampler(CAUD_ATTR* CAA)
 	return;
 }
 
-INLINE INT16 Limit2Short(INT32 Value)
+INLINE UINT8 Limit8Bit(INT32 Value)
 {
 	INT32 NewValue;
 	
-	NewValue = Value;
+	// divide by (8 + VOL_SHIFT) with proper rounding
+	Value += (0x80 << VOL_SHIFT);	// add rounding term (1 << (8 + VOL_SHIFT)) / 2
+	NewValue = Value >> (8 + VOL_SHIFT);
+	if (NewValue < -0x80)
+		NewValue = -0x80;
+	else if (NewValue > +0x7F)
+		NewValue = +0x7F;
+	
+	return (UINT8)(0x80 + NewValue);	// return unsigned 8-bit
+}
+
+INLINE INT16 Limit16Bit(INT32 Value)
+{
+	INT32 NewValue;
+	
+	NewValue = Value >> VOL_SHIFT;
 	if (NewValue < -0x8000)
 		NewValue = -0x8000;
-	if (NewValue > 0x7FFF)
-		NewValue = 0x7FFF;
-	
+	else if (NewValue > +0x7FFF)
+		NewValue = +0x7FFF;
+
 	return (INT16)NewValue;
+}
+
+INLINE INT32 Limit24Bit(INT32 Value)
+{
+	INT32 NewValue;
+	
+#if (VOL_SHIFT < 8)
+	NewValue = (Value << 8 >> VOL_SHIFT) + (Value >> (8 + VOL_SHIFT));
+#else
+	NewValue = (Value >> (VOL_SHIFT - 8)) + (Value >> (8 + VOL_SHIFT));
+#endif
+	if (NewValue < -0x800000)
+		NewValue = -0x800000;
+	else if (NewValue > +0x7FFFFF)
+		NewValue = +0x7FFFFF;
+	return NewValue;
+}
+
+INLINE INT32 Limit32Bit(INT32 Value)
+{
+	INT64 NewValue;
+	
+	NewValue = ((INT64)Value << 16 >> VOL_SHIFT) + (Value >> VOL_SHIFT);
+#ifndef _MSC_VER
+	if (NewValue < -0x80000000LL)
+		NewValue = -0x80000000LL;
+	else if (NewValue > +0x7FFFFFFFLL)
+		NewValue = +0x7FFFFFFFLL;
+#else	// fallback for MS VC++ 6.0
+	if (NewValue < -0x80000000i64)
+		NewValue = -0x80000000i64;
+	else if (NewValue > +0x7FFFFFFFi64)
+		NewValue = +0x7FFFFFFFi64;
+#endif
+	return (INT32)NewValue;
 }
 
 static void null_update(UINT8 ChipID, stream_sample_t **outputs, int samples)
@@ -452,23 +886,33 @@ static void ResampleChipStream(CAUD_ATTR* CAA, WAVE_32BS* RetSample, UINT32 Leng
 	return;
 }
 
-UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize)
+static UINT32 FillBuffer(void* Params, UINT32 bufSize, void* data)
 {
+	UINT32 BufferSmpls;
+	UINT8* Buffer;
 	UINT32 CurSmpl;
 	WAVE_32BS TempBuf;
 	//UINT8 CurChip;
+	INT32 tempSmpl;
 	
-	if (Buffer == NULL)
+	if (data == NULL)
 		return 0x00;
 	
-	for (CurSmpl = 0x00; CurSmpl < BufferSize; CurSmpl ++)
+#ifdef _WIN32
+	WaitForSingleObject(hMutex, INFINITE);
+#else
+	pthread_mutex_lock(&hMutex);
+#endif
+	Buffer = (UINT8*)data;
+	BufferSmpls = bufSize * 8 / audOpts->numBitsPerSmpl / 2;
+	for (CurSmpl = 0x00; CurSmpl < BufferSmpls; CurSmpl ++)
 	{
 		if (! SmplsTilFrame)
 		{
 			UpdateAll(UPDATEEVT_VINT);
-			UpdateAll(UPDATEEVT_TIMER);
-			SmplsTilFrame = SmplsPerFrame;
-			//SmplsTilFrame = SampleRate / FrameDivider;
+			UpdateAll(UPDATEEVT_TIMER);	// check for Timer-based update (in case we changed timing)
+			//SmplsTilFrame = SmplsPerFrame;
+			SmplsTilFrame = SampleRate / FrameDivider;
 		}
 		SmplsTilFrame --;
 		if (TimerExpired)
@@ -477,11 +921,26 @@ UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize)
 			TimerExpired = ym2612_r(0x00, 0x00) & TimerMask;
 		}
 		UpdateDAC(1);
+#ifndef DISABLE_NECPCM
+		UpdateNECPCM();
+#endif
 		
-		if (StoppedTimer != -1)
-			StoppedTimer ++;
-		else if (PlayingTimer != -1)
-			PlayingTimer ++;
+		// count time and do VGM timing
+		if (SMPS_CountdownTimer)
+		{
+			SMPS_CountdownTimer --;
+			if (! SMPS_CountdownTimer && CB_Signal != NULL)
+				CB_Signal();
+		}
+		if (SMPS_StoppedTimer != -1)
+			SMPS_StoppedTimer ++;
+		else if (SMPS_PlayingTimer != -1)
+			SMPS_PlayingTimer ++;
+		
+#ifdef ENABLE_VGM_LOGGING
+		if (SMPS_StoppedTimer != -1 || SMPS_PlayingTimer != -1)
+			vgm_update(1);
+#endif
 		
 		TempBuf.Left = 0x00;
 		TempBuf.Right = 0x00;
@@ -490,16 +949,51 @@ UINT32 FillBuffer(WAVE_16BS* Buffer, UINT32 BufferSize)
 		//	ResampleChipStream(CurChip, &TempBuf, 1);
 		ResampleChipStream(&ChipAudio.YM2612, &TempBuf, 1);
 		ResampleChipStream(&ChipAudio.SN76496, &TempBuf, 1);
+#ifndef DISABLE_NECPCM
+		if (! upd7759_busy_r(0x00))
+			ResampleChipStream(&ChipAudio.uPD7759, &TempBuf, 1);
+#endif
 		
-		TempBuf.Left = TempBuf.Left >> 7;
-		TempBuf.Right = TempBuf.Right >> 7;
-		TempBuf.Left = (int)(TempBuf.Left * VolumeLevel);
-		TempBuf.Right = (int)(TempBuf.Right * VolumeLevel);
-		Buffer[CurSmpl].Left = Limit2Short(TempBuf.Left);
-		Buffer[CurSmpl].Right = Limit2Short(TempBuf.Right);
+		TempBuf.Left = (TempBuf.Left >> 5) * OutputVolume;
+		TempBuf.Right = (TempBuf.Right >> 5) * OutputVolume;
+		// now done by the LimitXBit routines
+		//TempBuf.Left = TempBuf.Left >> VOL_SHIFT;
+		//TempBuf.Right = TempBuf.Right >> VOL_SHIFT;
+		switch(audOpts->numBitsPerSmpl)
+		{
+		case 8:	// 8-bit is unsigned
+			*Buffer++ = Limit8Bit(TempBuf.Left);
+			*Buffer++ = Limit8Bit(TempBuf.Right);
+			break;
+		case 16:
+			((INT16*)Buffer)[0] = Limit16Bit(TempBuf.Left);
+			((INT16*)Buffer)[1] = Limit16Bit(TempBuf.Right);
+			Buffer += sizeof(INT16) * 2;
+			break;
+		case 24:
+			tempSmpl = Limit24Bit(TempBuf.Left);
+			*Buffer++ = (tempSmpl >>  0) & 0xFF;
+			*Buffer++ = (tempSmpl >>  8) & 0xFF;
+			*Buffer++ = (tempSmpl >> 16) & 0xFF;
+			tempSmpl = Limit24Bit(TempBuf.Right);
+			*Buffer++ = (tempSmpl >>  0) & 0xFF;
+			*Buffer++ = (tempSmpl >>  8) & 0xFF;
+			*Buffer++ = (tempSmpl >> 16) & 0xFF;
+			break;
+		case 32:
+			((INT32*)Buffer)[0] = Limit32Bit(TempBuf.Left);
+			((INT32*)Buffer)[1] = Limit32Bit(TempBuf.Right);
+			Buffer += sizeof(INT32) * 2;
+			break;
+		}
 	}
+#ifdef _WIN32
+	ReleaseMutex(hMutex);
+#else
+	pthread_mutex_unlock(&hMutex);
+#endif
 	
-	return CurSmpl;
+	return CurSmpl * audOpts->numBitsPerSmpl * 2 / 8;
 }
 
 static void YM2612_Callback(void* param, int irq)
@@ -527,12 +1021,20 @@ void ym2612_fm_write(UINT8 ChipID, UINT8 Port, UINT8 Register, UINT8 Data)
 	ym2612_w(ChipID, 0x00 | (Port << 1), Register);
 	ym2612_w(ChipID, 0x01 | (Port << 1), Data);
 	
+#ifdef ENABLE_VGM_LOGGING
+	vgm_write(VGMC_YM2612, Port, Register, Data);
+#endif
+	
 	return;
 }
 
 void sn76496_psg_write(UINT8 ChipID, UINT8 Data)
 {
 	sn764xx_w(ChipID, 0x00, Data);
+	
+#ifdef ENABLE_VGM_LOGGING
+	vgm_write(VGMC_SN76496, 0, Data, 0);
+#endif
 	
 	return;
 }
