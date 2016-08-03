@@ -870,10 +870,10 @@ public:
 		smpscfg_3K.VolEnvs = VolEnvs_SK;
 
 		GenerateDACDrv(&smpscfg_3K.DACDrv, (IDR_DAC_A0_S3D - IDR_DAC_81) + 1, IDR_DAC_81, 297,
-						LengthOfArray(DACFiles), DACFiles);
+						(unsigned int)LengthOfArray(DACFiles), DACFiles);
 
 		GenerateDACDrv(&smpscfg_12.DACDrv, (IDR_DAC_87_S2 - IDR_DAC_81_S2) + 1, IDR_DAC_81_S2, 288,
-						LengthOfArray(DACFiles_S2), DACFiles_S2);
+						(unsigned int)LengthOfArray(DACFiles_S2), DACFiles_S2);
 
 		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_INSSET), _T("MISC"));
 		LoadGlobalInstrumentLib_Mem((UINT16)SizeofResource(moduleHandle, hres),
@@ -1342,6 +1342,29 @@ extern "C"
 	__declspec(dllexport) void SetVolume(double volume)
 	{
 		OutputVolume = (INT32)(volume * 0x100 + 0.5);
+	}
+
+	__declspec(dllexport) void SetWaveLogPath(const char *logfile)
+	{
+		if (AudioCfg.WaveLogPath)
+		{
+			free(AudioCfg.WaveLogPath);
+			AudioCfg.WaveLogPath = NULL;
+		}
+		if (logfile)
+		{
+			AudioCfg.WaveLogPath = _strdup(logfile);
+			AudioCfg.LogWave = 1;
+		}
+		else
+		{
+			AudioCfg.LogWave = 0;
+		}
+	}
+
+	__declspec(dllexport) void RegisterSongLoopCallback(SMPS_CB_SIGNAL func)
+	{
+		SMPSExtra_SetCallbacks(SMPSCB_LOOP, func);
 	}
 
 	void NotifySongStopped(void)
