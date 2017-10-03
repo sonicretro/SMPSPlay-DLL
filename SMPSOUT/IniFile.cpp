@@ -3,7 +3,6 @@
  * INI file parser.
  */
 
-#define _CRT_SECURE_NO_WARNINGS
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 #include "IniFile.hpp"
 #endif

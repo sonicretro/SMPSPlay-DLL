@@ -13,57 +13,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="SMPSPlay Header Files">
+      <UniqueIdentifier>{5cd3d815-5d19-49b7-b91e-8483ec4cddea}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx</Extensions>
+    </Filter>
+    <Filter Include="SMPSPlay Source Files">
+      <UniqueIdentifier>{0efa9d90-341b-4e4e-8f3a-3fc734e834e1}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\dac.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\smps.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\smps_commands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\smps_int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\smps_structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\smps_structs_int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\stdtype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chips\2612intf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chips\fm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chips\mamedef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chips\sn76496.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="chips\sn764intf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sound.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdtype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdbool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IniFile.hpp">
@@ -78,6 +41,36 @@
     <ClInclude Include="resource.gen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Sound.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_structs.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_structs_int.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Engine\dac.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\loader.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\loader_data.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\loader_smps.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_commands.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_int.h">
+      <Filter>SMPSPlay Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SMPSOUT.cpp">
@@ -86,47 +79,35 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="chips\2612intf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="chips\fm2612.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="chips\sn76496.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="chips\sn764intf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\dac.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\smps.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\smps_commands.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\smps_drums.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\smps_extra.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sound.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IniFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="songinfo.gen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="loader_smps.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\SMPSPlay\src\Engine\dac.c">
+      <Filter>SMPSPlay Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="loader_data.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps.c">
+      <Filter>SMPSPlay Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps_commands.c">
+      <Filter>SMPSPlay Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps_drums.c">
+      <Filter>SMPSPlay Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps_extra.c">
+      <Filter>SMPSPlay Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SMPSPlay\src\loader_data.c">
+      <Filter>SMPSPlay Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SMPSPlay\src\loader_smps.c">
+      <Filter>SMPSPlay Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SMPSPlay\src\Sound.c">
+      <Filter>SMPSPlay Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

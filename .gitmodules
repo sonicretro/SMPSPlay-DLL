@@ -1,0 +1,3 @@
+[submodule "SMPSPlay"]
+	path = SMPSPlay
+	url = https://github.com/ValleyBell/SMPSPlay.git

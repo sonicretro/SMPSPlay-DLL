@@ -22,33 +22,34 @@
     <ProjectGuid>{3B009AD4-292B-424F-AB97-071ADD662C80}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SMPSOUT</RootNamespace>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -68,35 +69,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>libs\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_Win32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;vgm-audio_Win32d.lib;vgm-emu_Win32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,12 +105,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_x64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;vgm-audio_Win64d.lib;vgm-emu_Win64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,14 +120,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_Win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;vgm-audio_Win32.lib;vgm-emu_Win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>SMPSOUTBuildTool.exe</Command>
@@ -143,14 +144,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;libAudio_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;vgm-audio_Win64.lib;vgm-emu_Win64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>SMPSOUTBuildTool.exe</Command>
@@ -164,44 +165,35 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="chips\2612intf.h" />
-    <ClInclude Include="chips\fm.h" />
-    <ClInclude Include="chips\mamedef.h" />
-    <ClInclude Include="chips\sn76496.h" />
-    <ClInclude Include="chips\sn764intf.h" />
-    <ClInclude Include="Engine\dac.h" />
-    <ClInclude Include="Engine\smps.h" />
-    <ClInclude Include="Engine\smps_commands.h" />
-    <ClInclude Include="Engine\smps_int.h" />
-    <ClInclude Include="Engine\smps_structs.h" />
-    <ClInclude Include="Engine\smps_structs_int.h" />
-    <ClInclude Include="Engine\stdtype.h" />
+    <ClInclude Include="..\SMPSPlay\src\Engine\dac.h" />
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps.h" />
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_commands.h" />
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_int.h" />
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_structs.h" />
+    <ClInclude Include="..\SMPSPlay\src\Engine\smps_structs_int.h" />
+    <ClInclude Include="..\SMPSPlay\src\loader.h" />
+    <ClInclude Include="..\SMPSPlay\src\loader_data.h" />
+    <ClInclude Include="..\SMPSPlay\src\loader_smps.h" />
+    <ClInclude Include="..\SMPSPlay\src\Sound.h" />
     <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="musicid.gen.h" />
     <ClInclude Include="resource.gen.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="songinfo.h" />
-    <ClInclude Include="Sound.h" />
-    <ClInclude Include="stdbool.h" />
-    <ClInclude Include="stdtype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="chips\2612intf.c" />
-    <ClCompile Include="chips\fm2612.c" />
-    <ClCompile Include="chips\sn76496.c" />
-    <ClCompile Include="chips\sn764intf.c" />
+    <ClCompile Include="..\SMPSPlay\src\Engine\dac.c" />
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps.c" />
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps_commands.c" />
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps_drums.c" />
+    <ClCompile Include="..\SMPSPlay\src\Engine\smps_extra.c" />
+    <ClCompile Include="..\SMPSPlay\src\loader_data.c" />
+    <ClCompile Include="..\SMPSPlay\src\loader_smps.c" />
+    <ClCompile Include="..\SMPSPlay\src\Sound.c" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Engine\dac.c" />
-    <ClCompile Include="Engine\smps.c" />
-    <ClCompile Include="Engine\smps_commands.c" />
-    <ClCompile Include="Engine\smps_drums.c" />
-    <ClCompile Include="Engine\smps_extra.c" />
     <ClCompile Include="IniFile.cpp" />
-    <ClCompile Include="loader_data.c" />
-    <ClCompile Include="loader_smps.c" />
     <ClCompile Include="SMPSOUT.cpp" />
     <ClCompile Include="songinfo.gen.cpp" />
-    <ClCompile Include="Sound.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SMPSOUT.gen.rc" />

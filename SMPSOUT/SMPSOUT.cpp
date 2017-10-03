@@ -15,11 +15,11 @@ extern "C"
 //  DISABLE_DEBUG_MSGS
 //  DISABLE_NECPCM
 #include <common_def.h>
-#include "Engine\smps.h"
-#include "Engine\smps_commands.h"
-#include "Sound.h"
-#include "loader_data.h"
-#include "loader_smps.h"
+#include "../SMPSPlay/src/Engine/smps.h"
+#include "../SMPSPlay/src/Engine/smps_commands.h"
+#include "../SMPSPlay/src/Sound.h"
+#include "../SMPSPlay/src/loader_data.h"
+#include "../SMPSPlay/src/loader_smps.h"
 }
 
 #include <sstream>
@@ -35,6 +35,13 @@ extern "C"
 #include "songinfo.h"
 #include "musicid.gen.h"
 using namespace std;
+
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+#define get_time_int(x)	_time32(x)	// use _time32 for VC2005 and later
+#else
+#define get_time_int(x)	time(x)
+#endif
+
 
 HMODULE moduleHandle;
 HWND gameWindow;
@@ -695,7 +702,7 @@ public:
 		cursmpscfg = NULL;
 		fmdrum_on = false;
 
-		for (int i = 0; i < SongCount; i++)
+		for (i = 0; i < SongCount; i++)
 		{
 			hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MUSIC_1 + i), _T("MUSIC"));
 			songs[i].mode = MusicFiles[i].mode;
@@ -932,7 +939,7 @@ public:
 		{
 			timeBeginPeriod(2);
 
-			srand(_time32(NULL));
+			srand(get_time_int(NULL));
 		}
 #endif
 
@@ -1326,7 +1333,7 @@ extern "C"
 	__declspec(dllexport) const char **GetCustomSongs(unsigned int &count)
 	{
 		count = (unsigned int)customsongs.size();
-		return customsongs.data();
+		return &customsongs[0];
 	}
 
 	__declspec(dllexport) BOOL PlaySega()
