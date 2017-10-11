@@ -326,7 +326,28 @@ enum DriverMode {
 	SmpsDrv_S12
 };
 
-struct SongInfo { UINT8 *data; UINT16 length; UINT16 base; unsigned char mode; };
+struct SampleInfo { UINT8 *data; UINT32 length; };
+
+struct DrumInfo {
+	unsigned char id;
+	bool isRef;
+	union {
+		struct {
+			unsigned char game;
+			unsigned char id;
+		} ref;
+		struct {
+			bool isPCM;
+			UINT8 *data;
+			UINT32 dataSize;
+			UINT8 rate;
+		} cust;
+	};
+};
+
+struct DrumSet { unsigned char base; int drumCount; DrumInfo *drums; };
+
+struct SongInfo { UINT8 *data; UINT16 length; UINT16 base; unsigned char mode; DrumSet *drumset; };
 
 vector<SongInfo> songs(SongCount);
 
@@ -713,12 +734,15 @@ public:
 
 #ifdef INISUPPORT
 		IniFile custsongs(_T("songs_cust.ini"));
+		unordered_map<string, DrumSet *> drumsets;
+		unordered_map <string, SampleInfo> samples;
 		
 		for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
 		{
 			if (iter->first.empty()) continue;
+			IniGroup *group = iter->second;
 			SongInfo si = { };
-			string str = iter->second->getString("Type");
+			string str = group->getString("Type");
 			if (str == "S1")
 				si.mode = TrackMode_S1;
 			else if (str == "S2")
@@ -729,9 +753,9 @@ public:
 				si.mode = TrackMode_S3D;
 			else if (str == "S3")
 				si.mode = TrackMode_S3;
-			si.base = iter->second->getHexInt("Offset");
+			si.base = group->getHexInt("Offset");
 			FILE *fi;
-			fopen_s(&fi, iter->second->getString("File").c_str(), "rb");
+			fopen_s(&fi, group->getString("File").c_str(), "rb");
 			if (fi != nullptr)
 			{
 				fseek(fi, 0, SEEK_END);
@@ -740,6 +764,95 @@ public:
 				si.data = new UINT8[si.length];
 				fread(si.data, 1, si.length, fi);
 				fclose(fi);
+				if (group->hasKey("CustomDrums"))
+				{
+					string drumsetfile = group->getString("CustomDrums");
+					auto it2 = drumsets.find(drumsetfile);
+					if (it2 == drumsets.cend())
+					{
+						IniFile drumini(drumsetfile);
+						DrumSet *drumset = new DrumSet;
+						string str = drumini.getString("", "BaseSet");
+						if (str == "S1")
+							drumset->base = TrackMode_S1;
+						else if (str == "S2")
+							drumset->base = TrackMode_S2;
+						else if (str == "S2B")
+							drumset->base = TrackMode_S2B;
+						else if (str == "S3D")
+							drumset->base = TrackMode_S3D;
+						else if (str == "S3")
+							drumset->base = TrackMode_S3;
+						else if (str == "S&K")
+							drumset->base = TrackMode_SK;
+						else
+							drumset->base = -1;
+						vector<DrumInfo> drums;
+						for (auto it3 = drumini.begin(); iter != drumini.end(); it3++)
+						{
+							if (it3->first.empty()) continue;
+							IniGroup *g2 = it3->second;
+							DrumInfo di = {};
+							di.id = (UINT8)strtol(it3->first.c_str(), nullptr, 16);
+							di.isRef = g2->hasKey("DrumRef");
+							if (di.isRef)
+							{
+								string str = g2->getString("DrumRef");
+								size_t i = str.find(' ');
+								di.ref.id = (UINT8)strtol(str.substr(i + 1).c_str(), nullptr, 16);
+								str = str.substr(0, i);
+								if (str == "S1")
+									di.ref.game = TrackMode_S1;
+								else if (str == "S2")
+									di.ref.game = TrackMode_S2;
+								else if (str == "S2B")
+									di.ref.game = TrackMode_S2B;
+								else if (str == "S3D")
+									di.ref.game = TrackMode_S3D;
+								else if (str == "S3")
+									di.ref.game = TrackMode_S3;
+								else
+									di.ref.game = TrackMode_SK;
+							}
+							else
+							{
+								di.cust.isPCM = g2->getBool("PCM");
+								di.cust.rate = (UINT8)g2->getHexInt("Rate");
+								string str = g2->getString("File");
+								auto it4 = samples.find(str);
+								if (it4 == samples.cend())
+								{
+									fopen_s(&fi, str.c_str(), "rb");
+									if (fi != nullptr)
+									{
+										fseek(fi, 0, SEEK_END);
+										di.cust.dataSize = (UINT32)ftell(fi);
+										fseek(fi, 0, SEEK_SET);
+										di.cust.data = new UINT8[di.cust.dataSize];
+										fread(di.cust.data, 1, di.cust.dataSize, fi);
+										fclose(fi);
+										samples[str] = { di.cust.data, di.cust.dataSize };
+									}
+									else
+										continue;
+								}
+								else
+								{
+									di.cust.data = it4->second.data;
+									di.cust.dataSize = it4->second.length;
+								}
+							}
+							drums.push_back(di);
+						}
+						drumset->drumCount = drums.size();
+						drumset->drums = new DrumInfo[drums.size()];
+						memcpy(drumset->drums, drums.data(), sizeof(DrumInfo) * drums.size());
+						drumsets[drumsetfile] = drumset;
+						si.drumset = drumset;
+					}
+					else
+						si.drumset = it2->second;
+				}
 				songs.push_back(si);
 				char *buf = new char[iter->first.length() + 1];
 				strncpy_s(buf, iter->first.length() + 1, iter->first.c_str(), iter->first.length());
