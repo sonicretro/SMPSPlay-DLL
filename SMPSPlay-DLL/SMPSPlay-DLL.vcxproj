@@ -72,6 +72,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>SMPSPlay</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -82,6 +83,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>SMPSPlay</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
