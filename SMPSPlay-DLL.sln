@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SMPSOUT", "SMPSOUT\SMPSOUT.vcxproj", "{3B009AD4-292B-424F-AB97-071ADD662C80}"
-	ProjectSection(ProjectDependencies) = postProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SMPSPlay-DLL", "SMPSPlay-DLL\SMPSPlay-DLL.vcxproj", "{3B009AD4-292B-424F-AB97-071ADD662C80}"
+	ProjectSection(ProjectDependencies) = postProject 
 		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D} = {DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSCFG", "SMPSCFG\SMPSCFG.csproj", "{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSOUTBuildTool", "SMPSOUTBuildTool\SMPSOUTBuildTool.csproj", "{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSPlayBuildTool", "SMPSPlayBuildTool\SMPSPlayBuildTool.csproj", "{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

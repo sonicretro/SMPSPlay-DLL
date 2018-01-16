@@ -71,11 +71,11 @@
     <ClInclude Include="..\SMPSPlay\src\Engine\smps_int.h">
       <Filter>SMPSPlay Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SMPSPlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SMPSOUT.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -109,12 +109,15 @@
     <ClCompile Include="..\SMPSPlay\src\Sound.c">
       <Filter>SMPSPlay Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SMPSPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SMPSOUT.rc">
+    <ResourceCompile Include="SMPSPlay.gen.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="SMPSOUT.gen.rc">
+    <ResourceCompile Include="SMPSPlay.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

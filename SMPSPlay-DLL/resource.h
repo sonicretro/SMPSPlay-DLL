@@ -66,4 +66,3 @@
 #define IDR_MISC_PSG_S3                         203
 #define IDR_MISC_PSG_S2                         204
 #define IDR_MISC_FM_DRUMS                       205
-#define IDR_WAVE_SEGA                           299
