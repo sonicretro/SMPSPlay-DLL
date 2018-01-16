@@ -23,6 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SMPSOUT</RootNamespace>
     <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+    <ProjectName>SMPSPlay-DLL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -92,7 +93,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSPlay_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +121,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSPlay_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,7 +131,7 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;vgm-audio_Win32.lib;vgm-emu_Win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>SMPSOUTBuildTool.exe</Command>
+      <Command>SMPSPlayBuildTool.exe</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
@@ -179,6 +180,7 @@
     <ClInclude Include="musicid.gen.h" />
     <ClInclude Include="resource.gen.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SMPSPlay.h" />
     <ClInclude Include="songinfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -192,12 +194,12 @@
     <ClCompile Include="..\SMPSPlay\src\Sound.c" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IniFile.cpp" />
-    <ClCompile Include="SMPSOUT.cpp" />
+    <ClCompile Include="SMPSPlay.cpp" />
     <ClCompile Include="songinfo.gen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SMPSOUT.gen.rc" />
-    <ResourceCompile Include="SMPSOUT.rc" />
+    <ResourceCompile Include="SMPSPlay.gen.rc" />
+    <ResourceCompile Include="SMPSPlay.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

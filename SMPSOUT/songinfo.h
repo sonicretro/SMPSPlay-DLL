@@ -10,23 +10,3 @@ enum TrackMode {
 struct musicentry { unsigned short base; unsigned char mode; };
 
 extern const musicentry MusicFiles[];
-
-#if ! defined(_MSC_VER) || _MSC_VER >= 1600
-template <typename T, size_t N>
-inline size_t LengthOfArray(const T(&)[N])
-{
-	return N;
-}
-#else
-#define LengthOfArray(x)	(sizeof(x) / sizeof((x)[0]))
-#endif
-
-struct trackoption { const char *text; short id; };
-
-struct tracknameoptions { const char *name; const trackoption *options; int optioncount; };
-
-#define arrayptrandlength(x) x, (int)LengthOfArray(x)
-
-#define trackoptdef(x) { #x, arrayptrandlength(x##Options) }
-
-extern const tracknameoptions TrackOptions[];

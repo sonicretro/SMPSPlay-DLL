@@ -1,27 +1,27 @@
 ========================================================================
-    DYNAMIC LINK LIBRARY : SMPSOUT Project Overview
+    DYNAMIC LINK LIBRARY : SMPSPlay Project Overview
 ========================================================================
 
-AppWizard has created this SMPSOUT DLL for you.
+AppWizard has created this SMPSPlay DLL for you.
 
 This file contains a summary of what you will find in each of the files that
-make up your SMPSOUT application.
+make up your SMPSPlay application.
 
 
-SMPSOUT.vcxproj
+SMPSPlay.vcxproj
     This is the main project file for VC++ projects generated using an Application Wizard.
     It contains information about the version of Visual C++ that generated the file, and
     information about the platforms, configurations, and project features selected with the
     Application Wizard.
 
-SMPSOUT.vcxproj.filters
+SMPSPlay.vcxproj.filters
     This is the filters file for VC++ projects generated using an Application Wizard. 
     It contains information about the association between the files in your project 
     and the filters. This association is used in the IDE to show grouping of files with
     similar extensions under a specific node (for e.g. ".cpp" files are associated with the
     "Source Files" filter).
 
-SMPSOUT.cpp
+SMPSPlay.cpp
     This is the main DLL source file.
 
 	When created, this DLL does not export any symbols. As a result, it
@@ -37,7 +37,7 @@ Other standard files:
 
 StdAfx.h, StdAfx.cpp
     These files are used to build a precompiled header (PCH) file
-    named SMPSOUT.pch and a precompiled types file named StdAfx.obj.
+    named SMPSPlay.pch and a precompiled types file named StdAfx.obj.
 
 /////////////////////////////////////////////////////////////////////////////
 Other notes:

@@ -8,8 +8,8 @@
     <ProjectGuid>{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SMPSOUTBuildTool</RootNamespace>
-    <AssemblyName>SMPSOUTBuildTool</AssemblyName>
+    <RootNamespace>SMPSPlayBuildTool</RootNamespace>
+    <AssemblyName>SMPSPlayBuildTool</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
