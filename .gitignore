@@ -1,5 +1,6 @@
 *_SKC*
-SMPSOUT/Data/Sonic & Knuckles Collection/
+SMPSPlay-DLL/Data/Sonic & Knuckles Collection/
+SMPSPlay-DLL/libs
 
 #################
 ## Eclipse
@@ -220,4 +221,3 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-/SMPSOUT/libs
