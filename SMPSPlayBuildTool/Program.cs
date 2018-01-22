@@ -57,7 +57,7 @@ namespace SMPSPlayBuildTool
 				sw.WriteLine();
 				sw.WriteLine("const musicentry MusicFiles[] = {");
 				for (int i = 0; i < songlist.Count; i++)
-					sw.WriteLine("\t{{ 0x{0}, TrackMode_{1} }},", songlist[i].Value.Offset, songlist[i].Value.Type);
+					sw.WriteLine("\t{{ 0x{0}, TrackMode_{1}, \"{2}\" }},", songlist[i].Value.Offset, songlist[i].Value.Type, songlist[i].Key);
 				sw.WriteLine("};");
 			}
 		}

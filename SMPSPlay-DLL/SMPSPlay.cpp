@@ -45,7 +45,6 @@ using namespace std;
 
 
 HMODULE moduleHandle;
-HWND gameWindow;
 extern "C"
 {
 	//extern UINT32 SampleRate;	// from Sound.c
@@ -328,7 +327,7 @@ struct SongInfo { UINT8 *data; UINT16 length; UINT16 base; unsigned char mode; }
 
 vector<SongInfo> songs(SongCount);
 
-vector<const char *> customsongs;
+vector<const char *> songnames;
 
 UINT8* SmpsReloadState;
 UINT8* SmpsMusicSaveState;
@@ -597,6 +596,7 @@ extern "C"
 			songs[i].base = MusicFiles[i].base;
 			songs[i].length = (UINT16)SizeofResource(moduleHandle, hres);
 			songs[i].data = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
+			songnames.push_back(MusicFiles[i].name);
 		}
 
 #ifdef INISUPPORT
@@ -633,7 +633,7 @@ extern "C"
 				char *buf = new char[iter->first.length() + 1];
 				strncpy_s(buf, iter->first.length() + 1, iter->first.c_str(), iter->first.length());
 				buf[iter->first.length()] = 0;
-				customsongs.push_back(buf);
+				songnames.push_back(buf);
 			}
 		}
 #endif
@@ -987,10 +987,10 @@ extern "C"
 		default1UpHandling = enable;
 	}
 
-	const char **SMPS_GetCustomSongs(unsigned int &count)
+	const char **SMPS_GetSongNames(unsigned int &count)
 	{
-		count = (unsigned int)customsongs.size();
-		return &customsongs[0];
+		count = (unsigned int)songnames.size();
+		return songnames.data();
 	}
 
 	void SMPS_SetVolume(double volume)

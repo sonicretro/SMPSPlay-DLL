@@ -7,6 +7,6 @@ enum TrackMode {
 	TrackMode_S2
 };
 
-struct musicentry { unsigned short base; unsigned char mode; };
+struct musicentry { unsigned short base; unsigned char mode; const char *name; };
 
 extern const musicentry MusicFiles[];

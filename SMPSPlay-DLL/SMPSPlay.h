@@ -29,7 +29,7 @@ extern "C"
 	SMPSPlay_API BOOL SMPS_ResumeSong();
 	SMPSPlay_API BOOL SMPS_SetSongTempo(double multiplier);
 	SMPSPlay_API void SMPS_SetDefault1UpHandling(bool enable);
-	SMPSPlay_API const char **SMPS_GetCustomSongs(unsigned int &count);
+	SMPSPlay_API const char **SMPS_GetSongNames(unsigned int &count);
 	SMPSPlay_API void SMPS_SetVolume(double volume);
 	SMPSPlay_API void SMPS_SetWaveLogPath(const char *logfile);
 	SMPSPlay_API void SMPS_RegisterSongLoopCallback(SMPS_CB_SIGNAL func);
