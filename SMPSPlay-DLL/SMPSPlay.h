@@ -16,6 +16,8 @@ extern "C"
 	typedef void(*SMPS_CB_SIGNAL)(void);
 #endif
 
+	void AddCustomSongs(TCHAR * fn);
+
 	SMPSPlay_API BOOL SMPS_InitializeDriver();
 	SMPSPlay_API BOOL SMPS_DeInitializeDriver();
 	SMPSPlay_API void SMPS_RegisterSongStoppedCallback(void(*callback)());
@@ -29,6 +31,7 @@ extern "C"
 	SMPSPlay_API BOOL SMPS_ResumeSong();
 	SMPSPlay_API BOOL SMPS_SetSongTempo(double multiplier);
 	SMPSPlay_API void SMPS_SetDefault1UpHandling(bool enable);
+	SMPSPlay_API void SMPS_AddCustomSongs(const char *filename);
 	SMPSPlay_API const char **SMPS_GetSongNames(unsigned int &count);
 	SMPSPlay_API void SMPS_SetVolume(double volume);
 	SMPSPlay_API void SMPS_SetWaveLogPath(const char *logfile);

@@ -575,8 +575,76 @@ void GenerateDACDrv(DAC_CFG* DACDrv, UINT16 smplCount, WORD startID, UINT32 dacC
 	return;
 }
 
+string GetDirectory(const string& path)
+{
+	auto slash = path.find_last_of("/\\");
+	if (slash == string::npos)
+	{
+		return string();
+	}
+
+	if (slash != path.size() - 1)
+	{
+		return path.substr(0, slash);
+	}
+
+	auto last = slash;
+	slash = path.find_last_of("/\\", last);
+	if (slash == string::npos)
+	{
+		return string();
+	}
+
+	return path.substr(last);
+}
+
 extern "C"
 {
+	void SMPS_AddCustomSongs(const char *fn)
+	{
+#ifdef INISUPPORT
+		IniFile custsongs(fn);
+
+		string path = GetDirectory(fn);
+
+		for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
+		{
+			if (iter->first.empty()) continue;
+			IniGroup *group = iter->second;
+			SongInfo si = {};
+			string str = group->getString("Type");
+			if (str == "S1")
+				si.mode = TrackMode_S1;
+			else if (str == "S2")
+				si.mode = TrackMode_S2;
+			else if (str == "S2B")
+				si.mode = TrackMode_S2B;
+			else if (str == "S3D")
+				si.mode = TrackMode_S3D;
+			else if (str == "S3")
+				si.mode = TrackMode_S3;
+			si.base = group->getHexInt("Offset");
+			FILE *fi;
+			str = path + group->getString("File");
+			fopen_s(&fi, str.c_str(), "rb");
+			if (fi != nullptr)
+			{
+				fseek(fi, 0, SEEK_END);
+				si.length = (UINT16)ftell(fi);
+				fseek(fi, 0, SEEK_SET);
+				si.data = new UINT8[si.length];
+				fread(si.data, 1, si.length, fi);
+				fclose(fi);
+				songs.push_back(si);
+				char *buf = new char[iter->first.length() + 1];
+				strncpy_s(buf, iter->first.length() + 1, iter->first.c_str(), iter->first.length());
+				buf[iter->first.length()] = 0;
+				songnames.push_back(buf);
+			}
+		}
+#endif
+	}
+
 	BOOL SMPS_InitializeDriver()
 	{
 		HRSRC hres;
@@ -600,42 +668,7 @@ extern "C"
 		}
 
 #ifdef INISUPPORT
-		IniFile custsongs(_T("songs_cust.ini"));
-
-		for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
-		{
-			if (iter->first.empty()) continue;
-			IniGroup *group = iter->second;
-			SongInfo si = { };
-			string str = group->getString("Type");
-			if (str == "S1")
-				si.mode = TrackMode_S1;
-			else if (str == "S2")
-				si.mode = TrackMode_S2;
-			else if (str == "S2B")
-				si.mode = TrackMode_S2B;
-			else if (str == "S3D")
-				si.mode = TrackMode_S3D;
-			else if (str == "S3")
-				si.mode = TrackMode_S3;
-			si.base = group->getHexInt("Offset");
-			FILE *fi;
-			fopen_s(&fi, group->getString("File").c_str(), "rb");
-			if (fi != nullptr)
-			{
-				fseek(fi, 0, SEEK_END);
-				si.length = (UINT16)ftell(fi);
-				fseek(fi, 0, SEEK_SET);
-				si.data = new UINT8[si.length];
-				fread(si.data, 1, si.length, fi);
-				fclose(fi);
-				songs.push_back(si);
-				char *buf = new char[iter->first.length() + 1];
-				strncpy_s(buf, iter->first.length() + 1, iter->first.c_str(), iter->first.length());
-				buf[iter->first.length()] = 0;
-				songnames.push_back(buf);
-			}
-		}
+		SMPS_AddCustomSongs("songs_cust.ini");
 #endif
 
 		LoadSettings(SmpsDrv_S3K, &smpscfg_3K);
