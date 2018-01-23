@@ -16,8 +16,6 @@ extern "C"
 	typedef void(*SMPS_CB_SIGNAL)(void);
 #endif
 
-	void AddCustomSongs(TCHAR * fn);
-
 	SMPSPlay_API BOOL SMPS_InitializeDriver();
 	SMPSPlay_API BOOL SMPS_DeInitializeDriver();
 	SMPSPlay_API void SMPS_RegisterSongStoppedCallback(void(*callback)());
