@@ -1,14 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SMPSPlay-DLL", "SMPSPlay-DLL\SMPSPlay-DLL.vcxproj", "{3B009AD4-292B-424F-AB97-071ADD662C80}"
-	ProjectSection(ProjectDependencies) = postProject 
+	ProjectSection(ProjectDependencies) = postProject
 		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D} = {DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSCFG", "SMPSCFG\SMPSCFG.csproj", "{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPSPlayBuildTool", "SMPSPlayBuildTool\SMPSPlayBuildTool.csproj", "{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}"
 EndProject
@@ -34,16 +32,6 @@ Global
 		{3B009AD4-292B-424F-AB97-071ADD662C80}.Release|x64.Build.0 = Release|x64
 		{3B009AD4-292B-424F-AB97-071ADD662C80}.Release|x86.ActiveCfg = Release|Win32
 		{3B009AD4-292B-424F-AB97-071ADD662C80}.Release|x86.Build.0 = Release|Win32
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Debug|Win32.ActiveCfg = Debug|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Debug|Win32.Build.0 = Debug|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Debug|x64.ActiveCfg = Debug|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Debug|x86.ActiveCfg = Debug|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Debug|x86.Build.0 = Debug|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|Win32.ActiveCfg = Release|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|Win32.Build.0 = Release|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|x64.ActiveCfg = Release|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|x86.ActiveCfg = Release|x86
-		{2D5609BC-C3AF-40BE-A9D8-722A42A9F32F}.Release|x86.Build.0 = Release|x86
 		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Debug|Win32.ActiveCfg = Debug|x86
 		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Debug|Win32.Build.0 = Debug|x86
 		{DD148B7E-3032-42DD-A0F0-7638EAFA0A0D}.Debug|x64.ActiveCfg = Debug|x86
