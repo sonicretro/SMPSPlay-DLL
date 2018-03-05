@@ -957,7 +957,7 @@ extern "C"
 	BOOL SMPS_SetSongTempo(double multiplier)
 	{
 		//SmplsPerFrame = (SampleRate * pct) / (FrameDivider * 100);
-		FrameDivider = (UINT16)(60 / multiplier);
+		FrameDivider = (UINT16)(60 * multiplier);
 		return TRUE;
 	}
 
