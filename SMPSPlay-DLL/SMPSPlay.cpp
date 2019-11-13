@@ -1059,4 +1059,9 @@ extern "C"
 		if (SongStoppedCallback != NULL)
 			SongStoppedCallback();
 	}
+
+	void EnableFMDrums(bool enable)
+	{
+		fmdrum_on = enable;
+	}
 }
