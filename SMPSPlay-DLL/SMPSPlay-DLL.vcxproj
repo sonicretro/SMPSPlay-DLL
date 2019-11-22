@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3B009AD4-292B-424F-AB97-071ADD662C80}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SMPSOUT</RootNamespace>
+    <RootNamespace>SMPSPlay</RootNamespace>
     <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
     <ProjectName>SMPSPlay-DLL</ProjectName>
   </PropertyGroup>
@@ -78,6 +78,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>SMPSPlay</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,6 +90,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)SMPSPlay\libs\include;$(SolutionDir)SMPSPlay\libs\install\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SMPSPlay\libs\install\lib;$(LibraryPath)</LibraryPath>
+    <TargetName>SMPSPlay</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,7 +110,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;SMPSPlay_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,7 +149,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSOUT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_LOOP_DETECTION;DISABLE_DLOAD_FILE;DISABLE_DEBUG_MSGS;DISABLE_NECPCM;AUDDRV_WAVEWRITE;AUDDRV_WINMM;AUDDRV_DSOUND;AUDDRV_XAUD2;AUDDRV_WASAPI;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;SMPSPlay_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,7 +159,7 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;ole32.lib;winmm.lib;dsound.lib;vgm-audio_Win64.lib;vgm-emu_Win64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>SMPSOUTBuildTool.exe</Command>
+      <Command>SMPSPlayBuildTool.exe</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
