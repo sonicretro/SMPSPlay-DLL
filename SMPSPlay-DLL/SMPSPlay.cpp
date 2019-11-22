@@ -49,7 +49,6 @@ extern "C"
 {
 	//extern UINT32 SampleRate;	// from Sound.c
 	extern UINT16 FrameDivider;
-	//extern UINT32 SmplsPerFrame;
 	extern INT32 OutputVolume;
 	extern AUDIO_CFG AudioCfg;
 
@@ -78,7 +77,7 @@ enum MusicID2 {
 
 struct dacentry { int resid; unsigned char rate; };
 
-dacentry DACFiles[] = {
+static dacentry DACFiles[] = {
 	{ IDR_DAC_81, 0x04 },
 	{ IDR_DAC_82, 0x0E },
 	{ IDR_DAC_82, 0x14 },
@@ -146,13 +145,18 @@ dacentry DACFiles[] = {
 	{ IDR_DAC_B4, 0x0F },
 	{ IDR_DAC_B4, 0x11 },
 	{ IDR_DAC_B4, 0x12 },
-	{ IDR_DAC_B4, 0x0B },
+	{ IDR_DAC_B4, 0x0B },	// 0xC4 [last S3K DAC ID]
+	{ IDR_DAC_B2_S3, 0x16 },
+	{ IDR_DAC_B2_S3, 0x20 },
+	{ IDR_DAC_9B_S3PROTO, 0x12 },
 	{ IDR_DAC_9F_S3D, 0x01 },
-	{ IDR_DAC_A0_S3D, 0x12 }
+	{ IDR_DAC_A0_S3D, 0x12 },
 };
-#define S3D_ID_BASE	(0xC5 - 0x81)
+#define S3_DACB2_ID_BASE	(0xC5 - 0x81)
+#define S3P_DAC9B_ID_BASE	(0xC7 - 0x81)
+#define S3D_DAC9F_ID_BASE	(0xC8 - 0x81)
 
-UINT8 FMDrumList[] = {
+static UINT8 FMDrumList[] = {
 	// 0    1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
 	      0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x86, 0x87, 0x82, 0x83, 0x82, 0x84, 0x82, 0x85,	// 81..8F
 	0x82, 0x83, 0x84, 0x85, 0x82, 0x83, 0x84, 0x85, 0x82, 0x83, 0x84, 0x81, 0x88, 0x86, 0x81, 0x81,	// 90..9F
@@ -161,7 +165,7 @@ UINT8 FMDrumList[] = {
 	0x86, 0x00, 0x00, 0x00, 0x00                                                                   	// C0..C4
 };
 
-dacentry DACFiles_S2[] = {
+static dacentry DACFiles_S2[] = {
 	{ IDR_DAC_81_S2, 0x17 },
 	{ IDR_DAC_82_S2, 0x01 },
 	{ IDR_DAC_83_S2, 0x06 },
@@ -171,8 +175,8 @@ dacentry DACFiles_S2[] = {
 	{ IDR_DAC_87_S2, 0x1B }
 };
 
-UINT8 S2DrumList[][2] =
-{ {0x00, 0x00},
+static UINT8 S2DrumList[][2] = {
+	{0x00, 0x00},
 	{0x81, 0x17},
 	{0x82, 0x01},
 	{0x83, 0x06},
@@ -192,8 +196,8 @@ UINT8 S2DrumList[][2] =
 	{0x97, 0x12},
 };
 
-static const UINT8 DefDPCMData[] =
-{ 0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
+static const UINT8 DefDPCMData[] = {
+	0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
 	0x80, 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0 };
 
 static const UINT8 FMCHN_ORDER[] = { 0x16, 0, 1, 2, 4, 5, 6 };
@@ -202,22 +206,24 @@ static const UINT8 PSGCHN_ORDER[] = { 0x80, 0xA0, 0xC0 };
 static const UINT16 DEF_FMFREQ_VAL[13] =
 { 0x25E, 0x284, 0x2AB, 0x2D3, 0x2FE, 0x32D, 0x35C, 0x38F, 0x3C5, 0x3FF, 0x43C, 0x47C, 0x4C0 };
 
-static const UINT16 DEF_PSGFREQ_68K_VAL[] =
-{ 0x356, 0x326, 0x2F9, 0x2CE, 0x2A5, 0x280, 0x25C, 0x23A, 0x21A, 0x1FB, 0x1DF, 0x1C4,
-	0x1AB, 0x193, 0x17D, 0x167, 0x153, 0x140, 0x12E, 0x11D, 0x10D, 0x0FE, 0x0EF, 0x0E2,
-	0x0D6, 0x0C9, 0x0BE, 0x0B4, 0x0A9, 0x0A0, 0x097, 0x08F, 0x087, 0x07F, 0x078, 0x071,
-	0x06B, 0x065, 0x05F, 0x05A, 0x055, 0x050, 0x04B, 0x047, 0x043, 0x040, 0x03C, 0x039,
-	0x036, 0x033, 0x030, 0x02D, 0x02B, 0x028, 0x026, 0x024, 0x022, 0x020, 0x01F, 0x01D,
-	0x01B, 0x01A, 0x018, 0x017, 0x016, 0x015, 0x013, 0x012, 0x011, 0x000 };
-
-static const UINT16 DEF_PSGFREQ_Z80_T2_VAL[] =
-{ 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3F7, 0x3BE, 0x388,
+static const UINT16 DEF_PSGFREQ_68K_VAL[] = {
 	0x356, 0x326, 0x2F9, 0x2CE, 0x2A5, 0x280, 0x25C, 0x23A, 0x21A, 0x1FB, 0x1DF, 0x1C4,
 	0x1AB, 0x193, 0x17D, 0x167, 0x153, 0x140, 0x12E, 0x11D, 0x10D, 0x0FE, 0x0EF, 0x0E2,
 	0x0D6, 0x0C9, 0x0BE, 0x0B4, 0x0A9, 0x0A0, 0x097, 0x08F, 0x087, 0x07F, 0x078, 0x071,
 	0x06B, 0x065, 0x05F, 0x05A, 0x055, 0x050, 0x04B, 0x047, 0x043, 0x040, 0x03C, 0x039,
 	0x036, 0x033, 0x030, 0x02D, 0x02B, 0x028, 0x026, 0x024, 0x022, 0x020, 0x01F, 0x01D,
-	0x01B, 0x01A, 0x018, 0x017, 0x016, 0x015, 0x013, 0x012, 0x011, 0x010, 0x000, 0x000 };
+	0x01B, 0x01A, 0x018, 0x017, 0x016, 0x015, 0x013, 0x012, 0x011, 0x000
+};
+
+static const UINT16 DEF_PSGFREQ_Z80_T2_VAL[] = {
+	0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3FF, 0x3F7, 0x3BE, 0x388,
+	0x356, 0x326, 0x2F9, 0x2CE, 0x2A5, 0x280, 0x25C, 0x23A, 0x21A, 0x1FB, 0x1DF, 0x1C4,
+	0x1AB, 0x193, 0x17D, 0x167, 0x153, 0x140, 0x12E, 0x11D, 0x10D, 0x0FE, 0x0EF, 0x0E2,
+	0x0D6, 0x0C9, 0x0BE, 0x0B4, 0x0A9, 0x0A0, 0x097, 0x08F, 0x087, 0x07F, 0x078, 0x071,
+	0x06B, 0x065, 0x05F, 0x05A, 0x055, 0x050, 0x04B, 0x047, 0x043, 0x040, 0x03C, 0x039,
+	0x036, 0x033, 0x030, 0x02D, 0x02B, 0x028, 0x026, 0x024, 0x022, 0x020, 0x01F, 0x01D,
+	0x01B, 0x01A, 0x018, 0x017, 0x016, 0x015, 0x013, 0x012, 0x011, 0x010, 0x000, 0x000
+};
 
 static const UINT16 FM3FREQS[] = { 0, 0x132, 0x18E, 0x1E4, 0x234, 0x27E, 0x2C2, 0x2F0 };
 
@@ -226,7 +232,6 @@ static const CMD_FLAGS CMDFLAGS_S12[] = {
 	{ CF_DETUNE, 0x00, 0x02 },
 	{ CF_SET_COMM, 0x00, 0x02 },
 	{ CF_RETURN, 0x00, 0x01 },
-	//{ CF_TRK_END, 0x00, 0x01 },	// actually CF_FADE_IN_SONG, but that's not supported yet
 	{ CF_FADE_IN_SONG, 0x00, 0x01 },
 	{ CF_TICK_MULT, CFS_TMULT_CUR, 0x02 },
 	{ CF_VOLUME, CFS_VOL_NN_FM, 0x02 },
@@ -251,18 +256,17 @@ static const CMD_FLAGS CMDFLAGS_S12[] = {
 	{ CF_SND_OFF, 0x00, 0x01, 0x01 }
 };
 
-static const CMD_FLAGS CMDFLAGS[] = {
+static const CMD_FLAGS CMDFLAGS_S3K[] = {
 	{ CF_PANAFMS, CFS_PAFMS_PAN, 0x02 },
 	{ CF_DETUNE, 0x00, 0x02 },
 	{ CF_FADE_IN_SONG, 0x00, 0x02 },
-	//{ CF_SET_COMM, 0x00, 0x02 },
 	{ CF_TRK_END, CFS_TEND_MUTE, 0x01 },
 	{ CF_VOLUME, CFS_VOL_ABS_S3K, 0x02 },
 	{ CF_VOLUME, CFS_VOL_CC_FMP2, 0x03 },
 	{ CF_VOLUME, CFS_VOL_CC_FM, 0x02 },
 	{ CF_HOLD, 0x00, 0x01 },
 	{ CF_NOTE_STOP, CFS_NSTOP_MULT, 0x02 },
-	{ CF_IGNORE, 0x00, 0x01 },
+	{ CF_SPINDASH_REV, CFS_SDREV_INC, 0x01 },
 	{ CF_PLAY_DAC, 0x00, 0x02 },
 	{ CF_LOOP_EXIT, 0x00, 0x04, 0x02 },
 	{ CF_VOLUME, CFS_VOL_CC_PSG, 0x02 },
@@ -281,21 +285,56 @@ static const CMD_FLAGS CMDFLAGS[] = {
 	{ CF_RETURN, 0x00, 0x01 },
 	{ CF_MOD_SET, CFS_MODS_OFF, 0x01 },
 	{ CF_TRANSPOSE, CFS_TRNSP_ADD, 0x02 },
-	{ CF_IGNORE, 0x00, 0x03, 0x01 },
+	{ CF_CONT_SFX, 0x00, 0x03, 0x01 },
 	{ CF_RAW_FREQ, 0x00, 0x02 },
 	{ CF_SPC_FM3, 0x00, 0x05 },
 	{ CF_META_CF, 0x00, 0x01 }
 };
 
-static const CMD_FLAGS CMDMETAFLAGS[] = {
+static const CMD_FLAGS CMDMETAFLAGS_S3K[] = {
 	{ CF_TEMPO, CFS_TEMPO_SET, 0x02 },
 	{ CF_SND_CMD, 0x00, 0x02 },
-	{ CF_IGNORE, 0x00, 0x02 },
-	{ CF_IGNORE, 0x00, 0x03 },
+	{ CF_MUS_PAUSE, CFS_MUSP_Z80, 0x02 },
+	{ CF_COPY_MEM, 0x00, 0x03 },
 	{ CF_TICK_MULT, CFS_TMULT_ALL, 0x02 },
 	{ CF_SSG_EG, CFS_SEG_NORMAL, 0x05 },
 	{ CF_FM_VOLENV, 0x00, 0x03 },
-	{ CF_IGNORE, 0x00, 0x01 }
+	{ CF_SPINDASH_REV, CFS_SDREV_RESET, 0x01 }
+};
+
+static const CMD_FLAGS CMDFLAGS_S3PROTO[] = {
+	{ CF_PANAFMS, CFS_PAFMS_PAN, 0x02 },
+	{ CF_DETUNE, 0x00, 0x02 },
+	{ CF_FADE_IN_SONG, 0x00, 0x02 },
+	{ CF_TRK_END, CFS_TEND_MUTE, 0x01 },
+	{ CF_VOLUME, CFS_VOL_ABS_S3K, 0x02 },
+	{ CF_VOLUME, CFS_VOL_CC_FMP2, 0x03 },
+	{ CF_VOLUME, CFS_VOL_CC_FM, 0x02 },
+	{ CF_HOLD, 0x00, 0x01 },
+	{ CF_NOTE_STOP, CFS_NSTOP_MULT, 0x02 },
+	{ CF_SPINDASH_REV, CFS_SDREV_INC, 0x01 },	// not used by music (and completely broken), so keep S3 final command
+	{ CF_PLAY_DAC, 0x00, 0x02 },
+	{ CF_LOOP_EXIT, 0x00, 0x04, 0x02 },
+	{ CF_VOLUME, CFS_VOL_CC_PSG, 0x02 },
+	{ CF_TRANSPOSE, CFS_TRNSP_SET_S3K, 0x02 },
+	{ CF_FM_COMMAND, 0x00, 0x03 },
+	{ CF_INSTRUMENT, CFS_INS_N_FM, 0x82 },
+	{ CF_MOD_SETUP, 0x00, 0x05 },
+	{ CF_MOD_ENV, CFS_MENV_1FMP, 0x03 },	// different from S3 final
+	{ CF_TRK_END, CFS_TEND_STD, 0x01 },
+	{ CF_PSG_NOISE, CFS_PNOIS_SRES, 0x02 },
+	{ CF_MOD_ENV, CFS_MENV_1GEN, 0x02 },	// different from S3 final
+	{ CF_INSTRUMENT, CFS_INS_C_PSG, 0x02 },
+	{ CF_GOTO, 0x00, 0x03, 0x01 },
+	{ CF_LOOP, 0x00, 0x05, 0x03 },
+	{ CF_GOSUB, 0x00, 0x03, 0x01 },
+	{ CF_RETURN, 0x00, 0x01 },
+	{ CF_MOD_SET, CFS_MODS_OFF, 0x01 },
+	{ CF_TRANSPOSE, CFS_TRNSP_ADD, 0x02 },
+	{ CF_CONT_SFX, 0x00, 0x03, 0x01 },
+	{ CF_RAW_FREQ, 0x00, 0x02 },
+	{ CF_SPC_FM3, 0x00, 0x05 },
+	{ CF_META_CF, 0x00, 0x01 }
 };
 
 static const UINT8 INSOPS_DEFAULT[] =
@@ -325,21 +364,23 @@ enum DriverMode {
 
 struct SongInfo { UINT8 *data; UINT16 length; UINT16 base; unsigned char mode; };
 
-vector<SongInfo> songs(SongCount);
+static vector<SongInfo> songs(SongCount);
 
-vector<const char *> songnames;
+static vector<const char *> songnames;
 
-UINT8* SmpsReloadState;
-UINT8* SmpsMusicSaveState;
-bool default1UpHandling = true;
+static UINT8* SmpsReloadState;
+static UINT8* SmpsMusicSaveState;
+static bool default1UpHandling = true;
 
-SMPS_CFG smpscfg_3K;
-SMPS_CFG smpscfg_12;
-SMPS_CFG* cursmpscfg;
-SMPS_SET cursmps;
-ENV_LIB VolEnvs_S3;
-ENV_LIB VolEnvs_SK;
-bool fmdrum_on;
+static SMPS_CFG smpscfg_3K;
+static SMPS_CFG smpscfg_12;
+static SMPS_CFG* cursmpscfg;
+static SMPS_SET cursmps;
+static ENV_LIB ModEnvs_S3Proto;
+static ENV_LIB ModEnvs_S3K;
+static ENV_LIB VolEnvs_S3;
+static ENV_LIB VolEnvs_SK;
+static bool fmdrum_on;
 
 INLINE UINT16 ReadBE16(const UINT8* Data)
 {
@@ -385,7 +426,7 @@ static void LoadRegisterList(SMPS_CFG* SmpsCfg, UINT8 RegCnt, const UINT8* RegPt
 
 #if ! defined(_MSC_VER) || _MSC_VER >= 1600
 template <typename T, size_t N>
-inline size_t LengthOfArray(const T(&)[N])
+static inline size_t LengthOfArray(const T(&)[N])
 {
 	return N;
 }
@@ -443,7 +484,7 @@ static void LoadSettings(UINT8 Mode, SMPS_CFG* SmpsCfg)
 		SmpsCfg->NoteBase = 0x80;
 		SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S12;
 		SmpsCfg->CmdList.FlagBase = 0xE0;
-		SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS);
+		SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS_S12);
 		SmpsCfg->CmdMetaList.CmdData = NULL;
 		SmpsCfg->CmdMetaList.FlagBase = 0x00;
 		SmpsCfg->CmdMetaList.FlagCount = 0;
@@ -496,18 +537,18 @@ static void LoadSettings(UINT8 Mode, SMPS_CFG* SmpsCfg)
 		SmpsCfg->EnvCmds[4] = ENVCMD_CHGMULT;
 
 		SmpsCfg->NoteBase = 0x80;
-		SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS;
+		SmpsCfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S3K;
 		SmpsCfg->CmdList.FlagBase = 0xE0;
-		SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS);
-		SmpsCfg->CmdMetaList.CmdData = (CMD_FLAGS*)CMDMETAFLAGS;
+		SmpsCfg->CmdList.FlagCount = (UINT16)LengthOfArray(CMDFLAGS_S3K);
+		SmpsCfg->CmdMetaList.CmdData = (CMD_FLAGS*)CMDMETAFLAGS_S3K;
 		SmpsCfg->CmdMetaList.FlagBase = 0x00;
-		SmpsCfg->CmdMetaList.FlagCount = (UINT16)LengthOfArray(CMDMETAFLAGS);
+		SmpsCfg->CmdMetaList.FlagCount = (UINT16)LengthOfArray(CMDMETAFLAGS_S3K);
 		break;
 	}
 }
 
 
-void GenerateDACAlgos(DAC_ALGO* DACAlgo, UINT8 Mode, UINT32 DacCycles)
+static void GenerateDACAlgos(DAC_ALGO* DACAlgo, UINT8 Mode, UINT32 DacCycles)
 {
 	DACAlgo->BaseCycles = DacCycles;	// BaseCyles overrides BaseRate and Divider
 	if (Mode == COMPR_DPCM)
@@ -525,7 +566,7 @@ void GenerateDACAlgos(DAC_ALGO* DACAlgo, UINT8 Mode, UINT32 DacCycles)
 	return;
 }
 
-void GenerateDACDrv(DAC_CFG* DACDrv, UINT16 smplCount, WORD startID, UINT32 dacCycles,
+static void GenerateDACDrv(DAC_CFG* DACDrv, UINT16 smplCount, WORD startID, UINT32 dacCycles,
 	unsigned int smplTblSize, const dacentry* smplTblList)
 {
 	unsigned int i;
@@ -575,7 +616,7 @@ void GenerateDACDrv(DAC_CFG* DACDrv, UINT16 smplCount, WORD startID, UINT32 dacC
 	return;
 }
 
-string GetDirectory(const string& path)
+static string GetDirectory(const string& path)
 {
 	auto slash = path.find_last_of("/\\");
 	if (slash == string::npos)
@@ -623,6 +664,8 @@ extern "C"
 				si.mode = TrackMode_S3D;
 			else if (str == "S3")
 				si.mode = TrackMode_S3;
+			else if (str == "S3P")
+				si.mode = TrackMode_S3P;
 			si.base = group->getHexInt("Offset");
 			FILE *fi;
 			str = path + group->getString("File");
@@ -706,22 +749,27 @@ extern "C"
 			}
 		}
 
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_MODULAT), _T("MISC"));
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_MODENV_S3K), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
-		LoadEnvelopeData_Mem(dataSize, dataPtr, &smpscfg_3K.ModEnvs);
+		LoadEnvelopeData_Mem(dataSize, dataPtr, &ModEnvs_S3K);
 
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_S3), _T("MISC"));
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_MODENV_S3PROTO), _T("MISC"));
+		dataSize = SizeofResource(moduleHandle, hres);
+		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
+		LoadEnvelopeData_Mem(dataSize, dataPtr, &ModEnvs_S3Proto);
+
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_VOLENV_S3), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		LoadEnvelopeData_Mem(dataSize, dataPtr, &VolEnvs_S3);
 
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_SK), _T("MISC"));
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_VOLENV_SK), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		LoadEnvelopeData_Mem(dataSize, dataPtr, &VolEnvs_SK);
 
-		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_PSG_S2), _T("MISC"));
+		hres = FindResource(moduleHandle, MAKEINTRESOURCE(IDR_MISC_VOLENV_S2), _T("MISC"));
 		dataSize = SizeofResource(moduleHandle, hres);
 		dataPtr = (UINT8*)LockResource(LoadResource(moduleHandle, hres));
 		LoadEnvelopeData_Mem(dataSize, dataPtr, &smpscfg_12.VolEnvs);
@@ -832,22 +880,29 @@ extern "C"
 			//default:
 		case TrackMode_SK:
 		case TrackMode_S3:
+		case TrackMode_S3P:
 		case TrackMode_S3D:
 			DRUM_LIB * drumLib;
 
 			cursmpscfg = &smpscfg_3K;
 			drumLib = &cursmpscfg->DrumLib;
-			if (song->mode == TrackMode_S3)
+			if (song->mode == TrackMode_S3P)
 			{
+				cursmpscfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S3PROTO;
+				cursmpscfg->ModEnvs = ModEnvs_S3Proto;
 				cursmpscfg->VolEnvs = VolEnvs_S3;
-				cursmpscfg->DACDrv.SmplTbl[0xB2 - 0x81].Sample = IDR_DAC_B2_S3 - IDR_DAC_81;
-				cursmpscfg->DACDrv.SmplTbl[0xB3 - 0x81].Sample = IDR_DAC_B2_S3 - IDR_DAC_81;
+			}
+			else if (song->mode == TrackMode_S3)
+			{
+				cursmpscfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S3K;
+				cursmpscfg->ModEnvs = ModEnvs_S3K;
+				cursmpscfg->VolEnvs = VolEnvs_S3;
 			}
 			else
 			{
+				cursmpscfg->CmdList.CmdData = (CMD_FLAGS*)CMDFLAGS_S3K;
+				cursmpscfg->ModEnvs = ModEnvs_S3K;
 				cursmpscfg->VolEnvs = VolEnvs_SK;
-				cursmpscfg->DACDrv.SmplTbl[0xB2 - 0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
-				cursmpscfg->DACDrv.SmplTbl[0xB3 - 0x81].Sample = IDR_DAC_B2 - IDR_DAC_81;
 			}
 
 			UINT8 i;
@@ -867,13 +922,13 @@ extern "C"
 					drumLib->DrumData[0x9F - 0x80].Type = DRMTYPE_FM;
 					drumLib->DrumData[0x9F - 0x80].DrumID = 0x86 - 0x81;
 					drumLib->DrumData[0xA0 - 0x80].Type = DRMTYPE_DAC;
-					drumLib->DrumData[0xA0 - 0x80].DrumID = S3D_ID_BASE + (0xA0 - 0x9F);
+					drumLib->DrumData[0xA0 - 0x80].DrumID = S3D_DAC9F_ID_BASE + (0xA0 - 0x9F);
 				}
 			}
 			else if (song->mode == TrackMode_S3D)
 			{
 				// Sonic 3D DAC drums
-				for (i = 1; i < 0x1F; i++)
+				for (i = 0x01; i < 0x1F; i++)
 				{
 					drumLib->DrumData[i].Type = DRMTYPE_DAC;
 					drumLib->DrumData[i].DrumID = i - 1;	// set DAC sample
@@ -881,7 +936,7 @@ extern "C"
 				for (; i <= 0x20; i++)
 				{
 					drumLib->DrumData[i].Type = DRMTYPE_DAC;
-					drumLib->DrumData[i].DrumID = S3D_ID_BASE + (i - 0x1F);	// S3D sounds 9F/A0 are C5/C6 here.
+					drumLib->DrumData[i].DrumID = S3D_DAC9F_ID_BASE + (i - 0x1F);	// S3D sounds 9F/A0 are C5/C6 here.
 				}
 				for (; i < drumLib->DrumCount; i++)
 					drumLib->DrumData[i].Type = DRMTYPE_NONE;
@@ -889,10 +944,21 @@ extern "C"
 			else
 			{
 				// Sonic 3/K DAC drums
-				for (i = 1; i < drumLib->DrumCount; i++)
+				for (i = 0x01; i < drumLib->DrumCount; i++)
 				{
 					drumLib->DrumData[i].Type = DRMTYPE_DAC;
 					drumLib->DrumData[i].DrumID = i - 1;	// set DAC sample
+				}
+				if (song->mode == TrackMode_S3P)
+				{
+					drumLib->DrumData[0x9B - 0x80].DrumID = S3P_DAC9B_ID_BASE;
+					drumLib->DrumData[0xB2 - 0x80].DrumID = S3_DACB2_ID_BASE + 0;
+					drumLib->DrumData[0xB3 - 0x80].DrumID = S3_DACB2_ID_BASE + 1;
+				}
+				else if (song->mode == TrackMode_S3)
+				{
+					drumLib->DrumData[0xB2 - 0x80].DrumID = S3_DACB2_ID_BASE + 0;
+					drumLib->DrumData[0xB3 - 0x80].DrumID = S3_DACB2_ID_BASE + 1;
 				}
 			}
 			break;
@@ -920,7 +986,6 @@ extern "C"
 
 		ThreadSync(1);
 
-		//SmplsPerFrame = SampleRate / FrameDivider;
 		FrameDivider = 60;
 		PlayMusic(&cursmps);
 
@@ -956,8 +1021,7 @@ extern "C"
 
 	SMPSPlay_API BOOL SMPS_SetSongTempo(double multiplier)
 	{
-		//SmplsPerFrame = (SampleRate * pct) / (FrameDivider * 100);
-		FrameDivider = (UINT16)(60 * multiplier);
+		FrameDivider = (UINT16)(60 * multiplier + 0.5);
 		return TRUE;
 	}
 
@@ -973,7 +1037,8 @@ extern "C"
 		{
 			delete[] smpscfg_3K.DrumLib.DrumData;
 			delete[] smpscfg_12.DrumLib.DrumData;
-			FreeEnvelopeData(&smpscfg_3K.ModEnvs);
+			FreeEnvelopeData(&ModEnvs_S3K);
+			FreeEnvelopeData(&ModEnvs_S3Proto);
 			FreeEnvelopeData(&smpscfg_12.ModEnvs);
 			FreeEnvelopeData(&VolEnvs_S3);
 			FreeEnvelopeData(&VolEnvs_SK);
