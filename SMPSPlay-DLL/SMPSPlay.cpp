@@ -53,7 +53,7 @@ extern "C"
 	extern INT32 OutputVolume;
 	extern AUDIO_CFG AudioCfg;
 
-	void NotifySongStopped(void);
+	static void NotifySongStopped(void);
 }
 
 enum MusicID2 {
@@ -154,7 +154,7 @@ dacentry DACFiles[] = {
 
 UINT8 FMDrumList[] = {
 	// 0    1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
-	0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x86, 0x87, 0x82, 0x83, 0x82, 0x84, 0x82, 0x85,	// 81..8F
+	      0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x86, 0x87, 0x82, 0x83, 0x82, 0x84, 0x82, 0x85,	// 81..8F
 	0x82, 0x83, 0x84, 0x85, 0x82, 0x83, 0x84, 0x85, 0x82, 0x83, 0x84, 0x81, 0x88, 0x86, 0x81, 0x81,	// 90..9F
 	0x87, 0x87, 0x87, 0x81, 0x86, 0x00, 0x00, 0x86, 0x86, 0x87, 0x87, 0x81, 0x85, 0x82, 0x83, 0x82,	// A0..AF
 	0x84, 0x87, 0x82, 0x84, 0x00, 0x00, 0x87, 0x86, 0x86, 0x86, 0x87, 0x87, 0x81, 0x86, 0x00, 0x81,	// B0..BF
@@ -600,7 +600,7 @@ string GetDirectory(const string& path)
 
 extern "C"
 {
-	void SMPS_AddCustomSongs(const char *fn)
+	SMPSPlay_API void SMPS_AddCustomSongs(const char *fn)
 	{
 #ifdef INISUPPORT
 		IniFile custsongs(fn);
@@ -645,7 +645,7 @@ extern "C"
 #endif
 	}
 
-	BOOL SMPS_InitializeDriver()
+	SMPSPlay_API BOOL SMPS_InitializeDriver()
 	{
 		HRSRC hres;
 		UINT8* dataPtr;
@@ -795,7 +795,7 @@ extern "C"
 		return TRUE;
 	}
 
-	BOOL SMPS_LoadSong(short id)
+	SMPSPlay_API BOOL SMPS_LoadSong(short id)
 	{
 		int newid = id;
 		if ((size_t)newid >= songs.size())
@@ -913,7 +913,7 @@ extern "C"
 		return TRUE;
 	}
 
-	BOOL SMPS_PlaySong()
+	SMPSPlay_API BOOL SMPS_PlaySong()
 	{
 		if (cursmpscfg == NULL)
 			return TRUE;
@@ -929,12 +929,12 @@ extern "C"
 		return TRUE;
 	}
 
-	BOOL SMPS_LoadAndPlaySong(short id)
+	SMPSPlay_API BOOL SMPS_LoadAndPlaySong(short id)
 	{
 		return SMPS_LoadSong(id) && SMPS_PlaySong();
 	}
 
-	BOOL SMPS_StopSong()
+	SMPSPlay_API BOOL SMPS_StopSong()
 	{
 		ThreadSync(1);
 		StopAllSound();
@@ -942,26 +942,26 @@ extern "C"
 		return TRUE;
 	}
 
-	BOOL SMPS_PauseSong()
+	SMPSPlay_API BOOL SMPS_PauseSong()
 	{
 		PauseResumeMusic(1);
 		return TRUE;
 	}
 
-	BOOL SMPS_ResumeSong()
+	SMPSPlay_API BOOL SMPS_ResumeSong()
 	{
 		PauseResumeMusic(0);
 		return TRUE;
 	}
 
-	BOOL SMPS_SetSongTempo(double multiplier)
+	SMPSPlay_API BOOL SMPS_SetSongTempo(double multiplier)
 	{
 		//SmplsPerFrame = (SampleRate * pct) / (FrameDivider * 100);
 		FrameDivider = (UINT16)(60 * multiplier);
 		return TRUE;
 	}
 
-	BOOL SMPS_DeInitializeDriver()
+	SMPSPlay_API BOOL SMPS_DeInitializeDriver()
 	{
 		SMPSExtra_SetCallbacks(SMPSCB_OFF, NULL);	// doing callbacks now can cause crashes
 		ThreadSync(1);
@@ -998,40 +998,40 @@ extern "C"
 		return TRUE;
 	}
 
-	void(*SongStoppedCallback)() = NULL;
+	static void(*SongStoppedCallback)() = NULL;
 
-	void SMPS_RegisterSongStoppedCallback(void(*callback)())
+	SMPSPlay_API void SMPS_RegisterSongStoppedCallback(void(*callback)())
 	{
 		SongStoppedCallback = callback;
 	}
 
-	void SMPS_FadeOutSong()
+	SMPSPlay_API void SMPS_FadeOutSong()
 	{
 		FadeOutMusic();
 	}
 
-	void SMPS_FadeInSong()
+	SMPSPlay_API void SMPS_FadeInSong()
 	{
 		FadeInMusic();
 	}
 
-	void SMPS_SetDefault1UpHandling(bool enable)
+	SMPSPlay_API void SMPS_SetDefault1UpHandling(bool enable)
 	{
 		default1UpHandling = enable;
 	}
 
-	const char **SMPS_GetSongNames(unsigned int &count)
+	SMPSPlay_API const char **SMPS_GetSongNames(unsigned int &count)
 	{
 		count = (unsigned int)songnames.size();
 		return songnames.data();
 	}
 
-	void SMPS_SetVolume(double volume)
+	SMPSPlay_API void SMPS_SetVolume(double volume)
 	{
 		OutputVolume = (INT32)(volume * 0x100 + 0.5);
 	}
 
-	void SMPS_SetWaveLogPath(const char *logfile)
+	SMPSPlay_API void SMPS_SetWaveLogPath(const char *logfile)
 	{
 		if (AudioCfg.WaveLogPath)
 		{
@@ -1049,18 +1049,18 @@ extern "C"
 		}
 	}
 
-	void SMPS_RegisterSongLoopCallback(SMPS_CB_SIGNAL func)
+	SMPSPlay_API void SMPS_RegisterSongLoopCallback(SMPS_CB_SIGNAL func)
 	{
 		SMPSExtra_SetCallbacks(SMPSCB_LOOP, func);
 	}
 
-	void NotifySongStopped(void)
+	static void NotifySongStopped(void)
 	{
 		if (SongStoppedCallback != NULL)
 			SongStoppedCallback();
 	}
 
-	void EnableFMDrums(bool enable)
+	SMPSPlay_API void EnableFMDrums(bool enable)
 	{
 		fmdrum_on = enable;
 	}
