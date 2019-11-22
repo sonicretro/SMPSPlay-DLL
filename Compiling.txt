@@ -1,0 +1,10 @@
+Compiling with Visual Studio 2017
+---------------------------------
+1. check out the SMPSPlay and libvgm submodules
+    git submodule update --init --recursive
+2. compile the libvgm library (sound chip emulation + audio output)
+2a. make sure CMake is installed and the folder with cmake.exe inside is added to the PATH environment variable
+2b. open "Developer Command Prompt for VS 2017"
+2c. change directory to <SMPSPlay-DLL>\SMPSPlay\libs
+2d. run build_libs_VC2017-Win32.bat and build_libs_VC2017-Win64.bat
+3. Open SMPSPlay-DLL.sln and compile the project
