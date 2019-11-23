@@ -1125,7 +1125,7 @@ extern "C"
 			SongStoppedCallback();
 	}
 
-	SMPSPlay_API void EnableFMDrums(bool enable)
+	SMPSPlay_API void SMPS_EnableFMDrums(bool enable)
 	{
 		fmdrum_on = enable;
 	}
