@@ -825,7 +825,7 @@ extern "C"
 				if (retVal)
 					continue;
 				AudioCfg.AudAPIName = (char*)AudAPIList[curADrv];
-				AudioCfg.AudioBufs = 5;
+				AudioCfg.AudioBufs = 8;
 				AudioCfg.AudioBufSize = (curADrv < 3) ? 4 : 8;	// WinMM: use 8+ buffers
 				AudioCfg.Volume = 1.0f;
 
