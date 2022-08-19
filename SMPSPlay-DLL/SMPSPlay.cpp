@@ -646,7 +646,7 @@ extern "C"
 #ifdef INISUPPORT
 		IniFile custsongs(fn);
 
-		string path = GetDirectory(fn);
+		string path = GetDirectory(fn) + "\\";
 
 		for (auto iter = custsongs.begin(); iter != custsongs.end(); iter++)
 		{
